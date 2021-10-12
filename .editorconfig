@@ -1,0 +1,39 @@
+# https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# Go files want tab indentation
+[*.go]
+indent_style = tab
+
+# Makefiles want tab indentation
+[Makefile]
+indent_style = tab
+
+# HTML files want narrow space
+[*.html]
+indent_style = space
+indent_size = 2
+
+# YAML files want narrow space
+[*.yml]
+indent_style = space
+indent_size = 2
+
+# SQL files want space indentation
+[*.sql]
+indent_style = space
+indent_size = 2
+
+# .bat files want CRLF
+[*.bat]
+end_of_line = crlf
