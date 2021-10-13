@@ -276,3 +276,140 @@ CREATE TABLE matrix (
   CHECK(agg_cost >= 0)
 );
 -- MATRIX TABLE end
+
+
+
+-------------------------------------------------------------------------------
+-- TRIGGERS
+-------------------------------------------------------------------------------
+
+-- BEFORE INSERT Trigger for jobs, inserts rows into locations and project_locations
+CREATE FUNCTION tgr_jobs_insert_func()
+RETURNS TRIGGER
+AS $trig$
+BEGIN
+  INSERT INTO locations (id)
+  SELECT NEW.location_index
+  ON CONFLICT DO NOTHING;
+
+  INSERT INTO project_locations (project_id, location_id)
+  SELECT NEW.project_id, NEW.location_id
+  ON CONFLICT DO NOTHING;
+END;
+$trig$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tgr_jobs_insert
+BEFORE INSERT ON jobs
+FOR EACH ROW EXECUTE PROCEDURE tgr_jobs_insert_func();
+
+
+-- BEFORE INSERT Trigger for shipments, inserts rows into locations and project_locations
+CREATE FUNCTION tgr_shipments_insert_func()
+RETURNS TRIGGER
+AS $trig$
+BEGIN
+  INSERT INTO locations (id)
+  SELECT NEW.p_location_index
+  UNION
+  SELECT NEW.d_location_index
+  ON CONFLICT DO NOTHING;
+
+  INSERT INTO project_locations (project_id, location_id)
+  SELECT NEW.project_id, NEW.p_location_id
+  UNION
+  SELECT NEW.project_id, NEW.d_location_id
+  ON CONFLICT DO NOTHING;
+END;
+$trig$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tgr_shipments_insert
+BEFORE INSERT ON shipments
+FOR EACH ROW EXECUTE PROCEDURE tgr_shipments_insert_func();
+
+
+-- BEFORE INSERT Trigger for vehicles, inserts rows into locations and project_locations
+CREATE FUNCTION tgr_vehicles_insert_func()
+RETURNS TRIGGER
+AS $trig$
+BEGIN
+  INSERT INTO locations (id)
+  SELECT NEW.start_index
+  UNION
+  SELECT NEW.end_index
+  ON CONFLICT DO NOTHING;
+
+  INSERT INTO project_locations (project_id, location_id)
+  SELECT NEW.project_id, NEW.start_index
+  UNION
+  SELECT NEW.project_id, NEW.end_index
+  ON CONFLICT DO NOTHING;
+END;
+$trig$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tgr_vehicles_insert
+BEFORE INSERT ON vehicles
+FOR EACH ROW EXECUTE PROCEDURE tgr_vehicles_insert_func();
+
+
+-- AFTER INSERT Trigger for project locations, inserts rows into matrix
+CREATE FUNCTION tgr_project_locations_insert_func()
+RETURNS TRIGGER
+AS $trig$
+BEGIN
+  INSERT INTO matrix(start_vid, end_vid, agg_cost)
+  SELECT
+    NEW.location_id,
+    PL.location_id,
+    ROUND(ST_distance(
+      id_to_geom(NEW.location_id)::geography,
+      id_to_geom(PL.location_id)::geography)
+    )
+    FROM project_locations AS PL
+  ON CONFLICT DO NOTHING;
+END;
+$trig$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tgr_project_locations_insert
+AFTER INSERT ON project_locations
+FOR EACH ROW EXECUTE PROCEDURE tgr_project_locations_insert_func();
+
+
+-- AFTER INSERT Trigger for matrix, inserts reverse direction cost
+CREATE FUNCTION tgr_matrix_insert_func()
+RETURNS TRIGGER
+AS $trig$
+BEGIN
+  INSERT INTO matrix(start_vid, end_vid, agg_cost)
+  SELECT NEW.end_vid, NEW.start_vid, NEW.agg_cost
+  ON CONFLICT DO NOTHING;
+END;
+$trig$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tgr_matrix_insert
+AFTER INSERT ON matrix
+FOR EACH ROW EXECUTE PROCEDURE tgr_matrix_insert_func();
+
+
+-- BEFORE UPDATE TRIGGER for all tables, auto-update updated_at field
+CREATE FUNCTION tgr_updated_at_field_func()
+RETURNS TRIGGER
+AS $trig$
+BEGIN
+  NEW.updated_at = current_timestamp;
+  RETURN NEW;
+END;
+$trig$ LANGUAGE plpgsql;
+
+DO
+$$
+BEGIN
+  EXECUTE (
+  SELECT string_agg('CREATE TRIGGER tgr_updated_at_field
+    BEFORE UPDATE ON ' || quote_ident(T) || '
+    FOR EACH ROW EXECUTE PROCEDURE tgr_updated_at_field_func();', E'\n')
+  FROM unnest('{locations, projects, project_locations, jobs,
+    jobs_time_windows, shipments, shipments_time_windows, vehicles,
+    breaks, breaks_time_windows, matrix}'::text[]) T
+  );
+END
+$$;
