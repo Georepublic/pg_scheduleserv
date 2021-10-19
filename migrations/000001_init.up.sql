@@ -1,3 +1,33 @@
+/*GRP-GNU-AGPL******************************************************************
+
+File: 000001_init.up.sql - Initial migrations up file
+
+Copyright (C) 2021  Team Georepublic <info@georepublic.de>
+
+Developer(s):
+Copyright (C) 2021  Ashish Kumar <ashishkr23438@gmail.com>
+
+-----
+
+This file is part of pg_scheduleserv.
+
+pg_scheduleserv is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+pg_scheduleserv is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with pg_scheduleserv.  If not, see <https://www.gnu.org/licenses/>.
+
+******************************************************************GRP-GNU-AGPL*/
+
+BEGIN;
+
 CREATE EXTENSION postgis;
 CREATE EXTENSION pgrouting;
 CREATE EXTENSION vrprouting;
@@ -86,7 +116,6 @@ $BODY$ LANGUAGE SQL VOLATILE STRICT;
 -- TABLES
 -------------------------------------------------------------------------------
 
-
 -- LOCATIONS TABLE start
 CREATE TABLE locations (
   id          BIGINT PRIMARY KEY,
@@ -105,6 +134,7 @@ CREATE TABLE projects (
   id          BIGINT    DEFAULT random_bigint() PRIMARY KEY,
   name        VARCHAR   NOT NULL,
 
+  data        JSONB     NOT NULL DEFAULT '{}'::JSONB,
   created_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
   updated_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
   deleted     BOOLEAN   NOT NULL DEFAULT FALSE,
@@ -136,6 +166,9 @@ CREATE TABLE jobs (
   skills          INTEGER[] NOT NULL DEFAULT ARRAY[]::INTEGER[],
   priority        INTEGER   NOT NULL DEFAULT 0,
 
+  project_id      BIGINT    NOT NULL REFERENCES projects(id),
+
+  data            JSONB     NOT NULL DEFAULT '{}'::JSONB,
   created_at      TIMESTAMP NOT NULL DEFAULT current_timestamp,
   updated_at      TIMESTAMP NOT NULL DEFAULT current_timestamp,
   deleted         BOOLEAN   NOT NULL DEFAULT FALSE,
@@ -158,7 +191,8 @@ CREATE TABLE jobs_time_windows (
 
   created_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
   updated_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  deleted     BOOLEAN   NOT NULL DEFAULT FALSE,
+
+  PRIMARY KEY(id, tw_open, tw_close),
 
   CHECK(tw_open <= tw_close)
 );
@@ -176,6 +210,9 @@ CREATE TABLE shipments (
   skills            INTEGER[] NOT NULL DEFAULT ARRAY[]::INTEGER[],
   priority          INTEGER   NOT NULL DEFAULT 0,
 
+  project_id        BIGINT    NOT NULL REFERENCES projects(id),
+
+  data              JSONB     NOT NULL DEFAULT '{}'::JSONB,
   created_at        TIMESTAMP NOT NULL DEFAULT current_timestamp,
   updated_at        TIMESTAMP NOT NULL DEFAULT current_timestamp,
   deleted           BOOLEAN   NOT NULL DEFAULT FALSE,
@@ -199,7 +236,8 @@ CREATE TABLE shipments_time_windows (
 
   created_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
   updated_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  deleted     BOOLEAN   NOT NULL DEFAULT FALSE,
+
+  PRIMARY KEY(id, kind, tw_open, tw_close),
 
   CHECK(kind = 'p' OR kind = 'd'),
   CHECK(tw_open <= tw_close)
@@ -218,6 +256,9 @@ CREATE TABLE vehicles (
   tw_close      TIMESTAMP NOT NULL DEFAULT (to_timestamp(2147483647) at time zone 'UTC'),
   speed_factor  FLOAT     NOT NULL DEFAULT 1.0,
 
+  project_id    BIGINT    NOT NULL REFERENCES projects(id),
+
+  data          JSONB     NOT NULL DEFAULT '{}'::JSONB,
   created_at    TIMESTAMP NOT NULL DEFAULT current_timestamp,
   updated_at    TIMESTAMP NOT NULL DEFAULT current_timestamp,
   deleted       BOOLEAN   NOT NULL DEFAULT FALSE,
@@ -237,6 +278,7 @@ CREATE TABLE breaks (
   vehicle_id  BIGINT    NOT NULL REFERENCES vehicles(id),
   service     INTERVAL  NOT NULL DEFAULT '00:00:00'::INTERVAL,
 
+  data        JSONB     NOT NULL DEFAULT '{}'::JSONB,
   created_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
   updated_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
   deleted     BOOLEAN   NOT NULL DEFAULT FALSE,
@@ -255,7 +297,8 @@ CREATE TABLE breaks_time_windows (
 
   created_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
   updated_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  deleted     BOOLEAN   NOT NULL DEFAULT FALSE,
+
+  PRIMARY KEY(id, tw_open, tw_close),
 
   CHECK(tw_open <= tw_close)
 );
@@ -413,3 +456,5 @@ BEGIN
   );
 END
 $$;
+
+END;
