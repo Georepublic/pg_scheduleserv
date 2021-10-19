@@ -25,7 +25,7 @@ indent_style = space
 indent_size = 2
 
 # YAML files want narrow space
-[*.yml]
+[{*.yml,*.yaml}]
 indent_style = space
 indent_size = 2
 
