@@ -32,7 +32,7 @@ DO
 $$
 BEGIN
   EXECUTE (
-  SELECT string_agg('DROP TRIGGER tgr_updated_at_field
+  SELECT string_agg('DROP TRIGGER IF EXISTS tgr_updated_at_field
     ON ' || quote_ident(T) || ';', E'\n')
   FROM unnest('{locations, projects, project_locations, jobs,
     jobs_time_windows, shipments, shipments_time_windows, vehicles,
@@ -40,42 +40,42 @@ BEGIN
   );
 END
 $$;
-DROP FUNCTION tgr_updated_at_field_func;
+DROP FUNCTION IF EXISTS tgr_updated_at_field_func;
 
-DROP TRIGGER tgr_matrix_insert ON matrix;
-DROP FUNCTION tgr_matrix_insert_func;
+DROP TRIGGER IF EXISTS tgr_matrix_insert ON matrix;
+DROP FUNCTION IF EXISTS tgr_matrix_insert_func;
 
-DROP TRIGGER tgr_project_locations_insert ON project_locations;
-DROP FUNCTION tgr_project_locations_insert_func;
+DROP TRIGGER IF EXISTS tgr_project_locations_insert ON project_locations;
+DROP FUNCTION IF EXISTS tgr_project_locations_insert_func;
 
-DROP TRIGGER tgr_vehicles_insert ON vehicles;
-DROP FUNCTION tgr_vehicles_insert_func;
+DROP TRIGGER IF EXISTS tgr_vehicles_insert ON vehicles;
+DROP FUNCTION IF EXISTS tgr_vehicles_insert_func;
 
-DROP TRIGGER tgr_shipments_insert ON shipments;
-DROP FUNCTION tgr_shipments_insert_func;
+DROP TRIGGER IF EXISTS tgr_shipments_insert ON shipments;
+DROP FUNCTION IF EXISTS tgr_shipments_insert_func;
 
-DROP TRIGGER tgr_jobs_insert ON jobs;
-DROP FUNCTION tgr_jobs_insert_func;
+DROP TRIGGER IF EXISTS tgr_jobs_insert ON jobs;
+DROP FUNCTION IF EXISTS tgr_jobs_insert_func;
 
-DROP TABLE matrix;
-DROP TABLE breaks_time_windows;
-DROP TABLE breaks;
-DROP TABLE vehicles;
-DROP TABLE shipments_time_windows;
-DROP TABLE shipments;
-DROP TABLE jobs_time_windows;
-DROP TABLE jobs;
-DROP TABLE project_locations;
-DROP TABLE projects;
-DROP TABLE locations;
+DROP TABLE IF EXISTS matrix;
+DROP TABLE IF EXISTS breaks_time_windows;
+DROP TABLE IF EXISTS breaks;
+DROP TABLE IF EXISTS vehicles;
+DROP TABLE IF EXISTS shipments_time_windows;
+DROP TABLE IF EXISTS shipments;
+DROP TABLE IF EXISTS jobs_time_windows;
+DROP TABLE IF EXISTS jobs;
+DROP TABLE IF EXISTS project_locations;
+DROP TABLE IF EXISTS projects;
+DROP TABLE IF EXISTS locations;
 
-DROP FUNCTION random_bigint;
-DROP FUNCTION id_to_geom;
-DROP FUNCTION geom_to_id;
-DROP FUNCTION coord_to_id;
+DROP FUNCTION IF EXISTS random_bigint;
+DROP FUNCTION IF EXISTS id_to_geom;
+DROP FUNCTION IF EXISTS geom_to_id;
+DROP FUNCTION IF EXISTS coord_to_id;
 
-DROP EXTENSION vrprouting;
-DROP EXTENSION pgrouting;
-DROP EXTENSION postgis;
+DROP EXTENSION IF EXISTS vrprouting;
+DROP EXTENSION IF EXISTS pgrouting;
+DROP EXTENSION IF EXISTS postgis;
 
 END;
