@@ -28,9 +28,9 @@ along with pg_scheduleserv.  If not, see <https://www.gnu.org/licenses/>.
 
 BEGIN;
 
-CREATE EXTENSION postgis;
-CREATE EXTENSION pgrouting;
-CREATE EXTENSION vrprouting;
+CREATE EXTENSION IF NOT EXISTS postgis;
+CREATE EXTENSION IF NOT EXISTS pgrouting;
+CREATE EXTENSION IF NOT EXISTS vrprouting;
 
 
 -------------------------------------------------------------------------------
@@ -42,7 +42,7 @@ CREATE EXTENSION vrprouting;
 -- considering the values upto 4 decimal places.
 -- id = 16 digits (or less), where the last 8 digits denote the longitude, and
 -- the rest 8 or less digits denote the latitude.
-CREATE FUNCTION coord_to_id(latitude FLOAT, longitude FLOAT)
+CREATE OR REPLACE FUNCTION coord_to_id(latitude FLOAT, longitude FLOAT)
 RETURNS BIGINT
 AS $BODY$
 DECLARE
@@ -68,7 +68,7 @@ $BODY$ LANGUAGE plpgsql IMMUTABLE STRICT;
 
 
 -- Generate id by concatenating the latitude and longitude upto 4 decimal places
-CREATE FUNCTION geom_to_id(location geometry)
+CREATE OR REPLACE FUNCTION geom_to_id(location geometry)
 RETURNS BIGINT
 AS $BODY$
   SELECT
@@ -77,7 +77,7 @@ $BODY$ LANGUAGE SQL IMMUTABLE STRICT;
 
 
 -- Generate geometry from the id (upto 4 decimal places of latitude and longitude)
-CREATE FUNCTION id_to_geom(id BIGINT)
+CREATE OR REPLACE FUNCTION id_to_geom(id BIGINT)
 RETURNS geometry
 AS $BODY$
 DECLARE
@@ -101,7 +101,7 @@ $BODY$ LANGUAGE plpgsql IMMUTABLE STRICT;
 
 
 -- Generate a random bigint by using the first half of 128-bit hex uuid
-CREATE FUNCTION random_bigint()
+CREATE OR REPLACE FUNCTION random_bigint()
 RETURNS BIGINT
 AS $BODY$
   SELECT
@@ -117,7 +117,7 @@ $BODY$ LANGUAGE SQL VOLATILE STRICT;
 -------------------------------------------------------------------------------
 
 -- LOCATIONS TABLE start
-CREATE TABLE locations (
+CREATE TABLE IF NOT EXISTS locations (
   id          BIGINT PRIMARY KEY,
   location    geometry(Point, 4326) GENERATED ALWAYS AS (id_to_geom(id)) STORED,
   latitude    FLOAT GENERATED ALWAYS AS (ST_Y(id_to_geom(id))) STORED,
@@ -130,7 +130,7 @@ CREATE TABLE locations (
 
 
 -- PROJECTS TABLE start
-CREATE TABLE projects (
+CREATE TABLE IF NOT EXISTS projects (
   id          BIGINT    DEFAULT random_bigint() PRIMARY KEY,
   name        VARCHAR   NOT NULL,
 
@@ -146,7 +146,7 @@ CREATE TABLE projects (
 
 -- PROJECT LOCATIONS TABLE start
 -- Aggregates all the locations in a project, eases inserting rows in the matrix
-CREATE TABLE project_locations (
+CREATE TABLE IF NOT EXISTS project_locations (
   project_id  BIGINT    NOT NULL REFERENCES projects(id),
   location_id BIGINT    NOT NULL REFERENCES locations(id),
 
@@ -157,7 +157,7 @@ CREATE TABLE project_locations (
 
 
 -- JOBS TABLE start
-CREATE TABLE jobs (
+CREATE TABLE IF NOT EXISTS jobs (
   id              BIGINT    DEFAULT random_bigint() PRIMARY KEY,
   location_index  BIGINT    NOT NULL REFERENCES locations(id),
   service         INTERVAL  NOT NULL DEFAULT '00:00:00'::INTERVAL,
@@ -184,7 +184,7 @@ CREATE TABLE jobs (
 
 
 -- JOBS TIME WINDOWS TABLE start
-CREATE TABLE jobs_time_windows (
+CREATE TABLE IF NOT EXISTS jobs_time_windows (
   id          BIGINT    NOT NULL REFERENCES jobs(id),
   tw_open     TIMESTAMP NOT NULL,
   tw_close    TIMESTAMP NOT NULL,
@@ -200,7 +200,7 @@ CREATE TABLE jobs_time_windows (
 
 
 -- SHIPMENTS TABLE start
-CREATE TABLE shipments (
+CREATE TABLE IF NOT EXISTS shipments (
   id                BIGINT    DEFAULT random_bigint() PRIMARY KEY,
   p_location_index  BIGINT    NOT NULL REFERENCES locations(id),
   p_service         INTERVAL  NOT NULL DEFAULT '00:00:00'::INTERVAL,
@@ -228,7 +228,7 @@ CREATE TABLE shipments (
 
 
 -- SHIPMENTS TIME WINDOWS TABLE start
-CREATE TABLE shipments_time_windows (
+CREATE TABLE IF NOT EXISTS shipments_time_windows (
   id          BIGINT    NOT NULL REFERENCES shipments(id),
   kind        CHAR(1)   NOT NULL,
   tw_open     TIMESTAMP NOT NULL,
@@ -246,7 +246,7 @@ CREATE TABLE shipments_time_windows (
 
 
 -- VEHICLES TABLE start
-CREATE TABLE vehicles (
+CREATE TABLE IF NOT EXISTS vehicles (
   id            BIGINT    DEFAULT random_bigint() PRIMARY KEY,
   start_index   BIGINT    NOT NULL REFERENCES locations(id),
   end_index     BIGINT    NOT NULL REFERENCES locations(id),
@@ -273,7 +273,7 @@ CREATE TABLE vehicles (
 
 
 -- BREAKS TABLE start
-CREATE TABLE breaks (
+CREATE TABLE IF NOT EXISTS breaks (
   id          BIGINT    DEFAULT random_bigint() PRIMARY KEY,
   vehicle_id  BIGINT    NOT NULL REFERENCES vehicles(id),
   service     INTERVAL  NOT NULL DEFAULT '00:00:00'::INTERVAL,
@@ -290,7 +290,7 @@ CREATE TABLE breaks (
 
 
 -- BREAKS TIME WINDOWS TABLE start
-CREATE TABLE breaks_time_windows (
+CREATE TABLE IF NOT EXISTS breaks_time_windows (
   id          BIGINT    NOT NULL REFERENCES breaks(id),
   tw_open     TIMESTAMP NOT NULL,
   tw_close    TIMESTAMP NOT NULL,
@@ -306,7 +306,7 @@ CREATE TABLE breaks_time_windows (
 
 
 -- MATRIX TABLE start
-CREATE TABLE matrix (
+CREATE TABLE IF NOT EXISTS matrix (
   start_vid   BIGINT    NOT NULL REFERENCES locations(id),
   end_vid     BIGINT    NOT NULL REFERENCES locations(id),
   agg_cost    INTEGER   NOT NULL,
@@ -327,7 +327,7 @@ CREATE TABLE matrix (
 -------------------------------------------------------------------------------
 
 -- BEFORE INSERT Trigger for jobs, inserts rows into locations and project_locations
-CREATE FUNCTION tgr_jobs_insert_func()
+CREATE OR REPLACE FUNCTION tgr_jobs_insert_func()
 RETURNS TRIGGER
 AS $trig$
 BEGIN
@@ -347,7 +347,7 @@ FOR EACH ROW EXECUTE PROCEDURE tgr_jobs_insert_func();
 
 
 -- BEFORE INSERT Trigger for shipments, inserts rows into locations and project_locations
-CREATE FUNCTION tgr_shipments_insert_func()
+CREATE OR REPLACE FUNCTION tgr_shipments_insert_func()
 RETURNS TRIGGER
 AS $trig$
 BEGIN
@@ -371,7 +371,7 @@ FOR EACH ROW EXECUTE PROCEDURE tgr_shipments_insert_func();
 
 
 -- BEFORE INSERT Trigger for vehicles, inserts rows into locations and project_locations
-CREATE FUNCTION tgr_vehicles_insert_func()
+CREATE OR REPLACE FUNCTION tgr_vehicles_insert_func()
 RETURNS TRIGGER
 AS $trig$
 BEGIN
@@ -395,7 +395,7 @@ FOR EACH ROW EXECUTE PROCEDURE tgr_vehicles_insert_func();
 
 
 -- AFTER INSERT Trigger for project locations, inserts rows into matrix
-CREATE FUNCTION tgr_project_locations_insert_func()
+CREATE OR REPLACE FUNCTION tgr_project_locations_insert_func()
 RETURNS TRIGGER
 AS $trig$
 BEGIN
@@ -418,7 +418,7 @@ FOR EACH ROW EXECUTE PROCEDURE tgr_project_locations_insert_func();
 
 
 -- AFTER INSERT Trigger for matrix, inserts reverse direction cost
-CREATE FUNCTION tgr_matrix_insert_func()
+CREATE OR REPLACE FUNCTION tgr_matrix_insert_func()
 RETURNS TRIGGER
 AS $trig$
 BEGIN
@@ -434,7 +434,7 @@ FOR EACH ROW EXECUTE PROCEDURE tgr_matrix_insert_func();
 
 
 -- BEFORE UPDATE TRIGGER for all tables, auto-update updated_at field
-CREATE FUNCTION tgr_updated_at_field_func()
+CREATE OR REPLACE FUNCTION tgr_updated_at_field_func()
 RETURNS TRIGGER
 AS $trig$
 BEGIN
