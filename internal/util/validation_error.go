@@ -40,7 +40,7 @@ func getErrorMsg(ve validator.ValidationErrors) []string {
 		err := ve[i].Error()
 		switch field := ve[i].Tag(); field {
 		case "required":
-			err = fmt.Sprintf("Field '%s' is required", ve[i].Field())
+			err = fmt.Sprintf("Field '%s' of type '%s' is required", ve[i].Field(), ve[i].Type().Elem())
 		}
 		msg = append(msg, err)
 	}
