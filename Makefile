@@ -4,4 +4,7 @@ migrateup:
 migratedown:
 	migrate -path migrations -database $(DATABASE_URL) -verbose down
 
-.PHONY: migrateup migratedown
+swagger:
+	swag init
+
+.PHONY: migrateup migratedown swagger
