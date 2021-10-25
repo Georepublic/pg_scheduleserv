@@ -42,6 +42,19 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// @title pg_scheduleserv API
+// @version 0.1.0
+// @description This is an API for scheduling VRP tasks. Source code can be found on https://github.com/Georepublic/pg_scheduleserv
+// @termsOfService https://swagger.io/terms/
+// @contact.name Ashish Kumar
+// @contact.email ashishkr23438@gmail.com
+// @license.name GNU Affero General Public License
+// @license.url https://www.gnu.org/licenses/agpl-3.0.en.html
+// @host localhost:9100
+// @BasePath /
+// @accept application/json
+// @produce application/json
+// @schemes http https
 func main() {
 	logrus.SetFormatter(&logrus.TextFormatter{
 		TimestampFormat: "2006-01-02 15:04:05 -0700",
