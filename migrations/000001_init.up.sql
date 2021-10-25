@@ -336,8 +336,10 @@ BEGIN
   ON CONFLICT DO NOTHING;
 
   INSERT INTO project_locations (project_id, location_id)
-  SELECT NEW.project_id, NEW.location_id
+  SELECT NEW.project_id, NEW.location_index
   ON CONFLICT DO NOTHING;
+
+  RETURN NEW;
 END;
 $trig$ LANGUAGE plpgsql;
 
@@ -362,6 +364,8 @@ BEGIN
   UNION
   SELECT NEW.project_id, NEW.d_location_id
   ON CONFLICT DO NOTHING;
+
+  RETURN NEW;
 END;
 $trig$ LANGUAGE plpgsql;
 
@@ -386,6 +390,8 @@ BEGIN
   UNION
   SELECT NEW.project_id, NEW.end_index
   ON CONFLICT DO NOTHING;
+
+  RETURN NEW;
 END;
 $trig$ LANGUAGE plpgsql;
 
@@ -409,6 +415,8 @@ BEGIN
     )
     FROM project_locations AS PL
   ON CONFLICT DO NOTHING;
+
+  RETURN NEW;
 END;
 $trig$ LANGUAGE plpgsql;
 
@@ -425,6 +433,8 @@ BEGIN
   INSERT INTO matrix(start_vid, end_vid, agg_cost)
   SELECT NEW.end_vid, NEW.start_vid, NEW.agg_cost
   ON CONFLICT DO NOTHING;
+
+  RETURN NEW;
 END;
 $trig$ LANGUAGE plpgsql;
 
