@@ -360,9 +360,9 @@ BEGIN
   ON CONFLICT DO NOTHING;
 
   INSERT INTO project_locations (project_id, location_id)
-  SELECT NEW.project_id, NEW.p_location_id
+  SELECT NEW.project_id, NEW.p_location_index
   UNION
-  SELECT NEW.project_id, NEW.d_location_id
+  SELECT NEW.project_id, NEW.d_location_index
   ON CONFLICT DO NOTHING;
 
   RETURN NEW;
