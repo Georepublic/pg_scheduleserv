@@ -1,6 +1,6 @@
 /*GRP-GNU-AGPL******************************************************************
 
-File: project.go
+File: vehicle.go
 
 Copyright (C) 2021  Team Georepublic <info@georepublic.de>
 
@@ -34,24 +34,32 @@ import (
 
 	"github.com/Georepublic/pg_scheduleserv/internal/database"
 	"github.com/Georepublic/pg_scheduleserv/internal/util"
+	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 )
 
-// CreateProject godoc
-// @Summary Create a new project
-// @Description Create a new project with the input payload
-// @Tags Project
+// CreateVehicles godoc
+// @Summary Create a new vehicle
+// @Description Create a new vehicle with the input payload
+// @Tags Vehicle
 // @Accept application/json
 // @Produce application/json
-// @Param Project body database.CreateProjectParams true "Create project"
-// @Success 200 {object} database.Project
-// @Router /projects [post]
-func (server *Server) createProject(w http.ResponseWriter, r *http.Request) {
+// @Param project_id path int true "Project ID"
+// @Param Vehicle body database.CreateVehicleParams true "Create vehicle"
+// @Success 200 {object} database.Vehicle
+// @Router /projects/{project_id}/vehicles [post]
+func (server *Server) createVehicle(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
 	json.NewDecoder(r.Body).Decode(&userInput)
 
+	// Add the project_id path variable
+	vars := mux.Vars(r)
+	userInput["project_id"] = vars["project_id"]
+
+	logrus.Debugf("%v", userInput)
+
 	// Validate the input type
-	if err := util.ValidateInput(userInput, database.CreateProjectParams{}); err != nil {
+	if err := util.ValidateInput(userInput, database.CreateVehicleParams{}); err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
 	}
@@ -61,21 +69,23 @@ func (server *Server) createProject(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logrus.Error(err)
 	}
-	project := database.CreateProjectParams{}
-	json.Unmarshal(userInputString, &project)
+	vehicle := database.CreateVehicleParams{}
+	json.Unmarshal(userInputString, &vehicle)
+
+	logrus.Debugf("%+v", vehicle)
 
 	// Validate the struct
-	if err := server.validate.Struct(project); err != nil {
+	if err := server.validate.Struct(vehicle); err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
 	}
 
 	ctx := r.Context()
-	created_project, err := server.DBCreateProject(ctx, project)
+	created_vehicle, err := server.DBCreateVehicle(ctx, vehicle)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, created_project)
+	server.FormatJSON(w, http.StatusCreated, created_vehicle)
 }

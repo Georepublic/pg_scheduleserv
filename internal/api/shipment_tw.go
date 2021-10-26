@@ -1,6 +1,6 @@
 /*GRP-GNU-AGPL******************************************************************
 
-File: project.go
+File: shipment_tw.go
 
 Copyright (C) 2021  Team Georepublic <info@georepublic.de>
 
@@ -34,24 +34,31 @@ import (
 
 	"github.com/Georepublic/pg_scheduleserv/internal/database"
 	"github.com/Georepublic/pg_scheduleserv/internal/util"
+	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 )
 
-// CreateProject godoc
-// @Summary Create a new project
-// @Description Create a new project with the input payload
-// @Tags Project
+// CreateShipmentTimeWindows godoc
+// @Summary Create a new shipment time window
+// @Description Create a new shipment time window with the input payload
+// @Tags Shipment
 // @Accept application/json
 // @Produce application/json
-// @Param Project body database.CreateProjectParams true "Create project"
-// @Success 200 {object} database.Project
-// @Router /projects [post]
-func (server *Server) createProject(w http.ResponseWriter, r *http.Request) {
+// @Param shipment_id path int true "Shipment ID"
+// @Param ShipmentTimeWindow body database.CreateShipmentTimeWindowParams true "Create shipment time window"
+// @Success 200 {object} database.ShipmentTimeWindow
+// @Router /shipments/{shipment_id}/time_windows [post]
+func (server *Server) createShipmentTimeWindow(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
+	logrus.Debug(r.Body)
 	json.NewDecoder(r.Body).Decode(&userInput)
 
+	// Add the shipment_id path variable
+	vars := mux.Vars(r)
+	userInput["id"] = vars["shipment_id"]
+
 	// Validate the input type
-	if err := util.ValidateInput(userInput, database.CreateProjectParams{}); err != nil {
+	if err := util.ValidateInput(userInput, database.CreateShipmentTimeWindowParams{}); err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
 	}
@@ -61,21 +68,24 @@ func (server *Server) createProject(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logrus.Error(err)
 	}
-	project := database.CreateProjectParams{}
-	json.Unmarshal(userInputString, &project)
+	shipment := database.CreateShipmentTimeWindowParams{}
+	json.Unmarshal(userInputString, &shipment)
+
+	logrus.Debugf("%v", userInput)
+	logrus.Debugf("%+v", shipment)
 
 	// Validate the struct
-	if err := server.validate.Struct(project); err != nil {
+	if err := server.validate.Struct(shipment); err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
 	}
 
 	ctx := r.Context()
-	created_project, err := server.DBCreateProject(ctx, project)
+	created_shipment, err := server.DBCreateShipmentTimeWindow(ctx, shipment)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, created_project)
+	server.FormatJSON(w, http.StatusCreated, created_shipment)
 }

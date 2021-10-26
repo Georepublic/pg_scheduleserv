@@ -1,6 +1,6 @@
 /*GRP-GNU-AGPL******************************************************************
 
-File: project.go
+File: job_tw.go
 
 Copyright (C) 2021  Team Georepublic <info@georepublic.de>
 
@@ -34,24 +34,31 @@ import (
 
 	"github.com/Georepublic/pg_scheduleserv/internal/database"
 	"github.com/Georepublic/pg_scheduleserv/internal/util"
+	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 )
 
-// CreateProject godoc
-// @Summary Create a new project
-// @Description Create a new project with the input payload
-// @Tags Project
+// CreateJobTimeWindows godoc
+// @Summary Create a new job time window
+// @Description Create a new job time window with the input payload
+// @Tags Job
 // @Accept application/json
 // @Produce application/json
-// @Param Project body database.CreateProjectParams true "Create project"
-// @Success 200 {object} database.Project
-// @Router /projects [post]
-func (server *Server) createProject(w http.ResponseWriter, r *http.Request) {
+// @Param job_id path int true "Job ID"
+// @Param JobTimeWindow body database.CreateJobTimeWindowParams true "Create job time window"
+// @Success 200 {object} database.JobTimeWindow
+// @Router /jobs/{job_id}/time_windows [post]
+func (server *Server) createJobTimeWindow(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
+	logrus.Debug(r.Body)
 	json.NewDecoder(r.Body).Decode(&userInput)
 
+	// Add the job_id path variable
+	vars := mux.Vars(r)
+	userInput["id"] = vars["job_id"]
+
 	// Validate the input type
-	if err := util.ValidateInput(userInput, database.CreateProjectParams{}); err != nil {
+	if err := util.ValidateInput(userInput, database.CreateJobTimeWindowParams{}); err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
 	}
@@ -61,21 +68,24 @@ func (server *Server) createProject(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logrus.Error(err)
 	}
-	project := database.CreateProjectParams{}
-	json.Unmarshal(userInputString, &project)
+	job := database.CreateJobTimeWindowParams{}
+	json.Unmarshal(userInputString, &job)
+
+	logrus.Debugf("%v", userInput)
+	logrus.Debugf("%+v", job)
 
 	// Validate the struct
-	if err := server.validate.Struct(project); err != nil {
+	if err := server.validate.Struct(job); err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
 	}
 
 	ctx := r.Context()
-	created_project, err := server.DBCreateProject(ctx, project)
+	created_job, err := server.DBCreateJobTimeWindow(ctx, job)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, created_project)
+	server.FormatJSON(w, http.StatusCreated, created_job)
 }

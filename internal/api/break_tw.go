@@ -1,6 +1,6 @@
 /*GRP-GNU-AGPL******************************************************************
 
-File: project.go
+File: break_tw.go
 
 Copyright (C) 2021  Team Georepublic <info@georepublic.de>
 
@@ -34,24 +34,31 @@ import (
 
 	"github.com/Georepublic/pg_scheduleserv/internal/database"
 	"github.com/Georepublic/pg_scheduleserv/internal/util"
+	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 )
 
-// CreateProject godoc
-// @Summary Create a new project
-// @Description Create a new project with the input payload
-// @Tags Project
+// CreateBreakTimeWindows godoc
+// @Summary Create a new break time window
+// @Description Create a new break time window with the input payload
+// @Tags Break
 // @Accept application/json
 // @Produce application/json
-// @Param Project body database.CreateProjectParams true "Create project"
-// @Success 200 {object} database.Project
-// @Router /projects [post]
-func (server *Server) createProject(w http.ResponseWriter, r *http.Request) {
+// @Param break_id path int true "Break ID"
+// @Param BreakTimeWindow body database.CreateBreakTimeWindowParams true "Create break time window"
+// @Success 200 {object} database.BreakTimeWindow
+// @Router /breaks/{break_id}/time_windows [post]
+func (server *Server) createBreakTimeWindow(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
+	logrus.Debug(r.Body)
 	json.NewDecoder(r.Body).Decode(&userInput)
 
+	// Add the break_id path variable
+	vars := mux.Vars(r)
+	userInput["id"] = vars["break_id"]
+
 	// Validate the input type
-	if err := util.ValidateInput(userInput, database.CreateProjectParams{}); err != nil {
+	if err := util.ValidateInput(userInput, database.CreateBreakTimeWindowParams{}); err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
 	}
@@ -61,21 +68,24 @@ func (server *Server) createProject(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logrus.Error(err)
 	}
-	project := database.CreateProjectParams{}
-	json.Unmarshal(userInputString, &project)
+	v_break := database.CreateBreakTimeWindowParams{}
+	json.Unmarshal(userInputString, &v_break)
+
+	logrus.Debugf("%v", userInput)
+	logrus.Debugf("%+v", v_break)
 
 	// Validate the struct
-	if err := server.validate.Struct(project); err != nil {
+	if err := server.validate.Struct(v_break); err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
 	}
 
 	ctx := r.Context()
-	created_project, err := server.DBCreateProject(ctx, project)
+	created_break, err := server.DBCreateBreakTimeWindow(ctx, v_break)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, created_project)
+	server.FormatJSON(w, http.StatusCreated, created_break)
 }
