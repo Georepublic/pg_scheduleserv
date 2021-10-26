@@ -1,6 +1,35 @@
+/*GRP-GNU-AGPL******************************************************************
+
+File: query.go
+
+Copyright (C) 2021  Team Georepublic <info@georepublic.de>
+
+Developer(s):
+Copyright (C) 2021  Ashish Kumar <ashishkr23438@gmail.com>
+
+-----
+
+This file is part of pg_scheduleserv.
+
+pg_scheduleserv is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+pg_scheduleserv is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with pg_scheduleserv.  If not, see <https://www.gnu.org/licenses/>.
+
+******************************************************************GRP-GNU-AGPL*/
+
 package util
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -10,16 +39,6 @@ import (
 type PartialSQL struct {
 	Fields []string
 	Args   []interface{}
-}
-
-var readOnlyFields = map[string]bool{
-	"id":         true,
-	"created_at": true,
-	"updated_at": true,
-}
-
-var aliasFields = map[string]string{
-	"location": "location_index",
 }
 
 type LocationParams struct {
@@ -45,14 +64,13 @@ func GetPartialSQL(resource interface{}) PartialSQL {
 		fieldVal := resVal.Field(i)
 		tag := jsonTag(fieldType)
 
-		// skip nil properties (not going to be patched), skip unexported fields or read only fields
-		_, readOnlyFound := readOnlyFields[tag]
-		if fieldVal.IsNil() || fieldType.PkgPath != "" || readOnlyFound == true {
+		// skip nil properties (not going to be patched), skip unexported fields
+		if fieldVal.IsNil() || fieldType.PkgPath != "" {
 			continue
 		}
 
 		// Change any alias fields
-		alias, aliasFound := aliasFields[tag]
+		alias, aliasFound := AliasFields[tag]
 		if aliasFound == true {
 			tag = alias
 		}
@@ -66,9 +84,12 @@ func GetPartialSQL(resource interface{}) PartialSQL {
 			val = fieldVal
 		}
 
+		logrus.Debugf("Value: %v, Kind: %v", val, val.Kind())
 		switch val.Kind() {
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 			partialSQL.Args = append(partialSQL.Args, val.Int())
+		case reflect.Float32, reflect.Float64:
+			partialSQL.Args = append(partialSQL.Args, val.Float())
 		case reflect.String:
 			partialSQL.Args = append(partialSQL.Args, val.String())
 		case reflect.Bool:
@@ -78,9 +99,15 @@ func GetPartialSQL(resource interface{}) PartialSQL {
 				partialSQL.Args = append(partialSQL.Args, 0)
 			}
 		case reflect.Struct:
-			location := val.Interface()
-			if typ, ok := location.(LocationParams); ok {
+			value := val.Interface()
+			if typ, ok := value.(LocationParams); ok {
 				partialSQL.Args = append(partialSQL.Args, GetLocationIndex(*typ.Latitude, *typ.Longitude))
+			}
+			if typ, ok := value.(string); ok {
+				logrus.Debug(value)
+				logrus.Debug(typ)
+				// logrus.Debug(GetTimeString(typ))
+				partialSQL.Args = append(partialSQL.Args, typ)
 			}
 		case reflect.Interface:
 			partialSQL.Args = append(partialSQL.Args, val.Interface())
@@ -92,6 +119,31 @@ func GetPartialSQL(resource interface{}) PartialSQL {
 	}
 
 	return partialSQL
+}
+
+func GetReturnSql(resourceStruct interface{}) (sql string) {
+	sql = " RETURNING "
+	val := reflect.ValueOf(resourceStruct)
+	for i := 0; i < val.Type().NumField(); i++ {
+		if i != 0 {
+			sql += ","
+		}
+		field := val.Type().Field(i)
+		fieldName := jsonTag(field)
+
+		if aliasField, aliasFieldFound := AliasFields[fieldName]; aliasFieldFound {
+			fieldName = aliasField
+		}
+
+		if _, intervalFieldFound := IntervalFields[fieldName]; intervalFieldFound {
+			fieldName = fmt.Sprintf("EXTRACT(epoch FROM %s)", fieldName)
+		}
+		if _, timestampFieldFound := TimestampFields[fieldName]; timestampFieldFound {
+			fieldName = fmt.Sprintf("to_char(%s, 'YYYY-MM-DD HH:MI:SS')", fieldName)
+		}
+		sql += " " + fieldName
+	}
+	return sql
 }
 
 // Get the json tag name from struct field
@@ -108,4 +160,17 @@ func jsonTag(field reflect.StructField) string {
 	}
 	name = strings.ToLower(name)
 	return name
+}
+
+// Checks whether the field tag of json matches a particular field
+func checkjsonTagField(field reflect.StructField, matchField string) bool {
+	if jsonTag := field.Tag.Get("json"); jsonTag != "" && jsonTag != "-" {
+		parts := strings.Split(jsonTag, ",")
+		for i := 1; i < len(parts); i++ {
+			if parts[i] == matchField {
+				return true
+			}
+		}
+	}
+	return false
 }

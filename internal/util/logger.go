@@ -30,6 +30,7 @@ package util
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -48,6 +49,10 @@ func (w *StatusRespWr) WriteHeader(status int) {
 func Logger(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
+
+		if r.URL.Path != "/" {
+			r.URL.Path = strings.TrimSuffix(r.URL.Path, "/")
+		}
 
 		srw := &StatusRespWr{ResponseWriter: w}
 		h.ServeHTTP(srw, r)
