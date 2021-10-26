@@ -46,8 +46,8 @@ import (
 // @version 0.1.0
 // @description This is an API for scheduling VRP tasks. Source code can be found on https://github.com/Georepublic/pg_scheduleserv
 // @termsOfService https://swagger.io/terms/
-// @contact.name Ashish Kumar
-// @contact.email ashishkr23438@gmail.com
+// @contact.name Team Georepublic
+// @contact.email info@georepublic.de
 // @license.name GNU Affero General Public License
 // @license.url https://www.gnu.org/licenses/agpl-3.0.en.html
 // @host localhost:9100
