@@ -30,31 +30,28 @@ package database
 
 import (
 	"context"
-	"time"
 
-	"github.com/jackc/pgtype"
+	"github.com/Georepublic/pg_scheduleserv/internal/util"
+	"github.com/sirupsen/logrus"
 )
 
 const createProject = `-- name: CreateProject :one
-/*
-POST /projects
-GET /projects/{project_id}
-PATCH /projects/{project_id}
-DELETE /projects/{project_id}
-*/
-
 INSERT INTO projects (name, data) VALUES ($1, $2)
 RETURNING id, name, data, created_at, updated_at, deleted
 `
 
 type CreateProjectParams struct {
-	Name string       `json:"name"`
-	Data pgtype.JSONB `json:"data"`
+	Name *string      `json:"name" example:"sample_project" validate:"required"`
+	Data *interface{} `json:"data" swaggertype:"object"`
 }
 
-func (q *Queries) CreateProject(ctx context.Context, arg CreateProjectParams) (Project, error) {
-	row := q.db.QueryRow(ctx, createProject, arg.Name, arg.Data)
+func (q *Queries) DBCreateProject(ctx context.Context, arg CreateProjectParams) (Project, error) {
+	sql, args := createResource("projects", arg)
+	logrus.Debugf("SQL query: %s", sql)
+	logrus.Debugf("Arguments: %s", args)
 	var i Project
+	return_sql := util.GetReturnSql(i)
+	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
@@ -71,7 +68,7 @@ UPDATE projects SET deleted = TRUE
 WHERE id = $1
 `
 
-func (q *Queries) DeleteProject(ctx context.Context, id int64) error {
+func (q *Queries) DBDeleteProject(ctx context.Context, id int64) error {
 	_, err := q.db.Exec(ctx, deleteProject, id)
 	return err
 }
@@ -83,14 +80,14 @@ WHERE id = $1 AND deleted = FALSE LIMIT 1
 `
 
 type GetProjectRow struct {
-	ID        int64        `json:"id"`
-	Name      string       `json:"name"`
-	Data      pgtype.JSONB `json:"data"`
-	CreatedAt time.Time    `json:"created_at"`
-	UpdatedAt time.Time    `json:"updated_at"`
+	ID        int64       `json:"id"`
+	Name      string      `json:"name"`
+	Data      interface{} `json:"data"`
+	CreatedAt string      `json:"created_at"`
+	UpdatedAt string      `json:"updated_at"`
 }
 
-func (q *Queries) GetProject(ctx context.Context, id int64) (GetProjectRow, error) {
+func (q *Queries) DBGetProject(ctx context.Context, id int64) (GetProjectRow, error) {
 	row := q.db.QueryRow(ctx, getProject, id)
 	var i GetProjectRow
 	err := row.Scan(
@@ -103,6 +100,47 @@ func (q *Queries) GetProject(ctx context.Context, id int64) (GetProjectRow, erro
 	return i, err
 }
 
+const listProjects = `-- name: ListProjects :many
+SELECT id, name, data, created_at, updated_at
+FROM projects
+WHERE deleted = FALSE
+ORDER BY created_at
+`
+
+type ListProjectsRow struct {
+	ID        int64       `json:"id"`
+	Name      string      `json:"name"`
+	Data      interface{} `json:"data"`
+	CreatedAt string      `json:"created_at"`
+	UpdatedAt string      `json:"updated_at"`
+}
+
+func (q *Queries) DBListProjects(ctx context.Context) ([]ListProjectsRow, error) {
+	rows, err := q.db.Query(ctx, listProjects)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ListProjectsRow{}
+	for rows.Next() {
+		var i ListProjectsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Data,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateProject = `-- name: UpdateProject :one
 UPDATE projects
 SET name = $2, data = $3
@@ -111,12 +149,12 @@ RETURNING id, name, data, created_at, updated_at, deleted
 `
 
 type UpdateProjectParams struct {
-	ID   int64        `json:"id"`
-	Name string       `json:"name"`
-	Data pgtype.JSONB `json:"data"`
+	ID   int64       `json:"id"`
+	Name string      `json:"name"`
+	Data interface{} `json:"data"`
 }
 
-func (q *Queries) UpdateProject(ctx context.Context, arg UpdateProjectParams) (Project, error) {
+func (q *Queries) DBUpdateProject(ctx context.Context, arg UpdateProjectParams) (Project, error) {
 	row := q.db.QueryRow(ctx, updateProject, arg.ID, arg.Name, arg.Data)
 	var i Project
 	err := row.Scan(

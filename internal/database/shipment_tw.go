@@ -30,36 +30,31 @@ package database
 
 import (
 	"context"
-	"time"
+
+	"github.com/Georepublic/pg_scheduleserv/internal/util"
+	"github.com/sirupsen/logrus"
 )
 
 const createShipmentTimeWindow = `-- name: CreateShipmentTimeWindow :one
-/*
-POST /shipments/{shipment_id}/time_windows/
-GET /shipments/{shipment_id}/time_windows/
-DELETE /shipments/{shipment_id}/time_windows/{p|d}/YYYYMMDDThhmmssZ/YYYYMMDDThhmmssZ
-*/
-
 INSERT INTO shipments_time_windows (id, kind, tw_open, tw_close)
 VALUES ($1, $2, $3, $4)
 RETURNING id, kind, tw_open, tw_close, created_at, updated_at
 `
 
 type CreateShipmentTimeWindowParams struct {
-	ID      int64     `json:"id"`
-	Kind    string    `json:"kind"`
-	TwOpen  time.Time `json:"tw_open"`
-	TwClose time.Time `json:"tw_close"`
+	ID      *int64  `json:"id,string" example:"1234567890123456789" validate:"required" swaggerignore:"true"`
+	Kind    *string `json:"kind" validate:"required"`
+	TwOpen  *string `json:"tw_open" validate:"required,datetime=2006-01-02 15:04:05"`
+	TwClose *string `json:"tw_close" validate:"required,datetime=2006-01-02 15:04:05"`
 }
 
-func (q *Queries) CreateShipmentTimeWindow(ctx context.Context, arg CreateShipmentTimeWindowParams) (ShipmentsTimeWindow, error) {
-	row := q.db.QueryRow(ctx, createShipmentTimeWindow,
-		arg.ID,
-		arg.Kind,
-		arg.TwOpen,
-		arg.TwClose,
-	)
-	var i ShipmentsTimeWindow
+func (q *Queries) DBCreateShipmentTimeWindow(ctx context.Context, arg CreateShipmentTimeWindowParams) (ShipmentTimeWindow, error) {
+	sql, args := createResource("shipments_time_windows", arg)
+	logrus.Debug(sql)
+	logrus.Debug(args)
+	var i ShipmentTimeWindow
+	return_sql := util.GetReturnSql(i)
+	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	err := row.Scan(
 		&i.ID,
 		&i.Kind,
@@ -77,13 +72,13 @@ WHERE id = $1 AND kind = $2 AND tw_open = $3 AND tw_close = $4
 `
 
 type DeleteShipmentTimeWindowParams struct {
-	ID      int64     `json:"id"`
-	Kind    string    `json:"kind"`
-	TwOpen  time.Time `json:"tw_open"`
-	TwClose time.Time `json:"tw_close"`
+	ID      int64  `json:"id"`
+	Kind    string `json:"kind"`
+	TwOpen  string `json:"tw_open"`
+	TwClose string `json:"tw_close"`
 }
 
-func (q *Queries) DeleteShipmentTimeWindow(ctx context.Context, arg DeleteShipmentTimeWindowParams) error {
+func (q *Queries) DBDeleteShipmentTimeWindow(ctx context.Context, arg DeleteShipmentTimeWindowParams) error {
 	_, err := q.db.Exec(ctx, deleteShipmentTimeWindow,
 		arg.ID,
 		arg.Kind,
@@ -100,15 +95,15 @@ WHERE id = $1
 ORDER BY created_at
 `
 
-func (q *Queries) ListShipmentTimeWindows(ctx context.Context, id int64) ([]ShipmentsTimeWindow, error) {
+func (q *Queries) DBListShipmentTimeWindows(ctx context.Context, id int64) ([]ShipmentTimeWindow, error) {
 	rows, err := q.db.Query(ctx, listShipmentTimeWindows, id)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []ShipmentsTimeWindow{}
+	items := []ShipmentTimeWindow{}
 	for rows.Next() {
-		var i ShipmentsTimeWindow
+		var i ShipmentTimeWindow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Kind,

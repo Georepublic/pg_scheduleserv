@@ -30,34 +30,29 @@ package database
 
 import (
 	"context"
-	"time"
 
-	"github.com/jackc/pgtype"
+	"github.com/Georepublic/pg_scheduleserv/internal/util"
+	"github.com/sirupsen/logrus"
 )
 
 const createBreak = `-- name: CreateBreak :one
-/*
-POST /vehicles/{vehicle_id}/breaks/
-GET /vehicles/{vehicle_id}/breaks/
-
-GET /breaks/{break_id}
-PATCH /breaks/{break_id}
-DELETE /breaks/{break_id}
-*/
-
 INSERT INTO breaks (vehicle_id, service, data) VALUES ($1, $2, $3)
 RETURNING id, vehicle_id, service, data, created_at, updated_at, deleted
 `
 
 type CreateBreakParams struct {
-	VehicleID int64        `json:"vehicle_id"`
-	Service   int64        `json:"service"`
-	Data      pgtype.JSONB `json:"data"`
+	VehicleID *int64       `json:"vehicle_id,string" example:"1234567890123456789" validate:"required" swaggerignore:"true"`
+	Service   *int64       `json:"service"`
+	Data      *interface{} `json:"data" swaggertype:"object"`
 }
 
-func (q *Queries) CreateBreak(ctx context.Context, arg CreateBreakParams) (Break, error) {
-	row := q.db.QueryRow(ctx, createBreak, arg.VehicleID, arg.Service, arg.Data)
+func (q *Queries) DBCreateBreak(ctx context.Context, arg CreateBreakParams) (Break, error) {
+	sql, args := createResource("breaks", arg)
+	logrus.Debug(sql)
+	logrus.Debug(args)
 	var i Break
+	return_sql := util.GetReturnSql(i)
+	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	err := row.Scan(
 		&i.ID,
 		&i.VehicleID,
@@ -75,7 +70,7 @@ UPDATE breaks SET deleted = TRUE
 WHERE id = $1
 `
 
-func (q *Queries) DeleteBreak(ctx context.Context, id int64) error {
+func (q *Queries) DBDeleteBreak(ctx context.Context, id int64) error {
 	_, err := q.db.Exec(ctx, deleteBreak, id)
 	return err
 }
@@ -89,15 +84,15 @@ LIMIT 1
 `
 
 type GetBreakRow struct {
-	ID        int64        `json:"id"`
-	VehicleID int64        `json:"vehicle_id"`
-	Service   int64        `json:"service"`
-	Data      pgtype.JSONB `json:"data"`
-	CreatedAt time.Time    `json:"created_at"`
-	UpdatedAt time.Time    `json:"updated_at"`
+	ID        int64       `json:"id"`
+	VehicleID int64       `json:"vehicle_id"`
+	Service   int64       `json:"service"`
+	Data      interface{} `json:"data"`
+	CreatedAt string      `json:"created_at"`
+	UpdatedAt string      `json:"updated_at"`
 }
 
-func (q *Queries) GetBreak(ctx context.Context, id int64) (GetBreakRow, error) {
+func (q *Queries) DBGetBreak(ctx context.Context, id int64) (GetBreakRow, error) {
 	row := q.db.QueryRow(ctx, getBreak, id)
 	var i GetBreakRow
 	err := row.Scan(
@@ -120,15 +115,15 @@ ORDER BY created_at
 `
 
 type ListBreaksRow struct {
-	ID        int64        `json:"id"`
-	VehicleID int64        `json:"vehicle_id"`
-	Service   int64        `json:"service"`
-	Data      pgtype.JSONB `json:"data"`
-	CreatedAt time.Time    `json:"created_at"`
-	UpdatedAt time.Time    `json:"updated_at"`
+	ID        int64       `json:"id"`
+	VehicleID int64       `json:"vehicle_id"`
+	Service   int64       `json:"service"`
+	Data      interface{} `json:"data"`
+	CreatedAt string      `json:"created_at"`
+	UpdatedAt string      `json:"updated_at"`
 }
 
-func (q *Queries) ListBreaks(ctx context.Context, vehicleID int64) ([]ListBreaksRow, error) {
+func (q *Queries) DBListBreaks(ctx context.Context, vehicleID int64) ([]ListBreaksRow, error) {
 	rows, err := q.db.Query(ctx, listBreaks, vehicleID)
 	if err != nil {
 		return nil, err
@@ -163,13 +158,13 @@ RETURNING id, vehicle_id, service, data, created_at, updated_at, deleted
 `
 
 type UpdateBreakParams struct {
-	ID        int64        `json:"id"`
-	VehicleID int64        `json:"vehicle_id"`
-	Service   int64        `json:"service"`
-	Data      pgtype.JSONB `json:"data"`
+	ID        int64       `json:"id"`
+	VehicleID int64       `json:"vehicle_id"`
+	Service   int64       `json:"service"`
+	Data      interface{} `json:"data"`
 }
 
-func (q *Queries) UpdateBreak(ctx context.Context, arg UpdateBreakParams) (Break, error) {
+func (q *Queries) DBUpdateBreak(ctx context.Context, arg UpdateBreakParams) (Break, error) {
 	row := q.db.QueryRow(ctx, updateBreak,
 		arg.ID,
 		arg.VehicleID,

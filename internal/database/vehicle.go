@@ -30,21 +30,12 @@ package database
 
 import (
 	"context"
-	"time"
 
-	"github.com/jackc/pgtype"
+	"github.com/Georepublic/pg_scheduleserv/internal/util"
+	"github.com/sirupsen/logrus"
 )
 
 const createVehicle = `-- name: CreateVehicle :one
-/*
-POST /projects/{project_id}/vehicles
-GET /projects/{project_id}/vehicles
-
-GET /vehicles/{vehicle_id}
-PATCH /vehicles/{vehicle_id}
-DELETE /vehicles/{vehicle_id}
-*/
-
 INSERT INTO vehicles (
   start_index, end_index, capacity, skills,
   tw_open, tw_close, speed_factor, project_id, data
@@ -55,38 +46,29 @@ RETURNING id, start_index, end_index, capacity, skills, tw_open, tw_close, speed
 `
 
 type CreateVehicleParams struct {
-	Latitude    float64      `json:"latitude"`
-	Longitude   float64      `json:"longitude"`
-	Latitude_2  float64      `json:"latitude_2"`
-	Longitude_2 float64      `json:"longitude_2"`
-	Capacity    []int64      `json:"capacity"`
-	Skills      []int32      `json:"skills"`
-	TwOpen      time.Time    `json:"tw_open"`
-	TwClose     time.Time    `json:"tw_close"`
-	SpeedFactor float64      `json:"speed_factor"`
-	ProjectID   int64        `json:"project_id"`
-	Data        pgtype.JSONB `json:"data"`
+	StartLocation *util.LocationParams `json:"start_location" validate:"required"`
+	EndLocation   *util.LocationParams `json:"end_location" validate:"required"`
+	Capacity      *[]int64             `json:"capacity"`
+	Skills        *[]int32             `json:"skills"`
+	TwOpen        *string              `json:"tw_open" validate:"omitempty,datetime=2006-01-02 15:04:05"`
+	TwClose       *string              `json:"tw_close" validate:"omitempty,datetime=2006-01-02 15:04:05"`
+	SpeedFactor   *float64             `json:"speed_factor"`
+	ProjectID     *int64               `json:"project_id,string" validate:"required" swaggerignore:"true"`
+	Data          *interface{}         `json:"data" swaggertype:"object"`
 }
 
-func (q *Queries) CreateVehicle(ctx context.Context, arg CreateVehicleParams) (Vehicle, error) {
-	row := q.db.QueryRow(ctx, createVehicle,
-		arg.Latitude,
-		arg.Longitude,
-		arg.Latitude_2,
-		arg.Longitude_2,
-		arg.Capacity,
-		arg.Skills,
-		arg.TwOpen,
-		arg.TwClose,
-		arg.SpeedFactor,
-		arg.ProjectID,
-		arg.Data,
-	)
+func (q *Queries) DBCreateVehicle(ctx context.Context, arg CreateVehicleParams) (Vehicle, error) {
+	sql, args := createResource("vehicles", arg)
+	logrus.Debug(sql)
+	logrus.Debug(args)
 	var i Vehicle
+	return_sql := util.GetReturnSql(i)
+	row := q.db.QueryRow(ctx, sql+return_sql, args...)
+	var start_index, end_index int64
 	err := row.Scan(
 		&i.ID,
-		&i.StartIndex,
-		&i.EndIndex,
+		&start_index,
+		&end_index,
 		&i.Capacity,
 		&i.Skills,
 		&i.TwOpen,
@@ -98,6 +80,16 @@ func (q *Queries) CreateVehicle(ctx context.Context, arg CreateVehicleParams) (V
 		&i.UpdatedAt,
 		&i.Deleted,
 	)
+	start_latitude, start_longitude := util.GetCoordinates(start_index)
+	end_latitude, end_longitude := util.GetCoordinates(end_index)
+	i.StartLocation = util.LocationParams{
+		Latitude:  &start_latitude,
+		Longitude: &start_longitude,
+	}
+	i.EndLocation = util.LocationParams{
+		Latitude:  &end_latitude,
+		Longitude: &end_longitude,
+	}
 	return i, err
 }
 
@@ -106,7 +98,7 @@ UPDATE vehicles SET deleted = TRUE
 WHERE id = $1
 `
 
-func (q *Queries) DeleteVehicle(ctx context.Context, id int64) error {
+func (q *Queries) DBDeleteVehicle(ctx context.Context, id int64) error {
 	_, err := q.db.Exec(ctx, deleteVehicle, id)
 	return err
 }
@@ -122,21 +114,21 @@ LIMIT 1
 `
 
 type GetVehicleRow struct {
-	ID          int64        `json:"id"`
-	StartIndex  int64        `json:"start_index"`
-	EndIndex    int64        `json:"end_index"`
-	Capacity    []int64      `json:"capacity"`
-	Skills      []int32      `json:"skills"`
-	TwOpen      time.Time    `json:"tw_open"`
-	TwClose     time.Time    `json:"tw_close"`
-	SpeedFactor float64      `json:"speed_factor"`
-	ProjectID   int64        `json:"project_id"`
-	Data        pgtype.JSONB `json:"data"`
-	CreatedAt   time.Time    `json:"created_at"`
-	UpdatedAt   time.Time    `json:"updated_at"`
+	ID          int64       `json:"id"`
+	StartIndex  int64       `json:"start_index"`
+	EndIndex    int64       `json:"end_index"`
+	Capacity    []int64     `json:"capacity"`
+	Skills      []int32     `json:"skills"`
+	TwOpen      string      `json:"tw_open"`
+	TwClose     string      `json:"tw_close"`
+	SpeedFactor float64     `json:"speed_factor"`
+	ProjectID   int64       `json:"project_id"`
+	Data        interface{} `json:"data"`
+	CreatedAt   string      `json:"created_at"`
+	UpdatedAt   string      `json:"updated_at"`
 }
 
-func (q *Queries) GetVehicle(ctx context.Context, id int64) (GetVehicleRow, error) {
+func (q *Queries) DBGetVehicle(ctx context.Context, id int64) (GetVehicleRow, error) {
 	row := q.db.QueryRow(ctx, getVehicle, id)
 	var i GetVehicleRow
 	err := row.Scan(
@@ -167,21 +159,21 @@ ORDER BY created_at
 `
 
 type ListVehiclesRow struct {
-	ID          int64        `json:"id"`
-	StartIndex  int64        `json:"start_index"`
-	EndIndex    int64        `json:"end_index"`
-	Capacity    []int64      `json:"capacity"`
-	Skills      []int32      `json:"skills"`
-	TwOpen      time.Time    `json:"tw_open"`
-	TwClose     time.Time    `json:"tw_close"`
-	SpeedFactor float64      `json:"speed_factor"`
-	ProjectID   int64        `json:"project_id"`
-	Data        pgtype.JSONB `json:"data"`
-	CreatedAt   time.Time    `json:"created_at"`
-	UpdatedAt   time.Time    `json:"updated_at"`
+	ID          int64       `json:"id"`
+	StartIndex  int64       `json:"start_index"`
+	EndIndex    int64       `json:"end_index"`
+	Capacity    []int64     `json:"capacity"`
+	Skills      []int32     `json:"skills"`
+	TwOpen      string      `json:"tw_open"`
+	TwClose     string      `json:"tw_close"`
+	SpeedFactor float64     `json:"speed_factor"`
+	ProjectID   int64       `json:"project_id"`
+	Data        interface{} `json:"data"`
+	CreatedAt   string      `json:"created_at"`
+	UpdatedAt   string      `json:"updated_at"`
 }
 
-func (q *Queries) ListVehicles(ctx context.Context, projectID int64) ([]ListVehiclesRow, error) {
+func (q *Queries) DBListVehicles(ctx context.Context, projectID int64) ([]ListVehiclesRow, error) {
 	rows, err := q.db.Query(ctx, listVehicles, projectID)
 	if err != nil {
 		return nil, err
@@ -225,21 +217,21 @@ RETURNING id, start_index, end_index, capacity, skills, tw_open, tw_close, speed
 `
 
 type UpdateVehicleParams struct {
-	ID          int64        `json:"id"`
-	Latitude    float64      `json:"latitude"`
-	Longitude   float64      `json:"longitude"`
-	Latitude_2  float64      `json:"latitude_2"`
-	Longitude_2 float64      `json:"longitude_2"`
-	Capacity    []int64      `json:"capacity"`
-	Skills      []int32      `json:"skills"`
-	TwOpen      time.Time    `json:"tw_open"`
-	TwClose     time.Time    `json:"tw_close"`
-	SpeedFactor float64      `json:"speed_factor"`
-	ProjectID   int64        `json:"project_id"`
-	Data        pgtype.JSONB `json:"data"`
+	ID          int64       `json:"id"`
+	Latitude    float64     `json:"latitude"`
+	Longitude   float64     `json:"longitude"`
+	Latitude_2  float64     `json:"latitude_2"`
+	Longitude_2 float64     `json:"longitude_2"`
+	Capacity    []int64     `json:"capacity"`
+	Skills      []int32     `json:"skills"`
+	TwOpen      string      `json:"tw_open"`
+	TwClose     string      `json:"tw_close"`
+	SpeedFactor float64     `json:"speed_factor"`
+	ProjectID   int64       `json:"project_id"`
+	Data        interface{} `json:"data"`
 }
 
-func (q *Queries) UpdateVehicle(ctx context.Context, arg UpdateVehicleParams) (Vehicle, error) {
+func (q *Queries) DBUpdateVehicle(ctx context.Context, arg UpdateVehicleParams) (Vehicle, error) {
 	row := q.db.QueryRow(ctx, updateVehicle,
 		arg.ID,
 		arg.Latitude,
@@ -254,11 +246,12 @@ func (q *Queries) UpdateVehicle(ctx context.Context, arg UpdateVehicleParams) (V
 		arg.ProjectID,
 		arg.Data,
 	)
+	var start_index, end_index int64
 	var i Vehicle
 	err := row.Scan(
 		&i.ID,
-		&i.StartIndex,
-		&i.EndIndex,
+		&start_index,
+		&end_index,
 		&i.Capacity,
 		&i.Skills,
 		&i.TwOpen,
