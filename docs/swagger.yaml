@@ -1,0 +1,542 @@
+basePath: /
+definitions:
+  database.Break:
+    properties:
+      created_at:
+        type: string
+      data: {}
+      deleted:
+        type: boolean
+      id:
+        type: integer
+      service:
+        type: integer
+      updated_at:
+        type: string
+      vehicle_id:
+        example: "0"
+        type: string
+    type: object
+  database.BreakTimeWindow:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      tw_close:
+        type: string
+      tw_open:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  database.CreateBreakParams:
+    properties:
+      data:
+        type: object
+      service:
+        type: integer
+    type: object
+  database.CreateBreakTimeWindowParams:
+    properties:
+      tw_close:
+        type: string
+      tw_open:
+        type: string
+    required:
+    - tw_close
+    - tw_open
+    type: object
+  database.CreateJobParams:
+    properties:
+      data:
+        type: object
+      delivery:
+        items:
+          type: integer
+        type: array
+      location:
+        $ref: '#/definitions/util.LocationParams'
+      pickup:
+        items:
+          type: integer
+        type: array
+      priority:
+        type: integer
+      service:
+        type: integer
+      skills:
+        items:
+          type: integer
+        type: array
+    required:
+    - location
+    type: object
+  database.CreateJobTimeWindowParams:
+    properties:
+      tw_close:
+        type: string
+      tw_open:
+        type: string
+    required:
+    - tw_close
+    - tw_open
+    type: object
+  database.CreateProjectParams:
+    properties:
+      data:
+        type: object
+      name:
+        example: sample_project
+        type: string
+    required:
+    - name
+    type: object
+  database.CreateShipmentParams:
+    properties:
+      amount:
+        items:
+          type: integer
+        type: array
+      d_location:
+        $ref: '#/definitions/util.LocationParams'
+      d_service:
+        type: integer
+      data:
+        type: object
+      p_location:
+        $ref: '#/definitions/util.LocationParams'
+      p_service:
+        type: integer
+      priority:
+        type: integer
+      skills:
+        items:
+          type: integer
+        type: array
+    required:
+    - d_location
+    - p_location
+    type: object
+  database.CreateShipmentTimeWindowParams:
+    properties:
+      kind:
+        type: string
+      tw_close:
+        type: string
+      tw_open:
+        type: string
+    required:
+    - kind
+    - tw_close
+    - tw_open
+    type: object
+  database.CreateVehicleParams:
+    properties:
+      capacity:
+        items:
+          type: integer
+        type: array
+      data:
+        type: object
+      end_location:
+        $ref: '#/definitions/util.LocationParams'
+      skills:
+        items:
+          type: integer
+        type: array
+      speed_factor:
+        type: number
+      start_location:
+        $ref: '#/definitions/util.LocationParams'
+      tw_close:
+        type: string
+      tw_open:
+        type: string
+    required:
+    - end_location
+    - start_location
+    type: object
+  database.Job:
+    properties:
+      created_at:
+        type: string
+      data: {}
+      deleted:
+        type: boolean
+      delivery:
+        items:
+          type: integer
+        type: array
+      id:
+        example: "0"
+        type: string
+      location:
+        $ref: '#/definitions/util.LocationParams'
+      pickup:
+        items:
+          type: integer
+        type: array
+      priority:
+        type: integer
+      project_id:
+        example: "0"
+        type: string
+      service:
+        type: integer
+      skills:
+        items:
+          type: integer
+        type: array
+      updated_at:
+        type: string
+    type: object
+  database.JobTimeWindow:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      tw_close:
+        type: string
+      tw_open:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  database.Project:
+    properties:
+      created_at:
+        type: string
+      data: {}
+      deleted:
+        type: boolean
+      id:
+        example: "0"
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  database.Shipment:
+    properties:
+      amount:
+        items:
+          type: integer
+        type: array
+      created_at:
+        type: string
+      d_location:
+        $ref: '#/definitions/util.LocationParams'
+      d_service:
+        type: integer
+      data: {}
+      deleted:
+        type: boolean
+      id:
+        example: "0"
+        type: string
+      p_location:
+        $ref: '#/definitions/util.LocationParams'
+      p_service:
+        type: integer
+      priority:
+        type: integer
+      project_id:
+        example: "0"
+        type: string
+      skills:
+        items:
+          type: integer
+        type: array
+      updated_at:
+        type: string
+    type: object
+  database.ShipmentTimeWindow:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      kind:
+        type: string
+      tw_close:
+        type: string
+      tw_open:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  database.Vehicle:
+    properties:
+      capacity:
+        items:
+          type: integer
+        type: array
+      created_at:
+        type: string
+      data: {}
+      deleted:
+        type: boolean
+      end_location:
+        $ref: '#/definitions/util.LocationParams'
+      id:
+        type: integer
+      project_id:
+        example: "0"
+        type: string
+      skills:
+        items:
+          type: integer
+        type: array
+      speed_factor:
+        type: number
+      start_location:
+        $ref: '#/definitions/util.LocationParams'
+      tw_close:
+        type: string
+      tw_open:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  util.LocationParams:
+    properties:
+      latitude:
+        type: number
+      longitude:
+        type: number
+    required:
+    - latitude
+    - longitude
+    type: object
+host: localhost:9100
+info:
+  contact:
+    email: info@georepublic.de
+    name: Team Georepublic
+  description: This is an API for scheduling VRP tasks. Source code can be found on
+    https://github.com/Georepublic/pg_scheduleserv
+  license:
+    name: GNU Affero General Public License
+    url: https://www.gnu.org/licenses/agpl-3.0.en.html
+  termsOfService: https://swagger.io/terms/
+  title: pg_scheduleserv API
+  version: 0.1.0
+paths:
+  /breaks/{break_id}/time_windows:
+    post:
+      consumes:
+      - application/json
+      description: Create a new break time window with the input payload
+      parameters:
+      - description: Break ID
+        in: path
+        name: break_id
+        required: true
+        type: integer
+      - description: Create break time window
+        in: body
+        name: BreakTimeWindow
+        required: true
+        schema:
+          $ref: '#/definitions/database.CreateBreakTimeWindowParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.BreakTimeWindow'
+      summary: Create a new break time window
+      tags:
+      - Break
+  /jobs/{job_id}/time_windows:
+    post:
+      consumes:
+      - application/json
+      description: Create a new job time window with the input payload
+      parameters:
+      - description: Job ID
+        in: path
+        name: job_id
+        required: true
+        type: integer
+      - description: Create job time window
+        in: body
+        name: JobTimeWindow
+        required: true
+        schema:
+          $ref: '#/definitions/database.CreateJobTimeWindowParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.JobTimeWindow'
+      summary: Create a new job time window
+      tags:
+      - Job
+  /projects:
+    post:
+      consumes:
+      - application/json
+      description: Create a new project with the input payload
+      parameters:
+      - description: Create project
+        in: body
+        name: Project
+        required: true
+        schema:
+          $ref: '#/definitions/database.CreateProjectParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Project'
+      summary: Create a new project
+      tags:
+      - Project
+  /projects/{project_id}/jobs:
+    post:
+      consumes:
+      - application/json
+      description: Create a new job with the input payload
+      parameters:
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      - description: Create job
+        in: body
+        name: Job
+        required: true
+        schema:
+          $ref: '#/definitions/database.CreateJobParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Job'
+      summary: Create a new job
+      tags:
+      - Job
+  /projects/{project_id}/shipments:
+    post:
+      consumes:
+      - application/json
+      description: Create a new shipment with the input payload
+      parameters:
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      - description: Create shipment
+        in: body
+        name: Shipment
+        required: true
+        schema:
+          $ref: '#/definitions/database.CreateShipmentParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Shipment'
+      summary: Create a new shipment
+      tags:
+      - Shipment
+  /projects/{project_id}/vehicles:
+    post:
+      consumes:
+      - application/json
+      description: Create a new vehicle with the input payload
+      parameters:
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      - description: Create vehicle
+        in: body
+        name: Vehicle
+        required: true
+        schema:
+          $ref: '#/definitions/database.CreateVehicleParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Vehicle'
+      summary: Create a new vehicle
+      tags:
+      - Vehicle
+  /shipments/{shipment_id}/time_windows:
+    post:
+      consumes:
+      - application/json
+      description: Create a new shipment time window with the input payload
+      parameters:
+      - description: Shipment ID
+        in: path
+        name: shipment_id
+        required: true
+        type: integer
+      - description: Create shipment time window
+        in: body
+        name: ShipmentTimeWindow
+        required: true
+        schema:
+          $ref: '#/definitions/database.CreateShipmentTimeWindowParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.ShipmentTimeWindow'
+      summary: Create a new shipment time window
+      tags:
+      - Shipment
+  /vehicles/{vehicle_id}/breaks:
+    post:
+      consumes:
+      - application/json
+      description: Create a new break with the input payload
+      parameters:
+      - description: Vehicle ID
+        in: path
+        name: vehicle_id
+        required: true
+        type: integer
+      - description: Create break
+        in: body
+        name: Break
+        required: true
+        schema:
+          $ref: '#/definitions/database.CreateBreakParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Break'
+      summary: Create a new break
+      tags:
+      - Break
+schemes:
+- http
+- https
+swagger: "2.0"

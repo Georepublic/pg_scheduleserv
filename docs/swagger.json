@@ -1,0 +1,813 @@
+{
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "This is an API for scheduling VRP tasks. Source code can be found on https://github.com/Georepublic/pg_scheduleserv",
+        "title": "pg_scheduleserv API",
+        "termsOfService": "https://swagger.io/terms/",
+        "contact": {
+            "name": "Team Georepublic",
+            "email": "info@georepublic.de"
+        },
+        "license": {
+            "name": "GNU Affero General Public License",
+            "url": "https://www.gnu.org/licenses/agpl-3.0.en.html"
+        },
+        "version": "0.1.0"
+    },
+    "host": "localhost:9100",
+    "basePath": "/",
+    "paths": {
+        "/breaks/{break_id}/time_windows": {
+            "post": {
+                "description": "Create a new break time window with the input payload",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Break"
+                ],
+                "summary": "Create a new break time window",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Break ID",
+                        "name": "break_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Create break time window",
+                        "name": "BreakTimeWindow",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.CreateBreakTimeWindowParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.BreakTimeWindow"
+                        }
+                    }
+                }
+            }
+        },
+        "/jobs/{job_id}/time_windows": {
+            "post": {
+                "description": "Create a new job time window with the input payload",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Job"
+                ],
+                "summary": "Create a new job time window",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Job ID",
+                        "name": "job_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Create job time window",
+                        "name": "JobTimeWindow",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.CreateJobTimeWindowParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.JobTimeWindow"
+                        }
+                    }
+                }
+            }
+        },
+        "/projects": {
+            "post": {
+                "description": "Create a new project with the input payload",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "Create a new project",
+                "parameters": [
+                    {
+                        "description": "Create project",
+                        "name": "Project",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.CreateProjectParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Project"
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/{project_id}/jobs": {
+            "post": {
+                "description": "Create a new job with the input payload",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Job"
+                ],
+                "summary": "Create a new job",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Create job",
+                        "name": "Job",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.CreateJobParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Job"
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/{project_id}/shipments": {
+            "post": {
+                "description": "Create a new shipment with the input payload",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Shipment"
+                ],
+                "summary": "Create a new shipment",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Create shipment",
+                        "name": "Shipment",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.CreateShipmentParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Shipment"
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/{project_id}/vehicles": {
+            "post": {
+                "description": "Create a new vehicle with the input payload",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Vehicle"
+                ],
+                "summary": "Create a new vehicle",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Create vehicle",
+                        "name": "Vehicle",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.CreateVehicleParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Vehicle"
+                        }
+                    }
+                }
+            }
+        },
+        "/shipments/{shipment_id}/time_windows": {
+            "post": {
+                "description": "Create a new shipment time window with the input payload",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Shipment"
+                ],
+                "summary": "Create a new shipment time window",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Shipment ID",
+                        "name": "shipment_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Create shipment time window",
+                        "name": "ShipmentTimeWindow",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.CreateShipmentTimeWindowParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.ShipmentTimeWindow"
+                        }
+                    }
+                }
+            }
+        },
+        "/vehicles/{vehicle_id}/breaks": {
+            "post": {
+                "description": "Create a new break with the input payload",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Break"
+                ],
+                "summary": "Create a new break",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Vehicle ID",
+                        "name": "vehicle_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Create break",
+                        "name": "Break",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.CreateBreakParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Break"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "database.Break": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "data": {},
+                "deleted": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "service": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "vehicle_id": {
+                    "type": "string",
+                    "example": "0"
+                }
+            }
+        },
+        "database.BreakTimeWindow": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "tw_close": {
+                    "type": "string"
+                },
+                "tw_open": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "database.CreateBreakParams": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "object"
+                },
+                "service": {
+                    "type": "integer"
+                }
+            }
+        },
+        "database.CreateBreakTimeWindowParams": {
+            "type": "object",
+            "required": [
+                "tw_close",
+                "tw_open"
+            ],
+            "properties": {
+                "tw_close": {
+                    "type": "string"
+                },
+                "tw_open": {
+                    "type": "string"
+                }
+            }
+        },
+        "database.CreateJobParams": {
+            "type": "object",
+            "required": [
+                "location"
+            ],
+            "properties": {
+                "data": {
+                    "type": "object"
+                },
+                "delivery": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "pickup": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "service": {
+                    "type": "integer"
+                },
+                "skills": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "database.CreateJobTimeWindowParams": {
+            "type": "object",
+            "required": [
+                "tw_close",
+                "tw_open"
+            ],
+            "properties": {
+                "tw_close": {
+                    "type": "string"
+                },
+                "tw_open": {
+                    "type": "string"
+                }
+            }
+        },
+        "database.CreateProjectParams": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "data": {
+                    "type": "object"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "sample_project"
+                }
+            }
+        },
+        "database.CreateShipmentParams": {
+            "type": "object",
+            "required": [
+                "d_location",
+                "p_location"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "d_location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "d_service": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "object"
+                },
+                "p_location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "p_service": {
+                    "type": "integer"
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "skills": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "database.CreateShipmentTimeWindowParams": {
+            "type": "object",
+            "required": [
+                "kind",
+                "tw_close",
+                "tw_open"
+            ],
+            "properties": {
+                "kind": {
+                    "type": "string"
+                },
+                "tw_close": {
+                    "type": "string"
+                },
+                "tw_open": {
+                    "type": "string"
+                }
+            }
+        },
+        "database.CreateVehicleParams": {
+            "type": "object",
+            "required": [
+                "end_location",
+                "start_location"
+            ],
+            "properties": {
+                "capacity": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "data": {
+                    "type": "object"
+                },
+                "end_location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "skills": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "speed_factor": {
+                    "type": "number"
+                },
+                "start_location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "tw_close": {
+                    "type": "string"
+                },
+                "tw_open": {
+                    "type": "string"
+                }
+            }
+        },
+        "database.Job": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "data": {},
+                "deleted": {
+                    "type": "boolean"
+                },
+                "delivery": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "id": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "pickup": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "project_id": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "service": {
+                    "type": "integer"
+                },
+                "skills": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "database.JobTimeWindow": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "tw_close": {
+                    "type": "string"
+                },
+                "tw_open": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "database.Project": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "data": {},
+                "deleted": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "database.Shipment": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "d_location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "d_service": {
+                    "type": "integer"
+                },
+                "data": {},
+                "deleted": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "p_location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "p_service": {
+                    "type": "integer"
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "project_id": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "skills": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "database.ShipmentTimeWindow": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "kind": {
+                    "type": "string"
+                },
+                "tw_close": {
+                    "type": "string"
+                },
+                "tw_open": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "database.Vehicle": {
+            "type": "object",
+            "properties": {
+                "capacity": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "data": {},
+                "deleted": {
+                    "type": "boolean"
+                },
+                "end_location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "project_id": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "skills": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "speed_factor": {
+                    "type": "number"
+                },
+                "start_location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "tw_close": {
+                    "type": "string"
+                },
+                "tw_open": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "util.LocationParams": {
+            "type": "object",
+            "required": [
+                "latitude",
+                "longitude"
+            ],
+            "properties": {
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                }
+            }
+        }
+    }
+}
