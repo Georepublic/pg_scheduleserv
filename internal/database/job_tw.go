@@ -32,7 +32,7 @@ import (
 	"context"
 
 	"github.com/Georepublic/pg_scheduleserv/internal/util"
-	"github.com/sirupsen/logrus"
+	"github.com/jackc/pgx/v4"
 )
 
 const createJobTimeWindow = `-- name: CreateJobTimeWindow :one
@@ -49,19 +49,28 @@ type CreateJobTimeWindowParams struct {
 
 func (q *Queries) DBCreateJobTimeWindow(ctx context.Context, arg CreateJobTimeWindowParams) (JobTimeWindow, error) {
 	sql, args := createResource("jobs_time_windows", arg)
-	logrus.Debug(sql)
-	logrus.Debug(args)
-	var i JobTimeWindow
-	return_sql := util.GetReturnSql(i)
+	return_sql := " RETURNING " + util.GetOutputFields(JobTimeWindow{})
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
-	err := row.Scan(
-		&i.ID,
-		&i.TwOpen,
-		&i.TwClose,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
+	return scanJobTimeWindowRow(row)
+}
+
+const listJobTimeWindow = `-- name: ListJobTimeWindow :many
+SELECT id, tw_open, tw_close, created_at, updated_at
+FROM jobs_time_windows
+WHERE id = $1
+ORDER BY created_at
+`
+
+func (q *Queries) DBListJobTimeWindow(ctx context.Context, id int64) ([]JobTimeWindow, error) {
+	table_name := "jobs_time_windows"
+	additional_query := " WHERE id = $1 ORDER BY created_at"
+	sql := "SELECT " + util.GetOutputFields(JobTimeWindow{}) + " FROM " + table_name + additional_query
+	rows, err := q.db.Query(ctx, sql, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return scanJobTimeWindowRows(rows)
 }
 
 const deleteJobTimeWindow = `-- name: DeleteJobTimeWindow :exec
@@ -76,26 +85,27 @@ type DeleteJobTimeWindowParams struct {
 }
 
 func (q *Queries) DBDeleteJobTimeWindow(ctx context.Context, arg DeleteJobTimeWindowParams) error {
-	_, err := q.db.Exec(ctx, deleteJobTimeWindow, arg.ID, arg.TwOpen, arg.TwClose)
+	sql := "DELETE FROM jobs_time_windows WHERE id = $1 AND tw_open = $2 AND tw_close = $3"
+	_, err := q.db.Exec(ctx, sql, arg.ID, arg.TwOpen, arg.TwClose)
 	return err
 }
 
-const listJobTimeWindows = `-- name: ListJobTimeWindows :many
-SELECT id, tw_open, tw_close, created_at, updated_at
-FROM jobs_time_windows
-WHERE id = $1
-ORDER BY created_at
-`
+func scanJobTimeWindowRow(row pgx.Row) (JobTimeWindow, error) {
+	var i JobTimeWindow
+	err := row.Scan(
+		&i.ID,
+		&i.TwOpen,
+		&i.TwClose,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
 
-func (q *Queries) DBListJobTimeWindows(ctx context.Context, id int64) ([]JobTimeWindow, error) {
-	rows, err := q.db.Query(ctx, listJobTimeWindows, id)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
+func scanJobTimeWindowRows(rows pgx.Rows) ([]JobTimeWindow, error) {
 	items := []JobTimeWindow{}
+	var i JobTimeWindow
 	for rows.Next() {
-		var i JobTimeWindow
 		if err := rows.Scan(
 			&i.ID,
 			&i.TwOpen,

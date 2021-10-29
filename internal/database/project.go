@@ -32,7 +32,7 @@ import (
 	"context"
 
 	"github.com/Georepublic/pg_scheduleserv/internal/util"
-	"github.com/sirupsen/logrus"
+	"github.com/jackc/pgx/v4"
 )
 
 const createProject = `-- name: CreateProject :one
@@ -47,30 +47,9 @@ type CreateProjectParams struct {
 
 func (q *Queries) DBCreateProject(ctx context.Context, arg CreateProjectParams) (Project, error) {
 	sql, args := createResource("projects", arg)
-	logrus.Debugf("SQL query: %s", sql)
-	logrus.Debugf("Arguments: %s", args)
-	var i Project
-	return_sql := util.GetReturnSql(i)
+	return_sql := " RETURNING " + util.GetOutputFields(Project{})
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Data,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.Deleted,
-	)
-	return i, err
-}
-
-const deleteProject = `-- name: DeleteProject :exec
-UPDATE projects SET deleted = TRUE
-WHERE id = $1
-`
-
-func (q *Queries) DBDeleteProject(ctx context.Context, id int64) error {
-	_, err := q.db.Exec(ctx, deleteProject, id)
-	return err
+	return scanProjectRow(row)
 }
 
 const getProject = `-- name: GetProject :one
@@ -87,17 +66,12 @@ type GetProjectRow struct {
 	UpdatedAt string      `json:"updated_at"`
 }
 
-func (q *Queries) DBGetProject(ctx context.Context, id int64) (GetProjectRow, error) {
-	row := q.db.QueryRow(ctx, getProject, id)
-	var i GetProjectRow
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Data,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
+func (q *Queries) DBGetProject(ctx context.Context, id int64) (Project, error) {
+	table_name := "projects"
+	additional_query := " WHERE id = $1 AND deleted = FALSE LIMIT 1"
+	sql := "SELECT " + util.GetOutputFields(Project{}) + " FROM " + table_name + additional_query
+	row := q.db.QueryRow(ctx, sql, id)
+	return scanProjectRow(row)
 }
 
 const listProjects = `-- name: ListProjects :many
@@ -115,30 +89,16 @@ type ListProjectsRow struct {
 	UpdatedAt string      `json:"updated_at"`
 }
 
-func (q *Queries) DBListProjects(ctx context.Context) ([]ListProjectsRow, error) {
-	rows, err := q.db.Query(ctx, listProjects)
+func (q *Queries) DBListProjects(ctx context.Context) ([]Project, error) {
+	table_name := "projects"
+	additional_query := " WHERE deleted = FALSE ORDER BY created_at"
+	sql := "SELECT " + util.GetOutputFields(Project{}) + " FROM " + table_name + additional_query
+	rows, err := q.db.Query(ctx, sql)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []ListProjectsRow{}
-	for rows.Next() {
-		var i ListProjectsRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			&i.Data,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+	return scanProjectRows(rows)
 }
 
 const updateProject = `-- name: UpdateProject :one
@@ -154,8 +114,25 @@ type UpdateProjectParams struct {
 	Data interface{} `json:"data"`
 }
 
-func (q *Queries) DBUpdateProject(ctx context.Context, arg UpdateProjectParams) (Project, error) {
-	row := q.db.QueryRow(ctx, updateProject, arg.ID, arg.Name, arg.Data)
+func (q *Queries) DBUpdateProject(ctx context.Context, arg CreateProjectParams, project_id int64) (Project, error) {
+	sql, args := updateResource("projects", arg, project_id)
+	return_sql := " RETURNING " + util.GetOutputFields(Project{})
+	row := q.db.QueryRow(ctx, sql+return_sql, args...)
+	return scanProjectRow(row)
+}
+
+const deleteProject = `-- name: DeleteProject :exec
+UPDATE projects SET deleted = TRUE
+WHERE id = $1
+`
+
+func (q *Queries) DBDeleteProject(ctx context.Context, id int64) error {
+	sql := "UPDATE projects SET deleted = TRUE WHERE id = $1"
+	_, err := q.db.Exec(ctx, sql, id)
+	return err
+}
+
+func scanProjectRow(row pgx.Row) (Project, error) {
 	var i Project
 	err := row.Scan(
 		&i.ID,
@@ -163,7 +140,27 @@ func (q *Queries) DBUpdateProject(ctx context.Context, arg UpdateProjectParams) 
 		&i.Data,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Deleted,
 	)
 	return i, err
+}
+
+func scanProjectRows(rows pgx.Rows) ([]Project, error) {
+	items := []Project{}
+	var i Project
+	for rows.Next() {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Data,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

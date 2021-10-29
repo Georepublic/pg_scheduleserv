@@ -32,7 +32,7 @@ import (
 	"context"
 
 	"github.com/Georepublic/pg_scheduleserv/internal/util"
-	"github.com/sirupsen/logrus"
+	"github.com/jackc/pgx/v4"
 )
 
 const createJob = `-- name: CreateJob :one
@@ -57,42 +57,9 @@ type CreateJobParams struct {
 
 func (q *Queries) DBCreateJob(ctx context.Context, arg CreateJobParams) (Job, error) {
 	sql, args := createResource("jobs", arg)
-	logrus.Debug(sql)
-	logrus.Debug(args)
-	var i Job
-	return_sql := util.GetReturnSql(i)
+	return_sql := " RETURNING " + util.GetOutputFields(Job{})
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
-	var location_index int64
-	err := row.Scan(
-		&i.ID,
-		&location_index,
-		&i.Service,
-		&i.Delivery,
-		&i.Pickup,
-		&i.Skills,
-		&i.Priority,
-		&i.ProjectID,
-		&i.Data,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.Deleted,
-	)
-	latitude, longitude := util.GetCoordinates(location_index)
-	i.Location = util.LocationParams{
-		Latitude:  &latitude,
-		Longitude: &longitude,
-	}
-	return i, err
-}
-
-const deleteJob = `-- name: DeleteJob :exec
-UPDATE jobs SET deleted = TRUE
-WHERE id = $1
-`
-
-func (q *Queries) DBDeleteJob(ctx context.Context, id int64) error {
-	_, err := q.db.Exec(ctx, deleteJob, id)
-	return err
+	return scanJobRow(row)
 }
 
 const getJob = `-- name: GetJob :one
@@ -118,23 +85,12 @@ type GetJobRow struct {
 	UpdatedAt     string      `json:"updated_at"`
 }
 
-func (q *Queries) DBGetJob(ctx context.Context, id int64) (GetJobRow, error) {
-	row := q.db.QueryRow(ctx, getJob, id)
-	var i GetJobRow
-	err := row.Scan(
-		&i.ID,
-		&i.LocationIndex,
-		&i.Service,
-		&i.Delivery,
-		&i.Pickup,
-		&i.Skills,
-		&i.Priority,
-		&i.ProjectID,
-		&i.Data,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
+func (q *Queries) DBGetJob(ctx context.Context, id int64) (Job, error) {
+	table_name := "jobs"
+	additional_query := " WHERE id = $1 AND deleted = FALSE LIMIT 1"
+	sql := "SELECT " + util.GetOutputFields(Job{}) + " FROM " + table_name + additional_query
+	row := q.db.QueryRow(ctx, sql, id)
+	return scanJobRow(row)
 }
 
 const listJobs = `-- name: ListJobs :many
@@ -160,36 +116,16 @@ type ListJobsRow struct {
 	UpdatedAt     string      `json:"updated_at"`
 }
 
-func (q *Queries) DBListJobs(ctx context.Context, projectID int64) ([]ListJobsRow, error) {
-	rows, err := q.db.Query(ctx, listJobs, projectID)
+func (q *Queries) DBListJobs(ctx context.Context, projectID int64) ([]Job, error) {
+	table_name := "jobs"
+	additional_query := " WHERE project_id = $1 AND deleted = FALSE ORDER BY created_at"
+	sql := "SELECT " + util.GetOutputFields(Job{}) + " FROM " + table_name + additional_query
+	rows, err := q.db.Query(ctx, sql, projectID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []ListJobsRow{}
-	for rows.Next() {
-		var i ListJobsRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.LocationIndex,
-			&i.Service,
-			&i.Delivery,
-			&i.Pickup,
-			&i.Skills,
-			&i.Priority,
-			&i.ProjectID,
-			&i.Data,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+	return scanJobRows(rows)
 }
 
 const updateJob = `-- name: UpdateJob :one
@@ -202,31 +138,35 @@ RETURNING id, location_index, service, delivery, pickup, skills, priority, proje
 `
 
 type UpdateJobParams struct {
-	ID        int64       `json:"id"`
-	Latitude  float64     `json:"latitude"`
-	Longitude float64     `json:"longitude"`
-	Service   int64       `json:"service"`
-	Delivery  []int64     `json:"delivery"`
-	Pickup    []int64     `json:"pickup"`
-	Skills    []int32     `json:"skills"`
-	Priority  int32       `json:"priority"`
-	ProjectID int64       `json:"project_id"`
-	Data      interface{} `json:"data"`
+	Location  *util.LocationParams `json:"location" validate:"required"`
+	Service   *int64               `json:"service"`
+	Delivery  *[]int64             `json:"delivery"`
+	Pickup    *[]int64             `json:"pickup"`
+	Skills    *[]int32             `json:"skills"`
+	Priority  *int32               `json:"priority"`
+	ProjectID *int64               `json:"project_id,string"`
+	Data      *interface{}         `json:"data" swaggertype:"object"`
 }
 
-func (q *Queries) DBUpdateJob(ctx context.Context, arg UpdateJobParams) (Job, error) {
-	row := q.db.QueryRow(ctx, updateJob,
-		arg.ID,
-		arg.Latitude,
-		arg.Longitude,
-		arg.Service,
-		arg.Delivery,
-		arg.Pickup,
-		arg.Skills,
-		arg.Priority,
-		arg.ProjectID,
-		arg.Data,
-	)
+func (q *Queries) DBUpdateJob(ctx context.Context, arg UpdateJobParams, job_id int64) (Job, error) {
+	sql, args := updateResource("jobs", arg, job_id)
+	return_sql := " RETURNING " + util.GetOutputFields(Job{})
+	row := q.db.QueryRow(ctx, sql+return_sql, args...)
+	return scanJobRow(row)
+}
+
+const deleteJob = `-- name: DeleteJob :exec
+UPDATE jobs SET deleted = TRUE
+WHERE id = $1
+`
+
+func (q *Queries) DBDeleteJob(ctx context.Context, id int64) error {
+	sql := "UPDATE jobs SET deleted = TRUE WHERE id = $1"
+	_, err := q.db.Exec(ctx, sql, id)
+	return err
+}
+
+func scanJobRow(row pgx.Row) (Job, error) {
 	var i Job
 	var location_index int64
 	err := row.Scan(
@@ -241,7 +181,44 @@ func (q *Queries) DBUpdateJob(ctx context.Context, arg UpdateJobParams) (Job, er
 		&i.Data,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Deleted,
 	)
+	latitude, longitude := util.GetCoordinates(location_index)
+	i.Location = util.LocationParams{
+		Latitude:  &latitude,
+		Longitude: &longitude,
+	}
 	return i, err
+}
+
+func scanJobRows(rows pgx.Rows) ([]Job, error) {
+	var i Job
+	items := []Job{}
+	var location_index int64
+	for rows.Next() {
+		if err := rows.Scan(
+			&i.ID,
+			&location_index,
+			&i.Service,
+			&i.Delivery,
+			&i.Pickup,
+			&i.Skills,
+			&i.Priority,
+			&i.ProjectID,
+			&i.Data,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		latitude, longitude := util.GetCoordinates(location_index)
+		i.Location = util.LocationParams{
+			Latitude:  &latitude,
+			Longitude: &longitude,
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

@@ -32,7 +32,7 @@ import (
 	"context"
 
 	"github.com/Georepublic/pg_scheduleserv/internal/util"
-	"github.com/sirupsen/logrus"
+	"github.com/jackc/pgx/v4"
 )
 
 const createVehicle = `-- name: CreateVehicle :one
@@ -59,48 +59,9 @@ type CreateVehicleParams struct {
 
 func (q *Queries) DBCreateVehicle(ctx context.Context, arg CreateVehicleParams) (Vehicle, error) {
 	sql, args := createResource("vehicles", arg)
-	logrus.Debug(sql)
-	logrus.Debug(args)
-	var i Vehicle
-	return_sql := util.GetReturnSql(i)
+	return_sql := " RETURNING " + util.GetOutputFields(Vehicle{})
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
-	var start_index, end_index int64
-	err := row.Scan(
-		&i.ID,
-		&start_index,
-		&end_index,
-		&i.Capacity,
-		&i.Skills,
-		&i.TwOpen,
-		&i.TwClose,
-		&i.SpeedFactor,
-		&i.ProjectID,
-		&i.Data,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.Deleted,
-	)
-	start_latitude, start_longitude := util.GetCoordinates(start_index)
-	end_latitude, end_longitude := util.GetCoordinates(end_index)
-	i.StartLocation = util.LocationParams{
-		Latitude:  &start_latitude,
-		Longitude: &start_longitude,
-	}
-	i.EndLocation = util.LocationParams{
-		Latitude:  &end_latitude,
-		Longitude: &end_longitude,
-	}
-	return i, err
-}
-
-const deleteVehicle = `-- name: DeleteVehicle :exec
-UPDATE vehicles SET deleted = TRUE
-WHERE id = $1
-`
-
-func (q *Queries) DBDeleteVehicle(ctx context.Context, id int64) error {
-	_, err := q.db.Exec(ctx, deleteVehicle, id)
-	return err
+	return scanVehicleRow(row)
 }
 
 const getVehicle = `-- name: GetVehicle :one
@@ -128,24 +89,12 @@ type GetVehicleRow struct {
 	UpdatedAt   string      `json:"updated_at"`
 }
 
-func (q *Queries) DBGetVehicle(ctx context.Context, id int64) (GetVehicleRow, error) {
-	row := q.db.QueryRow(ctx, getVehicle, id)
-	var i GetVehicleRow
-	err := row.Scan(
-		&i.ID,
-		&i.StartIndex,
-		&i.EndIndex,
-		&i.Capacity,
-		&i.Skills,
-		&i.TwOpen,
-		&i.TwClose,
-		&i.SpeedFactor,
-		&i.ProjectID,
-		&i.Data,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
+func (q *Queries) DBGetVehicle(ctx context.Context, id int64) (Vehicle, error) {
+	table_name := "vehicles"
+	additional_query := " WHERE id = $1 AND deleted = FALSE LIMIT 1"
+	sql := "SELECT " + util.GetOutputFields(Job{}) + " FROM " + table_name + additional_query
+	row := q.db.QueryRow(ctx, sql, id)
+	return scanVehicleRow(row)
 }
 
 const listVehicles = `-- name: ListVehicles :many
@@ -173,37 +122,16 @@ type ListVehiclesRow struct {
 	UpdatedAt   string      `json:"updated_at"`
 }
 
-func (q *Queries) DBListVehicles(ctx context.Context, projectID int64) ([]ListVehiclesRow, error) {
-	rows, err := q.db.Query(ctx, listVehicles, projectID)
+func (q *Queries) DBListVehicles(ctx context.Context, projectID int64) ([]Vehicle, error) {
+	table_name := "vehicles"
+	additional_query := " WHERE project_id = $1 AND deleted = FALSE ORDER BY created_at"
+	sql := "SELECT " + util.GetOutputFields(Vehicle{}) + " FROM " + table_name + additional_query
+	rows, err := q.db.Query(ctx, sql, projectID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []ListVehiclesRow{}
-	for rows.Next() {
-		var i ListVehiclesRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.StartIndex,
-			&i.EndIndex,
-			&i.Capacity,
-			&i.Skills,
-			&i.TwOpen,
-			&i.TwClose,
-			&i.SpeedFactor,
-			&i.ProjectID,
-			&i.Data,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+	return scanVehicleRows(rows)
 }
 
 const updateVehicle = `-- name: UpdateVehicle :one
@@ -217,37 +145,38 @@ RETURNING id, start_index, end_index, capacity, skills, tw_open, tw_close, speed
 `
 
 type UpdateVehicleParams struct {
-	ID          int64       `json:"id"`
-	Latitude    float64     `json:"latitude"`
-	Longitude   float64     `json:"longitude"`
-	Latitude_2  float64     `json:"latitude_2"`
-	Longitude_2 float64     `json:"longitude_2"`
-	Capacity    []int64     `json:"capacity"`
-	Skills      []int32     `json:"skills"`
-	TwOpen      string      `json:"tw_open"`
-	TwClose     string      `json:"tw_close"`
-	SpeedFactor float64     `json:"speed_factor"`
-	ProjectID   int64       `json:"project_id"`
-	Data        interface{} `json:"data"`
+	StartLocation *util.LocationParams `json:"start_location" validate:"required"`
+	EndLocation   *util.LocationParams `json:"end_location" validate:"required"`
+	Capacity      *[]int64             `json:"capacity"`
+	Skills        *[]int32             `json:"skills"`
+	TwOpen        *string              `json:"tw_open" validate:"omitempty,datetime=2006-01-02 15:04:05"`
+	TwClose       *string              `json:"tw_close" validate:"omitempty,datetime=2006-01-02 15:04:05"`
+	SpeedFactor   *float64             `json:"speed_factor"`
+	ProjectID     *int64               `json:"project_id,string"`
+	Data          *interface{}         `json:"data" swaggertype:"object"`
 }
 
-func (q *Queries) DBUpdateVehicle(ctx context.Context, arg UpdateVehicleParams) (Vehicle, error) {
-	row := q.db.QueryRow(ctx, updateVehicle,
-		arg.ID,
-		arg.Latitude,
-		arg.Longitude,
-		arg.Latitude_2,
-		arg.Longitude_2,
-		arg.Capacity,
-		arg.Skills,
-		arg.TwOpen,
-		arg.TwClose,
-		arg.SpeedFactor,
-		arg.ProjectID,
-		arg.Data,
-	)
-	var start_index, end_index int64
+func (q *Queries) DBUpdateVehicle(ctx context.Context, arg UpdateVehicleParams, vehicle_id int64) (Vehicle, error) {
+	sql, args := updateResource("vehicles", arg, vehicle_id)
+	return_sql := " RETURNING " + util.GetOutputFields(Vehicle{})
+	row := q.db.QueryRow(ctx, sql+return_sql, args...)
+	return scanVehicleRow(row)
+}
+
+const deleteVehicle = `-- name: DeleteVehicle :exec
+UPDATE vehicles SET deleted = TRUE
+WHERE id = $1
+`
+
+func (q *Queries) DBDeleteVehicle(ctx context.Context, id int64) error {
+	sql := "UPDATE vehicles SET deleted = TRUE WHERE id = $1"
+	_, err := q.db.Exec(ctx, sql, id)
+	return err
+}
+
+func scanVehicleRow(row pgx.Row) (Vehicle, error) {
 	var i Vehicle
+	var start_index, end_index int64
 	err := row.Scan(
 		&i.ID,
 		&start_index,
@@ -261,7 +190,55 @@ func (q *Queries) DBUpdateVehicle(ctx context.Context, arg UpdateVehicleParams) 
 		&i.Data,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Deleted,
 	)
+	start_latitude, start_longitude := util.GetCoordinates(start_index)
+	end_latitude, end_longitude := util.GetCoordinates(end_index)
+	i.StartLocation = util.LocationParams{
+		Latitude:  &start_latitude,
+		Longitude: &start_longitude,
+	}
+	i.EndLocation = util.LocationParams{
+		Latitude:  &end_latitude,
+		Longitude: &end_longitude,
+	}
 	return i, err
+}
+
+func scanVehicleRows(rows pgx.Rows) ([]Vehicle, error) {
+	var i Vehicle
+	items := []Vehicle{}
+	var start_index, end_index int64
+	for rows.Next() {
+		if err := rows.Scan(
+			&i.ID,
+			&start_index,
+			&end_index,
+			&i.Capacity,
+			&i.Skills,
+			&i.TwOpen,
+			&i.TwClose,
+			&i.SpeedFactor,
+			&i.ProjectID,
+			&i.Data,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		start_latitude, start_longitude := util.GetCoordinates(start_index)
+		end_latitude, end_longitude := util.GetCoordinates(end_index)
+		i.StartLocation = util.LocationParams{
+			Latitude:  &start_latitude,
+			Longitude: &start_longitude,
+		}
+		i.EndLocation = util.LocationParams{
+			Latitude:  &end_latitude,
+			Longitude: &end_longitude,
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

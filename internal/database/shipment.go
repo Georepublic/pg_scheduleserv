@@ -32,7 +32,7 @@ import (
 	"context"
 
 	"github.com/Georepublic/pg_scheduleserv/internal/util"
-	"github.com/sirupsen/logrus"
+	"github.com/jackc/pgx/v4"
 )
 
 const createShipment = `-- name: CreateShipment :one
@@ -59,48 +59,9 @@ type CreateShipmentParams struct {
 
 func (q *Queries) DBCreateShipment(ctx context.Context, arg CreateShipmentParams) (Shipment, error) {
 	sql, args := createResource("shipments", arg)
-	logrus.Debug(sql)
-	logrus.Debug(args)
-	var i Shipment
-	return_sql := util.GetReturnSql(i)
+	return_sql := " RETURNING " + util.GetOutputFields(Shipment{})
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
-	var p_location_index, d_location_index int64
-	err := row.Scan(
-		&i.ID,
-		&p_location_index,
-		&i.PService,
-		&d_location_index,
-		&i.DService,
-		&i.Amount,
-		&i.Skills,
-		&i.Priority,
-		&i.ProjectID,
-		&i.Data,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.Deleted,
-	)
-	p_latitude, p_longitude := util.GetCoordinates(p_location_index)
-	d_latitude, d_longitude := util.GetCoordinates(d_location_index)
-	i.PLocation = util.LocationParams{
-		Latitude:  &p_latitude,
-		Longitude: &p_longitude,
-	}
-	i.DLocation = util.LocationParams{
-		Latitude:  &d_latitude,
-		Longitude: &d_longitude,
-	}
-	return i, err
-}
-
-const deleteShipment = `-- name: DeleteShipment :exec
-UPDATE shipments SET deleted = TRUE
-WHERE id = $1
-`
-
-func (q *Queries) DBDeleteShipment(ctx context.Context, id int64) error {
-	_, err := q.db.Exec(ctx, deleteShipment, id)
-	return err
+	return scanShipmentRow(row)
 }
 
 const getShipment = `-- name: GetShipment :one
@@ -127,24 +88,12 @@ type GetShipmentRow struct {
 	UpdatedAt      string      `json:"updated_at"`
 }
 
-func (q *Queries) DBGetShipment(ctx context.Context, id int64) (GetShipmentRow, error) {
-	row := q.db.QueryRow(ctx, getShipment, id)
-	var i GetShipmentRow
-	err := row.Scan(
-		&i.ID,
-		&i.PLocationIndex,
-		&i.PService,
-		&i.DLocationIndex,
-		&i.DService,
-		&i.Amount,
-		&i.Skills,
-		&i.Priority,
-		&i.ProjectID,
-		&i.Data,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
+func (q *Queries) DBGetShipment(ctx context.Context, id int64) (Shipment, error) {
+	table_name := "shipments"
+	additional_query := " WHERE id = $1 AND deleted = FALSE LIMIT 1"
+	sql := "SELECT " + util.GetOutputFields(Job{}) + " FROM " + table_name + additional_query
+	row := q.db.QueryRow(ctx, sql, id)
+	return scanShipmentRow(row)
 }
 
 const listShipments = `-- name: ListShipments :many
@@ -171,37 +120,16 @@ type ListShipmentsRow struct {
 	UpdatedAt      string      `json:"updated_at"`
 }
 
-func (q *Queries) DBListShipments(ctx context.Context, projectID int64) ([]ListShipmentsRow, error) {
-	rows, err := q.db.Query(ctx, listShipments, projectID)
+func (q *Queries) DBListShipments(ctx context.Context, projectID int64) ([]Shipment, error) {
+	table_name := "shipments"
+	additional_query := " WHERE project_id = $1 AND deleted = FALSE ORDER BY created_at"
+	sql := "SELECT " + util.GetOutputFields(Shipment{}) + " FROM " + table_name + additional_query
+	rows, err := q.db.Query(ctx, sql, projectID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []ListShipmentsRow{}
-	for rows.Next() {
-		var i ListShipmentsRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.PLocationIndex,
-			&i.PService,
-			&i.DLocationIndex,
-			&i.DService,
-			&i.Amount,
-			&i.Skills,
-			&i.Priority,
-			&i.ProjectID,
-			&i.Data,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+	return scanShipmentRows(rows)
 }
 
 const updateShipment = `-- name: UpdateShipment :one
@@ -216,35 +144,36 @@ RETURNING id, p_location_index, p_service, d_location_index, d_service, amount, 
 `
 
 type UpdateShipmentParams struct {
-	ID          int64       `json:"id"`
-	Latitude    float64     `json:"latitude"`
-	Longitude   float64     `json:"longitude"`
-	PService    int64       `json:"p_service"`
-	Latitude_2  float64     `json:"latitude_2"`
-	Longitude_2 float64     `json:"longitude_2"`
-	DService    int64       `json:"d_service"`
-	Amount      []int64     `json:"amount"`
-	Skills      []int32     `json:"skills"`
-	Priority    int32       `json:"priority"`
-	ProjectID   int64       `json:"project_id"`
-	Data        interface{} `json:"data"`
+	PLocation *util.LocationParams `json:"p_location" validate:"required"`
+	PService  *int64               `json:"p_service"`
+	DLocation *util.LocationParams `json:"d_location" validate:"required"`
+	DService  *int64               `json:"d_service"`
+	Amount    *[]int64             `json:"amount"`
+	Skills    *[]int32             `json:"skills"`
+	Priority  *int32               `json:"priority"`
+	ProjectID *int64               `json:"project_id,string"`
+	Data      *interface{}         `json:"data" swaggertype:"object"`
 }
 
-func (q *Queries) DBUpdateShipment(ctx context.Context, arg UpdateShipmentParams) (Shipment, error) {
-	row := q.db.QueryRow(ctx, updateShipment,
-		arg.ID,
-		arg.Latitude,
-		arg.Longitude,
-		arg.PService,
-		arg.Latitude_2,
-		arg.Longitude_2,
-		arg.DService,
-		arg.Amount,
-		arg.Skills,
-		arg.Priority,
-		arg.ProjectID,
-		arg.Data,
-	)
+func (q *Queries) DBUpdateShipment(ctx context.Context, arg UpdateShipmentParams, shipment_id int64) (Shipment, error) {
+	sql, args := updateResource("shipments", arg, shipment_id)
+	return_sql := " RETURNING " + util.GetOutputFields(Shipment{})
+	row := q.db.QueryRow(ctx, sql+return_sql, args...)
+	return scanShipmentRow(row)
+}
+
+const deleteShipment = `-- name: DeleteShipment :exec
+UPDATE shipments SET deleted = TRUE
+WHERE id = $1
+`
+
+func (q *Queries) DBDeleteShipment(ctx context.Context, id int64) error {
+	sql := "UPDATE shipments SET deleted = TRUE WHERE id = $1"
+	_, err := q.db.Exec(ctx, sql, id)
+	return err
+}
+
+func scanShipmentRow(row pgx.Row) (Shipment, error) {
 	var i Shipment
 	var p_location_index, d_location_index int64
 	err := row.Scan(
@@ -260,7 +189,55 @@ func (q *Queries) DBUpdateShipment(ctx context.Context, arg UpdateShipmentParams
 		&i.Data,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.Deleted,
 	)
+	p_latitude, p_longitude := util.GetCoordinates(p_location_index)
+	d_latitude, d_longitude := util.GetCoordinates(d_location_index)
+	i.PLocation = util.LocationParams{
+		Latitude:  &p_latitude,
+		Longitude: &p_longitude,
+	}
+	i.DLocation = util.LocationParams{
+		Latitude:  &d_latitude,
+		Longitude: &d_longitude,
+	}
 	return i, err
+}
+
+func scanShipmentRows(rows pgx.Rows) ([]Shipment, error) {
+	items := []Shipment{}
+	var i Shipment
+	var p_location_index, d_location_index int64
+	for rows.Next() {
+		if err := rows.Scan(
+			&i.ID,
+			&p_location_index,
+			&i.PService,
+			&d_location_index,
+			&i.DService,
+			&i.Amount,
+			&i.Skills,
+			&i.Priority,
+			&i.ProjectID,
+			&i.Data,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		p_latitude, p_longitude := util.GetCoordinates(p_location_index)
+		d_latitude, d_longitude := util.GetCoordinates(d_location_index)
+		i.PLocation = util.LocationParams{
+			Latitude:  &p_latitude,
+			Longitude: &p_longitude,
+		}
+		i.DLocation = util.LocationParams{
+			Latitude:  &d_latitude,
+			Longitude: &d_longitude,
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

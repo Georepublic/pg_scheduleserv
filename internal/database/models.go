@@ -41,7 +41,6 @@ type Break struct {
 	Data      interface{} `json:"data"`
 	CreatedAt string      `json:"created_at"`
 	UpdatedAt string      `json:"updated_at"`
-	Deleted   bool        `json:"deleted"`
 }
 
 type BreakTimeWindow struct {
@@ -64,7 +63,6 @@ type Job struct {
 	Data      interface{}         `json:"data"`
 	CreatedAt string              `json:"created_at"`
 	UpdatedAt string              `json:"updated_at"`
-	Deleted   bool                `json:"deleted"`
 }
 
 type JobTimeWindow struct {
@@ -98,7 +96,6 @@ type Project struct {
 	Data      interface{} `json:"data"`
 	CreatedAt string      `json:"created_at"`
 	UpdatedAt string      `json:"updated_at"`
-	Deleted   bool        `json:"deleted"`
 }
 
 type ProjectLocation struct {
@@ -121,7 +118,6 @@ type Shipment struct {
 	Data      interface{}         `json:"data"`
 	CreatedAt string              `json:"created_at"`
 	UpdatedAt string              `json:"updated_at"`
-	Deleted   bool                `json:"deleted"`
 }
 
 type ShipmentTimeWindow struct {
@@ -134,7 +130,7 @@ type ShipmentTimeWindow struct {
 }
 
 type Vehicle struct {
-	ID            int64               `json:"id"`
+	ID            int64               `json:"id,string"`
 	StartLocation util.LocationParams `json:"start_location"`
 	EndLocation   util.LocationParams `json:"end_location"`
 	Capacity      []int64             `json:"capacity"`
@@ -146,5 +142,4 @@ type Vehicle struct {
 	Data          interface{}         `json:"data"`
 	CreatedAt     string              `json:"created_at"`
 	UpdatedAt     string              `json:"updated_at"`
-	Deleted       bool                `json:"deleted"`
 }

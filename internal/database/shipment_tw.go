@@ -32,7 +32,7 @@ import (
 	"context"
 
 	"github.com/Georepublic/pg_scheduleserv/internal/util"
-	"github.com/sirupsen/logrus"
+	"github.com/jackc/pgx/v4"
 )
 
 const createShipmentTimeWindow = `-- name: CreateShipmentTimeWindow :one
@@ -50,20 +50,28 @@ type CreateShipmentTimeWindowParams struct {
 
 func (q *Queries) DBCreateShipmentTimeWindow(ctx context.Context, arg CreateShipmentTimeWindowParams) (ShipmentTimeWindow, error) {
 	sql, args := createResource("shipments_time_windows", arg)
-	logrus.Debug(sql)
-	logrus.Debug(args)
-	var i ShipmentTimeWindow
-	return_sql := util.GetReturnSql(i)
+	return_sql := " RETURNING " + util.GetOutputFields(ShipmentTimeWindow{})
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
-	err := row.Scan(
-		&i.ID,
-		&i.Kind,
-		&i.TwOpen,
-		&i.TwClose,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
+	return scanShipmentTimeWindowRow(row)
+}
+
+const listShipmentTimeWindow = `-- name: ListShipmentTimeWindow :many
+SELECT id, kind, tw_open, tw_close, created_at, updated_at
+FROM shipments_time_windows
+WHERE id = $1
+ORDER BY created_at
+`
+
+func (q *Queries) DBListShipmentTimeWindow(ctx context.Context, id int64) ([]ShipmentTimeWindow, error) {
+	table_name := "shipments_time_windows"
+	additional_query := " WHERE id = $1 ORDER BY created_at"
+	sql := "SELECT " + util.GetOutputFields(ShipmentTimeWindow{}) + " FROM " + table_name + additional_query
+	rows, err := q.db.Query(ctx, sql, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return scanShipmentTimeWindowRows(rows)
 }
 
 const deleteShipmentTimeWindow = `-- name: DeleteShipmentTimeWindow :exec
@@ -79,7 +87,8 @@ type DeleteShipmentTimeWindowParams struct {
 }
 
 func (q *Queries) DBDeleteShipmentTimeWindow(ctx context.Context, arg DeleteShipmentTimeWindowParams) error {
-	_, err := q.db.Exec(ctx, deleteShipmentTimeWindow,
+	sql := "DELETE FROM shipments_time_windows WHERE id = $1 AND kind = $2 AND tw_open = $3 AND tw_close = $4"
+	_, err := q.db.Exec(ctx, sql,
 		arg.ID,
 		arg.Kind,
 		arg.TwOpen,
@@ -88,22 +97,23 @@ func (q *Queries) DBDeleteShipmentTimeWindow(ctx context.Context, arg DeleteShip
 	return err
 }
 
-const listShipmentTimeWindows = `-- name: ListShipmentTimeWindows :many
-SELECT id, kind, tw_open, tw_close, created_at, updated_at
-FROM shipments_time_windows
-WHERE id = $1
-ORDER BY created_at
-`
+func scanShipmentTimeWindowRow(row pgx.Row) (ShipmentTimeWindow, error) {
+	var i ShipmentTimeWindow
+	err := row.Scan(
+		&i.ID,
+		&i.Kind,
+		&i.TwOpen,
+		&i.TwClose,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
 
-func (q *Queries) DBListShipmentTimeWindows(ctx context.Context, id int64) ([]ShipmentTimeWindow, error) {
-	rows, err := q.db.Query(ctx, listShipmentTimeWindows, id)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
+func scanShipmentTimeWindowRows(rows pgx.Rows) ([]ShipmentTimeWindow, error) {
 	items := []ShipmentTimeWindow{}
+	var i ShipmentTimeWindow
 	for rows.Next() {
-		var i ShipmentTimeWindow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Kind,
