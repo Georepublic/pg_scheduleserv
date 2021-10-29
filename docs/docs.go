@@ -72,6 +72,98 @@ var doc = `{
                 }
             }
         },
+        "/jobs/{job_id}": {
+            "get": {
+                "description": "Fetch a job with its job_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Job"
+                ],
+                "summary": "Fetch a job",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Job ID",
+                        "name": "job_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Job"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a job with its job_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Job"
+                ],
+                "summary": "Delete a job",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Job ID",
+                        "name": "job_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Job"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update a job (partial update) with its job_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Job"
+                ],
+                "summary": "Update a job",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Job ID",
+                        "name": "job_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Job"
+                        }
+                    }
+                }
+            }
+        },
         "/jobs/{job_id}/time_windows": {
             "post": {
                 "description": "Create a new job time window with the input payload",
@@ -114,6 +206,27 @@ var doc = `{
             }
         },
         "/projects": {
+            "get": {
+                "description": "Get a list of projects",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "List projects",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Project"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Create a new project with the input payload",
                 "consumes": [
@@ -147,7 +260,138 @@ var doc = `{
                 }
             }
         },
+        "/projects/{project_id}": {
+            "get": {
+                "description": "Fetch a project with its project_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "Fetch a project",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Project"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a project with its project_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "Delete a project",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Project"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update a project with its project_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Project"
+                ],
+                "summary": "Update a project",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update project",
+                        "name": "Project",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.CreateProjectParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Project"
+                        }
+                    }
+                }
+            }
+        },
         "/projects/{project_id}/jobs": {
+            "get": {
+                "description": "Get a list of jobs for a project with project_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Job"
+                ],
+                "summary": "List jobs for a project",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Job"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Create a new job with the input payload",
                 "consumes": [
@@ -169,12 +413,12 @@ var doc = `{
                         "required": true
                     },
                     {
-                        "description": "Create job",
+                        "description": "Update job",
                         "name": "Job",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/database.CreateJobParams"
+                            "$ref": "#/definitions/database.UpdateJobParams"
                         }
                     }
                 ],
@@ -189,6 +433,36 @@ var doc = `{
             }
         },
         "/projects/{project_id}/shipments": {
+            "get": {
+                "description": "Get a list of shipments for a project with project_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Shipment"
+                ],
+                "summary": "List shipments for a project",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Shipment"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Create a new shipment with the input payload",
                 "consumes": [
@@ -230,6 +504,36 @@ var doc = `{
             }
         },
         "/projects/{project_id}/vehicles": {
+            "get": {
+                "description": "Get a list of vehicles for a project with project_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Vehicle"
+                ],
+                "summary": "List vehicles for a project",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Vehicle"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Create a new vehicle with the input payload",
                 "consumes": [
@@ -265,6 +569,107 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/database.Vehicle"
+                        }
+                    }
+                }
+            }
+        },
+        "/shipments/{shipment_id}": {
+            "get": {
+                "description": "Fetch a shipment with its shipment_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Shipment"
+                ],
+                "summary": "Fetch a shipment",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Shipment ID",
+                        "name": "shipment_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Shipment"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a shipment with its shipment_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Shipment"
+                ],
+                "summary": "Delete a shipment",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Shipment ID",
+                        "name": "shipment_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Shipment"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update a shipment with its shipment_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Shipment"
+                ],
+                "summary": "Update a shipment",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Shipment ID",
+                        "name": "shipment_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update shipment",
+                        "name": "Shipment",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.UpdateShipmentParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Shipment"
                         }
                     }
                 }
@@ -306,6 +711,107 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/database.ShipmentTimeWindow"
+                        }
+                    }
+                }
+            }
+        },
+        "/vehicles/{vehicle_id}": {
+            "get": {
+                "description": "Fetch a vehicle with its vehicle_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Vehicle"
+                ],
+                "summary": "Fetch a vehicle",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Vehicle ID",
+                        "name": "vehicle_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Vehicle"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a vehicle with its vehicle_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Vehicle"
+                ],
+                "summary": "Delete a vehicle",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Vehicle ID",
+                        "name": "vehicle_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Vehicle"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update a vehicle with its vehicle_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Vehicle"
+                ],
+                "summary": "Update a vehicle",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Vehicle ID",
+                        "name": "vehicle_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update vehicle",
+                        "name": "Vehicle",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.UpdateVehicleParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Vehicle"
                         }
                     }
                 }
@@ -361,9 +867,6 @@ var doc = `{
                     "type": "string"
                 },
                 "data": {},
-                "deleted": {
-                    "type": "boolean"
-                },
                 "id": {
                     "type": "integer"
                 },
@@ -422,44 +925,6 @@ var doc = `{
                 },
                 "tw_open": {
                     "type": "string"
-                }
-            }
-        },
-        "database.CreateJobParams": {
-            "type": "object",
-            "required": [
-                "location"
-            ],
-            "properties": {
-                "data": {
-                    "type": "object"
-                },
-                "delivery": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "location": {
-                    "$ref": "#/definitions/util.LocationParams"
-                },
-                "pickup": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "priority": {
-                    "type": "integer"
-                },
-                "service": {
-                    "type": "integer"
-                },
-                "skills": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
                 }
             }
         },
@@ -597,9 +1062,6 @@ var doc = `{
                     "type": "string"
                 },
                 "data": {},
-                "deleted": {
-                    "type": "boolean"
-                },
                 "delivery": {
                     "type": "array",
                     "items": {
@@ -667,9 +1129,6 @@ var doc = `{
                     "type": "string"
                 },
                 "data": {},
-                "deleted": {
-                    "type": "boolean"
-                },
                 "id": {
                     "type": "string",
                     "example": "0"
@@ -701,9 +1160,6 @@ var doc = `{
                     "type": "integer"
                 },
                 "data": {},
-                "deleted": {
-                    "type": "boolean"
-                },
                 "id": {
                     "type": "string",
                     "example": "0"
@@ -755,6 +1211,134 @@ var doc = `{
                 }
             }
         },
+        "database.UpdateJobParams": {
+            "type": "object",
+            "required": [
+                "location"
+            ],
+            "properties": {
+                "data": {
+                    "type": "object"
+                },
+                "delivery": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "pickup": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "project_id": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "service": {
+                    "type": "integer"
+                },
+                "skills": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "database.UpdateShipmentParams": {
+            "type": "object",
+            "required": [
+                "d_location",
+                "p_location"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "d_location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "d_service": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "object"
+                },
+                "p_location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "p_service": {
+                    "type": "integer"
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "project_id": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "skills": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "database.UpdateVehicleParams": {
+            "type": "object",
+            "required": [
+                "end_location",
+                "start_location"
+            ],
+            "properties": {
+                "capacity": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "data": {
+                    "type": "object"
+                },
+                "end_location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "project_id": {
+                    "type": "string",
+                    "example": "0"
+                },
+                "skills": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "speed_factor": {
+                    "type": "number"
+                },
+                "start_location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "tw_close": {
+                    "type": "string"
+                },
+                "tw_open": {
+                    "type": "string"
+                }
+            }
+        },
         "database.Vehicle": {
             "type": "object",
             "properties": {
@@ -768,9 +1352,6 @@ var doc = `{
                     "type": "string"
                 },
                 "data": {},
-                "deleted": {
-                    "type": "boolean"
-                },
                 "end_location": {
                     "$ref": "#/definitions/util.LocationParams"
                 },

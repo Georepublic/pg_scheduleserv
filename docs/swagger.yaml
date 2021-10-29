@@ -5,8 +5,6 @@ definitions:
       created_at:
         type: string
       data: {}
-      deleted:
-        type: boolean
       id:
         type: integer
       service:
@@ -46,31 +44,6 @@ definitions:
     required:
     - tw_close
     - tw_open
-    type: object
-  database.CreateJobParams:
-    properties:
-      data:
-        type: object
-      delivery:
-        items:
-          type: integer
-        type: array
-      location:
-        $ref: '#/definitions/util.LocationParams'
-      pickup:
-        items:
-          type: integer
-        type: array
-      priority:
-        type: integer
-      service:
-        type: integer
-      skills:
-        items:
-          type: integer
-        type: array
-    required:
-    - location
     type: object
   database.CreateJobTimeWindowParams:
     properties:
@@ -162,8 +135,6 @@ definitions:
       created_at:
         type: string
       data: {}
-      deleted:
-        type: boolean
       delivery:
         items:
           type: integer
@@ -209,8 +180,6 @@ definitions:
       created_at:
         type: string
       data: {}
-      deleted:
-        type: boolean
       id:
         example: "0"
         type: string
@@ -232,8 +201,6 @@ definitions:
       d_service:
         type: integer
       data: {}
-      deleted:
-        type: boolean
       id:
         example: "0"
         type: string
@@ -268,6 +235,92 @@ definitions:
       updated_at:
         type: string
     type: object
+  database.UpdateJobParams:
+    properties:
+      data:
+        type: object
+      delivery:
+        items:
+          type: integer
+        type: array
+      location:
+        $ref: '#/definitions/util.LocationParams'
+      pickup:
+        items:
+          type: integer
+        type: array
+      priority:
+        type: integer
+      project_id:
+        example: "0"
+        type: string
+      service:
+        type: integer
+      skills:
+        items:
+          type: integer
+        type: array
+    required:
+    - location
+    type: object
+  database.UpdateShipmentParams:
+    properties:
+      amount:
+        items:
+          type: integer
+        type: array
+      d_location:
+        $ref: '#/definitions/util.LocationParams'
+      d_service:
+        type: integer
+      data:
+        type: object
+      p_location:
+        $ref: '#/definitions/util.LocationParams'
+      p_service:
+        type: integer
+      priority:
+        type: integer
+      project_id:
+        example: "0"
+        type: string
+      skills:
+        items:
+          type: integer
+        type: array
+    required:
+    - d_location
+    - p_location
+    type: object
+  database.UpdateVehicleParams:
+    properties:
+      capacity:
+        items:
+          type: integer
+        type: array
+      data:
+        type: object
+      end_location:
+        $ref: '#/definitions/util.LocationParams'
+      project_id:
+        example: "0"
+        type: string
+      skills:
+        items:
+          type: integer
+        type: array
+      speed_factor:
+        type: number
+      start_location:
+        $ref: '#/definitions/util.LocationParams'
+      tw_close:
+        type: string
+      tw_open:
+        type: string
+    required:
+    - end_location
+    - start_location
+    type: object
   database.Vehicle:
     properties:
       capacity:
@@ -277,8 +330,6 @@ definitions:
       created_at:
         type: string
       data: {}
-      deleted:
-        type: boolean
       end_location:
         $ref: '#/definitions/util.LocationParams'
       id:
@@ -352,6 +403,67 @@ paths:
       summary: Create a new break time window
       tags:
       - Break
+  /jobs/{job_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a job with its job_id
+      parameters:
+      - description: Job ID
+        in: path
+        name: job_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Job'
+      summary: Delete a job
+      tags:
+      - Job
+    get:
+      consumes:
+      - application/json
+      description: Fetch a job with its job_id
+      parameters:
+      - description: Job ID
+        in: path
+        name: job_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Job'
+      summary: Fetch a job
+      tags:
+      - Job
+    patch:
+      consumes:
+      - application/json
+      description: Update a job (partial update) with its job_id
+      parameters:
+      - description: Job ID
+        in: path
+        name: job_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Job'
+      summary: Update a job
+      tags:
+      - Job
   /jobs/{job_id}/time_windows:
     post:
       consumes:
@@ -380,6 +492,20 @@ paths:
       tags:
       - Job
   /projects:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of projects
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Project'
+      summary: List projects
+      tags:
+      - Project
     post:
       consumes:
       - application/json
@@ -401,7 +527,94 @@ paths:
       summary: Create a new project
       tags:
       - Project
+  /projects/{project_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a project with its project_id
+      parameters:
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Project'
+      summary: Delete a project
+      tags:
+      - Project
+    get:
+      consumes:
+      - application/json
+      description: Fetch a project with its project_id
+      parameters:
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Project'
+      summary: Fetch a project
+      tags:
+      - Project
+    patch:
+      consumes:
+      - application/json
+      description: Update a project with its project_id
+      parameters:
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      - description: Update project
+        in: body
+        name: Project
+        required: true
+        schema:
+          $ref: '#/definitions/database.CreateProjectParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Project'
+      summary: Update a project
+      tags:
+      - Project
   /projects/{project_id}/jobs:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of jobs for a project with project_id
+      parameters:
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Job'
+      summary: List jobs for a project
+      tags:
+      - Job
     post:
       consumes:
       - application/json
@@ -412,12 +625,12 @@ paths:
         name: project_id
         required: true
         type: integer
-      - description: Create job
+      - description: Update job
         in: body
         name: Job
         required: true
         schema:
-          $ref: '#/definitions/database.CreateJobParams'
+          $ref: '#/definitions/database.UpdateJobParams'
       produces:
       - application/json
       responses:
@@ -429,6 +642,26 @@ paths:
       tags:
       - Job
   /projects/{project_id}/shipments:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of shipments for a project with project_id
+      parameters:
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Shipment'
+      summary: List shipments for a project
+      tags:
+      - Shipment
     post:
       consumes:
       - application/json
@@ -456,6 +689,26 @@ paths:
       tags:
       - Shipment
   /projects/{project_id}/vehicles:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of vehicles for a project with project_id
+      parameters:
+      - description: Project ID
+        in: path
+        name: project_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Vehicle'
+      summary: List vehicles for a project
+      tags:
+      - Vehicle
     post:
       consumes:
       - application/json
@@ -482,6 +735,73 @@ paths:
       summary: Create a new vehicle
       tags:
       - Vehicle
+  /shipments/{shipment_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a shipment with its shipment_id
+      parameters:
+      - description: Shipment ID
+        in: path
+        name: shipment_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Shipment'
+      summary: Delete a shipment
+      tags:
+      - Shipment
+    get:
+      consumes:
+      - application/json
+      description: Fetch a shipment with its shipment_id
+      parameters:
+      - description: Shipment ID
+        in: path
+        name: shipment_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Shipment'
+      summary: Fetch a shipment
+      tags:
+      - Shipment
+    patch:
+      consumes:
+      - application/json
+      description: Update a shipment with its shipment_id
+      parameters:
+      - description: Shipment ID
+        in: path
+        name: shipment_id
+        required: true
+        type: integer
+      - description: Update shipment
+        in: body
+        name: Shipment
+        required: true
+        schema:
+          $ref: '#/definitions/database.UpdateShipmentParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Shipment'
+      summary: Update a shipment
+      tags:
+      - Shipment
   /shipments/{shipment_id}/time_windows:
     post:
       consumes:
@@ -509,6 +829,73 @@ paths:
       summary: Create a new shipment time window
       tags:
       - Shipment
+  /vehicles/{vehicle_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a vehicle with its vehicle_id
+      parameters:
+      - description: Vehicle ID
+        in: path
+        name: vehicle_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Vehicle'
+      summary: Delete a vehicle
+      tags:
+      - Vehicle
+    get:
+      consumes:
+      - application/json
+      description: Fetch a vehicle with its vehicle_id
+      parameters:
+      - description: Vehicle ID
+        in: path
+        name: vehicle_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Vehicle'
+      summary: Fetch a vehicle
+      tags:
+      - Vehicle
+    patch:
+      consumes:
+      - application/json
+      description: Update a vehicle with its vehicle_id
+      parameters:
+      - description: Vehicle ID
+        in: path
+        name: vehicle_id
+        required: true
+        type: integer
+      - description: Update vehicle
+        in: body
+        name: Vehicle
+        required: true
+        schema:
+          $ref: '#/definitions/database.UpdateVehicleParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Vehicle'
+      summary: Update a vehicle
+      tags:
+      - Vehicle
   /vehicles/{vehicle_id}/breaks:
     post:
       consumes:
