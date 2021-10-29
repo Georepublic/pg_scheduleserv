@@ -46,7 +46,7 @@ type LocationParams struct {
 	Longitude *float64 `json:"longitude" validate:"required"`
 }
 
-// Get an SQL query with partial fields, excluding the read-only fields
+// Get an SQL query with partial fields
 // Takes a resource object as parameter, and returns its fields and arguments.
 // (returns only those arguments which are not nil)
 // See https://stackoverflow.com/questions/38206479/golang-rest-patch-and-building-an-update-query
@@ -121,8 +121,7 @@ func GetPartialSQL(resource interface{}) PartialSQL {
 	return partialSQL
 }
 
-func GetReturnSql(resourceStruct interface{}) (sql string) {
-	sql = " RETURNING "
+func GetOutputFields(resourceStruct interface{}) (sql string) {
 	val := reflect.ValueOf(resourceStruct)
 	for i := 0; i < val.Type().NumField(); i++ {
 		if i != 0 {
