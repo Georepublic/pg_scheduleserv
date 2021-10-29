@@ -326,8 +326,8 @@ CREATE TABLE IF NOT EXISTS matrix (
 -- TRIGGERS
 -------------------------------------------------------------------------------
 
--- BEFORE INSERT Trigger for jobs, inserts rows into locations and project_locations
-CREATE OR REPLACE FUNCTION tgr_jobs_insert_func()
+-- BEFORE INSERT OR UPDATE Trigger for jobs, inserts rows into locations and project_locations
+CREATE OR REPLACE FUNCTION tgr_jobs_insert_update_func()
 RETURNS TRIGGER
 AS $trig$
 BEGIN
@@ -343,13 +343,13 @@ BEGIN
 END;
 $trig$ LANGUAGE plpgsql;
 
-CREATE TRIGGER tgr_jobs_insert
-BEFORE INSERT ON jobs
-FOR EACH ROW EXECUTE PROCEDURE tgr_jobs_insert_func();
+CREATE TRIGGER tgr_jobs_insert_update
+BEFORE INSERT OR UPDATE ON jobs
+FOR EACH ROW EXECUTE PROCEDURE tgr_jobs_insert_update_func();
 
 
--- BEFORE INSERT Trigger for shipments, inserts rows into locations and project_locations
-CREATE OR REPLACE FUNCTION tgr_shipments_insert_func()
+-- BEFORE INSERT OR UPDATE Trigger for shipments, inserts rows into locations and project_locations
+CREATE OR REPLACE FUNCTION tgr_shipments_insert_update_func()
 RETURNS TRIGGER
 AS $trig$
 BEGIN
@@ -369,13 +369,13 @@ BEGIN
 END;
 $trig$ LANGUAGE plpgsql;
 
-CREATE TRIGGER tgr_shipments_insert
-BEFORE INSERT ON shipments
-FOR EACH ROW EXECUTE PROCEDURE tgr_shipments_insert_func();
+CREATE TRIGGER tgr_shipments_insert_update
+BEFORE INSERT OR UPDATE ON shipments
+FOR EACH ROW EXECUTE PROCEDURE tgr_shipments_insert_update_func();
 
 
--- BEFORE INSERT Trigger for vehicles, inserts rows into locations and project_locations
-CREATE OR REPLACE FUNCTION tgr_vehicles_insert_func()
+-- BEFORE INSERT OR UPDATE Trigger for vehicles, inserts rows into locations and project_locations
+CREATE OR REPLACE FUNCTION tgr_vehicles_insert_update_func()
 RETURNS TRIGGER
 AS $trig$
 BEGIN
@@ -395,9 +395,9 @@ BEGIN
 END;
 $trig$ LANGUAGE plpgsql;
 
-CREATE TRIGGER tgr_vehicles_insert
-BEFORE INSERT ON vehicles
-FOR EACH ROW EXECUTE PROCEDURE tgr_vehicles_insert_func();
+CREATE TRIGGER tgr_vehicles_insert_update
+BEFORE INSERT OR UPDATE ON vehicles
+FOR EACH ROW EXECUTE PROCEDURE tgr_vehicles_insert_update_func();
 
 
 -- AFTER INSERT Trigger for project locations, inserts rows into matrix

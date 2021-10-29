@@ -48,14 +48,14 @@ DROP FUNCTION IF EXISTS tgr_matrix_insert_func;
 DROP TRIGGER IF EXISTS tgr_project_locations_insert ON project_locations;
 DROP FUNCTION IF EXISTS tgr_project_locations_insert_func;
 
-DROP TRIGGER IF EXISTS tgr_vehicles_insert ON vehicles;
-DROP FUNCTION IF EXISTS tgr_vehicles_insert_func;
+DROP TRIGGER IF EXISTS tgr_vehicles_insert_update ON vehicles;
+DROP FUNCTION IF EXISTS tgr_vehicles_insert_update_func;
 
-DROP TRIGGER IF EXISTS tgr_shipments_insert ON shipments;
-DROP FUNCTION IF EXISTS tgr_shipments_insert_func;
+DROP TRIGGER IF EXISTS tgr_shipments_insert_update ON shipments;
+DROP FUNCTION IF EXISTS tgr_shipments_insert_update_func;
 
-DROP TRIGGER IF EXISTS tgr_jobs_insert ON jobs;
-DROP FUNCTION IF EXISTS tgr_jobs_insert_func;
+DROP TRIGGER IF EXISTS tgr_jobs_insert_update ON jobs;
+DROP FUNCTION IF EXISTS tgr_jobs_insert_update_func;
 
 DROP TABLE IF EXISTS matrix;
 DROP TABLE IF EXISTS breaks_time_windows;
