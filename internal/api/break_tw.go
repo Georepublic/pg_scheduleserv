@@ -38,7 +38,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// CreateBreakTimeWindows godoc
+// CreateBreakTimeWindow godoc
 // @Summary Create a new break time window
 // @Description Create a new break time window with the input payload
 // @Tags Break

@@ -38,7 +38,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// CreateJobTimeWindows godoc
+// CreateJobTimeWindow godoc
 // @Summary Create a new job time window
 // @Description Create a new job time window with the input payload
 // @Tags Job

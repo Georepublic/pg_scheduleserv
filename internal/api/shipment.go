@@ -31,6 +31,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/Georepublic/pg_scheduleserv/internal/database"
 	"github.com/Georepublic/pg_scheduleserv/internal/util"
@@ -87,4 +88,132 @@ func (server *Server) createShipment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	server.FormatJSON(w, http.StatusCreated, created_shipment)
+}
+
+// ListShipments godoc
+// @Summary List shipments for a project
+// @Description Get a list of shipments for a project with project_id
+// @Tags Shipment
+// @Accept application/json
+// @Produce application/json
+// @Param project_id path int true "Project ID"
+// @Success 200 {object} database.Shipment
+// @Router /projects/{project_id}/shipments [get]
+func (server *Server) listShipments(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	project_id, err := strconv.ParseInt(vars["project_id"], 10, 64)
+	if err != nil {
+		panic(err)
+	}
+
+	ctx := r.Context()
+	created_shipment, err := server.DBListShipments(ctx, project_id)
+	if err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	server.FormatJSON(w, http.StatusCreated, created_shipment)
+}
+
+// GetShipment godoc
+// @Summary Fetch a shipment
+// @Description Fetch a shipment with its shipment_id
+// @Tags Shipment
+// @Accept application/json
+// @Produce application/json
+// @Param shipment_id path int true "Shipment ID"
+// @Success 200 {object} database.Shipment
+// @Router /shipments/{shipment_id} [get]
+func (server *Server) getShipment(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	shipment_id, err := strconv.ParseInt(vars["shipment_id"], 10, 64)
+	if err != nil {
+		panic(err)
+	}
+
+	ctx := r.Context()
+	created_shipment, err := server.DBGetShipment(ctx, shipment_id)
+	if err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	server.FormatJSON(w, http.StatusCreated, created_shipment)
+}
+
+// UpdateShipment godoc
+// @Summary Update a shipment
+// @Description Update a shipment with its shipment_id
+// @Tags Shipment
+// @Accept application/json
+// @Produce application/json
+// @Param shipment_id path int true "Shipment ID"
+// @Param Shipment body database.UpdateShipmentParams true "Update shipment"
+// @Success 200 {object} database.Shipment
+// @Router /shipments/{shipment_id} [patch]
+func (server *Server) updateShipment(w http.ResponseWriter, r *http.Request) {
+	userInput := make(map[string]interface{})
+	json.NewDecoder(r.Body).Decode(&userInput)
+
+	vars := mux.Vars(r)
+	shipment_id, err := strconv.ParseInt(vars["shipment_id"], 10, 64)
+	if err != nil {
+		panic(err)
+	}
+
+	// Validate the input type
+	if err := util.ValidateInput(userInput, database.UpdateShipmentParams{}); err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	// Decode map[string]interface{} to struct
+	userInputString, err := json.Marshal(userInput)
+	if err != nil {
+		logrus.Error(err)
+	}
+	shipment := database.UpdateShipmentParams{}
+	json.Unmarshal(userInputString, &shipment)
+
+	// Validate the struct
+	if err := server.validate.Struct(shipment); err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	ctx := r.Context()
+	created_shipment, err := server.DBUpdateShipment(ctx, shipment, shipment_id)
+	if err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	server.FormatJSON(w, http.StatusCreated, created_shipment)
+}
+
+// DeleteShipment godoc
+// @Summary Delete a shipment
+// @Description Delete a shipment with its shipment_id
+// @Tags Shipment
+// @Accept application/json
+// @Produce application/json
+// @Param shipment_id path int true "Shipment ID"
+// @Success 200 {object} database.Shipment
+// @Router /shipments/{shipment_id} [delete]
+func (server *Server) deleteShipment(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	shipment_id, err := strconv.ParseInt(vars["shipment_id"], 10, 64)
+	if err != nil {
+		panic(err)
+	}
+
+	ctx := r.Context()
+	err = server.DBDeleteShipment(ctx, shipment_id)
+	if err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	server.FormatJSON(w, http.StatusCreated, nil)
 }

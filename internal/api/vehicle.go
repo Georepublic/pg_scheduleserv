@@ -31,6 +31,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/Georepublic/pg_scheduleserv/internal/database"
 	"github.com/Georepublic/pg_scheduleserv/internal/util"
@@ -88,4 +89,132 @@ func (server *Server) createVehicle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	server.FormatJSON(w, http.StatusCreated, created_vehicle)
+}
+
+// ListVehicles godoc
+// @Summary List vehicles for a project
+// @Description Get a list of vehicles for a project with project_id
+// @Tags Vehicle
+// @Accept application/json
+// @Produce application/json
+// @Param project_id path int true "Project ID"
+// @Success 200 {object} database.Vehicle
+// @Router /projects/{project_id}/vehicles [get]
+func (server *Server) listVehicles(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	project_id, err := strconv.ParseInt(vars["project_id"], 10, 64)
+	if err != nil {
+		panic(err)
+	}
+
+	ctx := r.Context()
+	created_vehicle, err := server.DBListVehicles(ctx, project_id)
+	if err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	server.FormatJSON(w, http.StatusCreated, created_vehicle)
+}
+
+// GetVehicle godoc
+// @Summary Fetch a vehicle
+// @Description Fetch a vehicle with its vehicle_id
+// @Tags Vehicle
+// @Accept application/json
+// @Produce application/json
+// @Param vehicle_id path int true "Vehicle ID"
+// @Success 200 {object} database.Vehicle
+// @Router /vehicles/{vehicle_id} [get]
+func (server *Server) getVehicle(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	vehicle_id, err := strconv.ParseInt(vars["vehicle_id"], 10, 64)
+	if err != nil {
+		panic(err)
+	}
+
+	ctx := r.Context()
+	created_vehicle, err := server.DBGetVehicle(ctx, vehicle_id)
+	if err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	server.FormatJSON(w, http.StatusCreated, created_vehicle)
+}
+
+// UpdateVehicle godoc
+// @Summary Update a vehicle
+// @Description Update a vehicle with its vehicle_id
+// @Tags Vehicle
+// @Accept application/json
+// @Produce application/json
+// @Param vehicle_id path int true "Vehicle ID"
+// @Param Vehicle body database.UpdateVehicleParams true "Update vehicle"
+// @Success 200 {object} database.Vehicle
+// @Router /vehicles/{vehicle_id} [patch]
+func (server *Server) updateVehicle(w http.ResponseWriter, r *http.Request) {
+	userInput := make(map[string]interface{})
+	json.NewDecoder(r.Body).Decode(&userInput)
+
+	vars := mux.Vars(r)
+	vehicle_id, err := strconv.ParseInt(vars["vehicle_id"], 10, 64)
+	if err != nil {
+		panic(err)
+	}
+
+	// Validate the input type
+	if err := util.ValidateInput(userInput, database.UpdateVehicleParams{}); err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	// Decode map[string]interface{} to struct
+	userInputString, err := json.Marshal(userInput)
+	if err != nil {
+		logrus.Error(err)
+	}
+	vehicle := database.UpdateVehicleParams{}
+	json.Unmarshal(userInputString, &vehicle)
+
+	// Validate the struct
+	if err := server.validate.Struct(vehicle); err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	ctx := r.Context()
+	created_vehicle, err := server.DBUpdateVehicle(ctx, vehicle, vehicle_id)
+	if err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	server.FormatJSON(w, http.StatusCreated, created_vehicle)
+}
+
+// DeleteVehicle godoc
+// @Summary Delete a vehicle
+// @Description Delete a vehicle with its vehicle_id
+// @Tags Vehicle
+// @Accept application/json
+// @Produce application/json
+// @Param vehicle_id path int true "Vehicle ID"
+// @Success 200 {object} database.Vehicle
+// @Router /vehicles/{vehicle_id} [delete]
+func (server *Server) deleteVehicle(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	vehicle_id, err := strconv.ParseInt(vars["vehicle_id"], 10, 64)
+	if err != nil {
+		panic(err)
+	}
+
+	ctx := r.Context()
+	err = server.DBDeleteVehicle(ctx, vehicle_id)
+	if err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	server.FormatJSON(w, http.StatusCreated, nil)
 }

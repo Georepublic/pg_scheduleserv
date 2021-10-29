@@ -86,16 +86,17 @@ func (server *Server) handleRoutes(router *mux.Router) {
 
 	// Projects endpoints
 	router.HandleFunc("/projects", server.createProject).Methods("POST")
-	// router.HandleFunc("/projects/{project_id}", server.getProject).Methods("GET")
-	// router.HandleFunc("/projects/{project_id}", server.updateProject).Methods("PATCH")
-	// router.HandleFunc("/projects/{project_id}", server.deleteProject).Methods("DELETE")
+	router.HandleFunc("/projects", server.listProjects).Methods("GET")
+	router.HandleFunc("/projects/{project_id}", server.getProject).Methods("GET")
+	router.HandleFunc("/projects/{project_id}", server.updateProject).Methods("PATCH")
+	router.HandleFunc("/projects/{project_id}", server.deleteProject).Methods("DELETE")
 
 	// Job endpoints
 	router.HandleFunc("/projects/{project_id}/jobs", server.createJob).Methods("POST")
-	// router.HandleFunc("/projects/{project_id}/jobs", server.listJobs).Methods("GET")
-	// router.HandleFunc("/jobs/{job_id}", server.getJob).Methods("GET")
-	// router.HandleFunc("/jobs/{job_id}", server.updateJob).Methods("PATCH")
-	// router.HandleFunc("/jobs/{job_id}", server.deleteJob).Methods("DELETE")
+	router.HandleFunc("/projects/{project_id}/jobs", server.listJobs).Methods("GET")
+	router.HandleFunc("/jobs/{job_id}", server.getJob).Methods("GET")
+	router.HandleFunc("/jobs/{job_id}", server.updateJob).Methods("PATCH")
+	router.HandleFunc("/jobs/{job_id}", server.deleteJob).Methods("DELETE")
 
 	// Job time windows endpoints
 	router.HandleFunc("/jobs/{job_id}/time_windows", server.createJobTimeWindow).Methods("POST")
@@ -104,10 +105,10 @@ func (server *Server) handleRoutes(router *mux.Router) {
 
 	// Shipment endpoints
 	router.HandleFunc("/projects/{project_id}/shipments", server.createShipment).Methods("POST")
-	// router.HandleFunc("/projects/{project_id}/shipments", server.listShipments).Methods("GET")
-	// router.HandleFunc("/shipments/{shipment_id}", server.getShipment).Methods("GET")
-	// router.HandleFunc("/shipments/{shipment_id}", server.updateShipment).Methods("PATCH")
-	// router.HandleFunc("/shipments/{shipment_id}", server.deleteShipment).Methods("DELETE")
+	router.HandleFunc("/projects/{project_id}/shipments", server.listShipments).Methods("GET")
+	router.HandleFunc("/shipments/{shipment_id}", server.getShipment).Methods("GET")
+	router.HandleFunc("/shipments/{shipment_id}", server.updateShipment).Methods("PATCH")
+	router.HandleFunc("/shipments/{shipment_id}", server.deleteShipment).Methods("DELETE")
 
 	// Shipment time windows endpoints
 	router.HandleFunc("/shipments/{shipment_id}/time_windows", server.createShipmentTimeWindow).Methods("POST")
@@ -116,10 +117,10 @@ func (server *Server) handleRoutes(router *mux.Router) {
 
 	// Vehicle endpoints
 	router.HandleFunc("/projects/{project_id}/vehicles", server.createVehicle).Methods("POST")
-	// router.HandleFunc("/projects/{project_id}/vehicles", server.listVehicles).Methods("GET")
-	// router.HandleFunc("/vehicles/{vehicle_id}", server.getVehicle).Methods("GET")
-	// router.HandleFunc("/vehicles/{vehicle_id}", server.updateVehicle).Methods("PATCH")
-	// router.HandleFunc("/vehicles/{vehicle_id}", server.deleteVehicle).Methods("DELETE")
+	router.HandleFunc("/projects/{project_id}/vehicles", server.listVehicles).Methods("GET")
+	router.HandleFunc("/vehicles/{vehicle_id}", server.getVehicle).Methods("GET")
+	router.HandleFunc("/vehicles/{vehicle_id}", server.updateVehicle).Methods("PATCH")
+	router.HandleFunc("/vehicles/{vehicle_id}", server.deleteVehicle).Methods("DELETE")
 
 	// Vehicle breaks endpoints
 	router.HandleFunc("/vehicles/{vehicle_id}/breaks", server.createBreak).Methods("POST")

@@ -38,7 +38,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// CreateShipmentTimeWindows godoc
+// CreateShipmentTimeWindow godoc
 // @Summary Create a new shipment time window
 // @Description Create a new shipment time window with the input payload
 // @Tags Shipment
