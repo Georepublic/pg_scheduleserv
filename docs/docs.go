@@ -31,7 +31,138 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/breaks/{break_id}": {
+            "get": {
+                "description": "Fetch a break with its break_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Break"
+                ],
+                "summary": "Fetch a break",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Break ID",
+                        "name": "break_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Break"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a break with its break_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Break"
+                ],
+                "summary": "Delete a break",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Break ID",
+                        "name": "break_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Break"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update a break with its break_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Break"
+                ],
+                "summary": "Update a break",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Break ID",
+                        "name": "break_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update break",
+                        "name": "Break",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.CreateBreakParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Break"
+                        }
+                    }
+                }
+            }
+        },
         "/breaks/{break_id}/time_windows": {
+            "get": {
+                "description": "Get a list of break time windows for a break with break_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Break"
+                ],
+                "summary": "List break time windows for a break",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Break ID",
+                        "name": "break_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.BreakTimeWindow"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Create a new break time window with the input payload",
                 "consumes": [
@@ -60,6 +191,52 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/database.CreateBreakTimeWindowParams"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.BreakTimeWindow"
+                        }
+                    }
+                }
+            }
+        },
+        "/breaks/{break_id}/time_windows/{tw_open}/{tw_close}": {
+            "delete": {
+                "description": "Delete break time windows for a break with break_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Break"
+                ],
+                "summary": "Delete break time windows",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Break ID",
+                        "name": "break_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Break opening Time Window",
+                        "name": "tw_open",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Break closing Time Window",
+                        "name": "tw_close",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -165,6 +342,36 @@ var doc = `{
             }
         },
         "/jobs/{job_id}/time_windows": {
+            "get": {
+                "description": "Get a list of job time windows for a job with job_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Job"
+                ],
+                "summary": "List job time windows for a job",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Job ID",
+                        "name": "job_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.JobTimeWindow"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Create a new job time window with the input payload",
                 "consumes": [
@@ -193,6 +400,52 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/database.CreateJobTimeWindowParams"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.JobTimeWindow"
+                        }
+                    }
+                }
+            }
+        },
+        "/jobs/{job_id}/time_windows/{tw_open}/{tw_close}": {
+            "delete": {
+                "description": "Delete job time windows for a job with job_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Job"
+                ],
+                "summary": "Delete job time windows",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Job ID",
+                        "name": "job_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Job opening Time Window",
+                        "name": "tw_open",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Job closing Time Window",
+                        "name": "tw_close",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -676,6 +929,36 @@ var doc = `{
             }
         },
         "/shipments/{shipment_id}/time_windows": {
+            "get": {
+                "description": "Get a list of shipment time windows for a shipment with shipment_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Shipment"
+                ],
+                "summary": "List shipment time windows for a shipment",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Shipment ID",
+                        "name": "shipment_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.ShipmentTimeWindow"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Create a new shipment time window with the input payload",
                 "consumes": [
@@ -704,6 +987,52 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/database.CreateShipmentTimeWindowParams"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.ShipmentTimeWindow"
+                        }
+                    }
+                }
+            }
+        },
+        "/shipments/{shipment_id}/time_windows/{tw_open}/{tw_close}": {
+            "delete": {
+                "description": "Delete shipment time windows for a shipment with shipment_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Shipment"
+                ],
+                "summary": "Delete shipment time windows",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Shipment ID",
+                        "name": "shipment_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Shipment opening Time Window",
+                        "name": "tw_open",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Shipment closing Time Window",
+                        "name": "tw_close",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -818,6 +1147,27 @@ var doc = `{
             }
         },
         "/vehicles/{vehicle_id}/breaks": {
+            "get": {
+                "description": "Get a list of breaks",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Break"
+                ],
+                "summary": "List breaks",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Break"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Create a new break with the input payload",
                 "consumes": [
@@ -1356,7 +1706,8 @@ var doc = `{
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string",
+                    "example": "0"
                 },
                 "project_id": {
                     "type": "string",

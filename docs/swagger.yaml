@@ -333,7 +333,8 @@ definitions:
       end_location:
         $ref: '#/definitions/util.LocationParams'
       id:
-        type: integer
+        example: "0"
+        type: string
       project_id:
         example: "0"
         type: string
@@ -376,7 +377,94 @@ info:
   title: pg_scheduleserv API
   version: 0.1.0
 paths:
+  /breaks/{break_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a break with its break_id
+      parameters:
+      - description: Break ID
+        in: path
+        name: break_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Break'
+      summary: Delete a break
+      tags:
+      - Break
+    get:
+      consumes:
+      - application/json
+      description: Fetch a break with its break_id
+      parameters:
+      - description: Break ID
+        in: path
+        name: break_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Break'
+      summary: Fetch a break
+      tags:
+      - Break
+    patch:
+      consumes:
+      - application/json
+      description: Update a break with its break_id
+      parameters:
+      - description: Break ID
+        in: path
+        name: break_id
+        required: true
+        type: integer
+      - description: Update break
+        in: body
+        name: Break
+        required: true
+        schema:
+          $ref: '#/definitions/database.CreateBreakParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Break'
+      summary: Update a break
+      tags:
+      - Break
   /breaks/{break_id}/time_windows:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of break time windows for a break with break_id
+      parameters:
+      - description: Break ID
+        in: path
+        name: break_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.BreakTimeWindow'
+      summary: List break time windows for a break
+      tags:
+      - Break
     post:
       consumes:
       - application/json
@@ -401,6 +489,37 @@ paths:
           schema:
             $ref: '#/definitions/database.BreakTimeWindow'
       summary: Create a new break time window
+      tags:
+      - Break
+  /breaks/{break_id}/time_windows/{tw_open}/{tw_close}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete break time windows for a break with break_id
+      parameters:
+      - description: Break ID
+        in: path
+        name: break_id
+        required: true
+        type: integer
+      - description: Break opening Time Window
+        in: path
+        name: tw_open
+        required: true
+        type: string
+      - description: Break closing Time Window
+        in: path
+        name: tw_close
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.BreakTimeWindow'
+      summary: Delete break time windows
       tags:
       - Break
   /jobs/{job_id}:
@@ -465,6 +584,26 @@ paths:
       tags:
       - Job
   /jobs/{job_id}/time_windows:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of job time windows for a job with job_id
+      parameters:
+      - description: Job ID
+        in: path
+        name: job_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.JobTimeWindow'
+      summary: List job time windows for a job
+      tags:
+      - Job
     post:
       consumes:
       - application/json
@@ -489,6 +628,37 @@ paths:
           schema:
             $ref: '#/definitions/database.JobTimeWindow'
       summary: Create a new job time window
+      tags:
+      - Job
+  /jobs/{job_id}/time_windows/{tw_open}/{tw_close}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete job time windows for a job with job_id
+      parameters:
+      - description: Job ID
+        in: path
+        name: job_id
+        required: true
+        type: integer
+      - description: Job opening Time Window
+        in: path
+        name: tw_open
+        required: true
+        type: string
+      - description: Job closing Time Window
+        in: path
+        name: tw_close
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.JobTimeWindow'
+      summary: Delete job time windows
       tags:
       - Job
   /projects:
@@ -803,6 +973,26 @@ paths:
       tags:
       - Shipment
   /shipments/{shipment_id}/time_windows:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of shipment time windows for a shipment with shipment_id
+      parameters:
+      - description: Shipment ID
+        in: path
+        name: shipment_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.ShipmentTimeWindow'
+      summary: List shipment time windows for a shipment
+      tags:
+      - Shipment
     post:
       consumes:
       - application/json
@@ -827,6 +1017,37 @@ paths:
           schema:
             $ref: '#/definitions/database.ShipmentTimeWindow'
       summary: Create a new shipment time window
+      tags:
+      - Shipment
+  /shipments/{shipment_id}/time_windows/{tw_open}/{tw_close}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete shipment time windows for a shipment with shipment_id
+      parameters:
+      - description: Shipment ID
+        in: path
+        name: shipment_id
+        required: true
+        type: integer
+      - description: Shipment opening Time Window
+        in: path
+        name: tw_open
+        required: true
+        type: string
+      - description: Shipment closing Time Window
+        in: path
+        name: tw_close
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.ShipmentTimeWindow'
+      summary: Delete shipment time windows
       tags:
       - Shipment
   /vehicles/{vehicle_id}:
@@ -897,6 +1118,20 @@ paths:
       tags:
       - Vehicle
   /vehicles/{vehicle_id}/breaks:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of breaks
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Break'
+      summary: List breaks
+      tags:
+      - Break
     post:
       consumes:
       - application/json
