@@ -61,7 +61,7 @@ WHERE id = $1
 ORDER BY created_at
 `
 
-func (q *Queries) DBListJobTimeWindow(ctx context.Context, id int64) ([]JobTimeWindow, error) {
+func (q *Queries) DBListJobTimeWindows(ctx context.Context, id int64) ([]JobTimeWindow, error) {
 	table_name := "jobs_time_windows"
 	additional_query := " WHERE id = $1 ORDER BY created_at"
 	sql := "SELECT " + util.GetOutputFields(JobTimeWindow{}) + " FROM " + table_name + additional_query
@@ -84,7 +84,7 @@ type DeleteJobTimeWindowParams struct {
 	TwClose string `json:"tw_close"`
 }
 
-func (q *Queries) DBDeleteJobTimeWindow(ctx context.Context, arg DeleteJobTimeWindowParams) error {
+func (q *Queries) DBDeleteJobTimeWindow(ctx context.Context, arg CreateJobTimeWindowParams) error {
 	sql := "DELETE FROM jobs_time_windows WHERE id = $1 AND tw_open = $2 AND tw_close = $3"
 	_, err := q.db.Exec(ctx, sql, arg.ID, arg.TwOpen, arg.TwClose)
 	return err

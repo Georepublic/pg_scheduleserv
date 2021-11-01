@@ -62,7 +62,7 @@ WHERE id = $1
 ORDER BY created_at
 `
 
-func (q *Queries) DBListShipmentTimeWindow(ctx context.Context, id int64) ([]ShipmentTimeWindow, error) {
+func (q *Queries) DBListShipmentTimeWindows(ctx context.Context, id int64) ([]ShipmentTimeWindow, error) {
 	table_name := "shipments_time_windows"
 	additional_query := " WHERE id = $1 ORDER BY created_at"
 	sql := "SELECT " + util.GetOutputFields(ShipmentTimeWindow{}) + " FROM " + table_name + additional_query
@@ -86,7 +86,7 @@ type DeleteShipmentTimeWindowParams struct {
 	TwClose string `json:"tw_close"`
 }
 
-func (q *Queries) DBDeleteShipmentTimeWindow(ctx context.Context, arg DeleteShipmentTimeWindowParams) error {
+func (q *Queries) DBDeleteShipmentTimeWindow(ctx context.Context, arg CreateShipmentTimeWindowParams) error {
 	sql := "DELETE FROM shipments_time_windows WHERE id = $1 AND kind = $2 AND tw_open = $3 AND tw_close = $4"
 	_, err := q.db.Exec(ctx, sql,
 		arg.ID,

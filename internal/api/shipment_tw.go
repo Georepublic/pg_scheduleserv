@@ -31,6 +31,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/Georepublic/pg_scheduleserv/internal/database"
 	"github.com/Georepublic/pg_scheduleserv/internal/util"
@@ -88,4 +89,84 @@ func (server *Server) createShipmentTimeWindow(w http.ResponseWriter, r *http.Re
 	}
 
 	server.FormatJSON(w, http.StatusCreated, created_shipment)
+}
+
+// ListShipmentTimeWindows godoc
+// @Summary List shipment time windows for a shipment
+// @Description Get a list of shipment time windows for a shipment with shipment_id
+// @Tags Shipment
+// @Accept application/json
+// @Produce application/json
+// @Param shipment_id path int true "Shipment ID"
+// @Success 200 {object} database.ShipmentTimeWindow
+// @Router /shipments/{shipment_id}/time_windows [get]
+func (server *Server) listShipmentTimeWindows(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	shipment_id, err := strconv.ParseInt(vars["shipment_id"], 10, 64)
+	if err != nil {
+		panic(err)
+	}
+
+	ctx := r.Context()
+	created_vehicle, err := server.DBListShipmentTimeWindows(ctx, shipment_id)
+	if err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	server.FormatJSON(w, http.StatusCreated, created_vehicle)
+}
+
+// DeleteShipmentTimeWindows godoc
+// @Summary Delete shipment time windows
+// @Description Delete shipment time windows for a shipment with shipment_id
+// @Tags Shipment
+// @Accept application/json
+// @Produce application/json
+// @Param shipment_id path int true "Shipment ID"
+// @Param tw_open path string true "Shipment opening Time Window"
+// @Param tw_close path string true "Shipment closing Time Window"
+// @Success 200 {object} database.ShipmentTimeWindow
+// @Router /shipments/{shipment_id}/time_windows/{tw_open}/{tw_close} [delete]
+func (server *Server) deleteShipmentTimeWindow(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	shipment_id, err := strconv.ParseInt(vars["shipment_id"], 10, 64)
+	if err != nil {
+		panic(err)
+	}
+
+	userInput := map[string]interface{}{
+		"id":       shipment_id,
+		"tw_open":  vars["tw_open"],
+		"tw_close": vars["tw_close"],
+	}
+
+	// Validate the input type
+	if err := util.ValidateInput(userInput, database.CreateShipmentTimeWindowParams{}); err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	// Decode map[string]interface{} to struct
+	userInputString, err := json.Marshal(userInput)
+	if err != nil {
+		logrus.Error(err)
+	}
+	shipment_tw := database.CreateShipmentTimeWindowParams{}
+	json.Unmarshal(userInputString, &shipment_tw)
+
+	// Validate the struct
+	if err := server.validate.Struct(shipment_tw); err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	ctx := r.Context()
+	err = server.DBDeleteShipmentTimeWindow(ctx, shipment_tw)
+	if err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	server.FormatJSON(w, http.StatusCreated, nil)
 }

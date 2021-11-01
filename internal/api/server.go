@@ -100,8 +100,8 @@ func (server *Server) handleRoutes(router *mux.Router) {
 
 	// Job time windows endpoints
 	router.HandleFunc("/jobs/{job_id}/time_windows", server.createJobTimeWindow).Methods("POST")
-	// router.HandleFunc("/jobs/{job_id}/time_windows", server.getJobTimeWindow).Methods("GET")
-	// router.HandleFunc("/jobs/{job_id}/time_windows/YYYYMMDDThhmmssZ/YYYYMMDDThhmmssZ", server.deleteJobTimeWindow).Methods("DELETE")
+	router.HandleFunc("/jobs/{job_id}/time_windows", server.listJobTimeWindows).Methods("GET")
+	router.HandleFunc("/jobs/{job_id}/time_windows/{tw_open}/{tw_close}", server.deleteJobTimeWindow).Methods("DELETE")
 
 	// Shipment endpoints
 	router.HandleFunc("/projects/{project_id}/shipments", server.createShipment).Methods("POST")
@@ -112,8 +112,8 @@ func (server *Server) handleRoutes(router *mux.Router) {
 
 	// Shipment time windows endpoints
 	router.HandleFunc("/shipments/{shipment_id}/time_windows", server.createShipmentTimeWindow).Methods("POST")
-	// router.HandleFunc("/shipments/{shipment_id}/time_windows", server.getShipmentTimeWindow).Methods("GET")
-	// router.HandleFunc("/shipments/{shipment_id}/time_windows/{p|d}/YYYYMMDDThhmmssZ/YYYYMMDDThhmmssZ", server.deleteShipmentTimeWindow).Methods("DELETE")
+	router.HandleFunc("/shipments/{shipment_id}/time_windows", server.listShipmentTimeWindows).Methods("GET")
+	router.HandleFunc("/shipments/{shipment_id}/time_windows/{kind}/{tw_open}/{tw_close}", server.deleteShipmentTimeWindow).Methods("DELETE")
 
 	// Vehicle endpoints
 	router.HandleFunc("/projects/{project_id}/vehicles", server.createVehicle).Methods("POST")
@@ -124,15 +124,15 @@ func (server *Server) handleRoutes(router *mux.Router) {
 
 	// Vehicle breaks endpoints
 	router.HandleFunc("/vehicles/{vehicle_id}/breaks", server.createBreak).Methods("POST")
-	// router.HandleFunc("/vehicles/{vehicle_id}/breaks", server.listBreaks).Methods("GET")
-	// router.HandleFunc("/breaks/{vehicle_id}", server.getBreak).Methods("GET")
-	// router.HandleFunc("/breaks/{vehicle_id}", server.updateBreak).Methods("PATCH")
-	// router.HandleFunc("/breaks/{vehicle_id}", server.deleteBreak).Methods("DELETE")
+	router.HandleFunc("/vehicles/{vehicle_id}/breaks", server.listBreaks).Methods("GET")
+	router.HandleFunc("/breaks/{vehicle_id}", server.getBreak).Methods("GET")
+	router.HandleFunc("/breaks/{vehicle_id}", server.updateBreak).Methods("PATCH")
+	router.HandleFunc("/breaks/{vehicle_id}", server.deleteBreak).Methods("DELETE")
 
 	// Break time windows endpoints
 	router.HandleFunc("/breaks/{break_id}/time_windows", server.createBreakTimeWindow).Methods("POST")
-	// router.HandleFunc("/breaks/{break_id}/time_windows", server.getBreakTimeWindow).Methods("GET")
-	// router.HandleFunc("/breaks/{break_id}/time_windows/YYYYMMDDThhmmssZ/YYYYMMDDThhmmssZ", server.deleteBreakTimeWindow).Methods("DELETE")
+	router.HandleFunc("/breaks/{break_id}/time_windows", server.listBreakTimeWindows).Methods("GET")
+	router.HandleFunc("/breaks/{break_id}/time_windows/{tw_open}/{tw_close}", server.deleteBreakTimeWindow).Methods("DELETE")
 }
 
 func serveSwagger(router *mux.Router) {

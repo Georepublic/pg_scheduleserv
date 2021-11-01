@@ -64,7 +64,7 @@ WHERE id = $1
 ORDER BY created_at
 `
 
-func (q *Queries) DBListBreakTimeWindow(ctx context.Context, id int64) ([]BreakTimeWindow, error) {
+func (q *Queries) DBListBreakTimeWindows(ctx context.Context, id int64) ([]BreakTimeWindow, error) {
 	table_name := "breaks_time_windows"
 	additional_query := " WHERE id = $1 ORDER BY created_at"
 	sql := "SELECT " + util.GetOutputFields(BreakTimeWindow{}) + " FROM " + table_name + additional_query
@@ -87,7 +87,7 @@ type DeleteBreakTimeWindowParams struct {
 	TwClose string `json:"tw_close"`
 }
 
-func (q *Queries) DBDeleteBreakTimeWindow(ctx context.Context, arg DeleteBreakTimeWindowParams) error {
+func (q *Queries) DBDeleteBreakTimeWindow(ctx context.Context, arg CreateBreakTimeWindowParams) error {
 	sql := "DELETE FROM breaks_time_windows WHERE id = $1 AND tw_open = $2 AND tw_close = $3"
 	_, err := q.db.Exec(ctx, sql, arg.ID, arg.TwOpen, arg.TwClose)
 	return err

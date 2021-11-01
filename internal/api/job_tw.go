@@ -31,6 +31,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/Georepublic/pg_scheduleserv/internal/database"
 	"github.com/Georepublic/pg_scheduleserv/internal/util"
@@ -88,4 +89,84 @@ func (server *Server) createJobTimeWindow(w http.ResponseWriter, r *http.Request
 	}
 
 	server.FormatJSON(w, http.StatusCreated, created_job)
+}
+
+// ListJobTimeWindows godoc
+// @Summary List job time windows for a job
+// @Description Get a list of job time windows for a job with job_id
+// @Tags Job
+// @Accept application/json
+// @Produce application/json
+// @Param job_id path int true "Job ID"
+// @Success 200 {object} database.JobTimeWindow
+// @Router /jobs/{job_id}/time_windows [get]
+func (server *Server) listJobTimeWindows(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	job_id, err := strconv.ParseInt(vars["job_id"], 10, 64)
+	if err != nil {
+		panic(err)
+	}
+
+	ctx := r.Context()
+	created_vehicle, err := server.DBListJobTimeWindows(ctx, job_id)
+	if err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	server.FormatJSON(w, http.StatusCreated, created_vehicle)
+}
+
+// DeleteJobTimeWindows godoc
+// @Summary Delete job time windows
+// @Description Delete job time windows for a job with job_id
+// @Tags Job
+// @Accept application/json
+// @Produce application/json
+// @Param job_id path int true "Job ID"
+// @Param tw_open path string true "Job opening Time Window"
+// @Param tw_close path string true "Job closing Time Window"
+// @Success 200 {object} database.JobTimeWindow
+// @Router /jobs/{job_id}/time_windows/{tw_open}/{tw_close} [delete]
+func (server *Server) deleteJobTimeWindow(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	job_id, err := strconv.ParseInt(vars["job_id"], 10, 64)
+	if err != nil {
+		panic(err)
+	}
+
+	userInput := map[string]interface{}{
+		"id":       job_id,
+		"tw_open":  vars["tw_open"],
+		"tw_close": vars["tw_close"],
+	}
+
+	// Validate the input type
+	if err := util.ValidateInput(userInput, database.CreateJobTimeWindowParams{}); err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	// Decode map[string]interface{} to struct
+	userInputString, err := json.Marshal(userInput)
+	if err != nil {
+		logrus.Error(err)
+	}
+	job_tw := database.CreateJobTimeWindowParams{}
+	json.Unmarshal(userInputString, &job_tw)
+
+	// Validate the struct
+	if err := server.validate.Struct(job_tw); err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	ctx := r.Context()
+	err = server.DBDeleteJobTimeWindow(ctx, job_tw)
+	if err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	server.FormatJSON(w, http.StatusCreated, nil)
 }

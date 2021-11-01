@@ -31,6 +31,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/Georepublic/pg_scheduleserv/internal/database"
 	"github.com/Georepublic/pg_scheduleserv/internal/util"
@@ -88,4 +89,84 @@ func (server *Server) createBreakTimeWindow(w http.ResponseWriter, r *http.Reque
 	}
 
 	server.FormatJSON(w, http.StatusCreated, created_break)
+}
+
+// ListBreakTimeWindows godoc
+// @Summary List break time windows for a break
+// @Description Get a list of break time windows for a break with break_id
+// @Tags Break
+// @Accept application/json
+// @Produce application/json
+// @Param break_id path int true "Break ID"
+// @Success 200 {object} database.BreakTimeWindow
+// @Router /breaks/{break_id}/time_windows [get]
+func (server *Server) listBreakTimeWindows(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	break_id, err := strconv.ParseInt(vars["break_id"], 10, 64)
+	if err != nil {
+		panic(err)
+	}
+
+	ctx := r.Context()
+	created_vehicle, err := server.DBListBreakTimeWindows(ctx, break_id)
+	if err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	server.FormatJSON(w, http.StatusCreated, created_vehicle)
+}
+
+// DeleteBreakTimeWindows godoc
+// @Summary Delete break time windows
+// @Description Delete break time windows for a break with break_id
+// @Tags Break
+// @Accept application/json
+// @Produce application/json
+// @Param break_id path int true "Break ID"
+// @Param tw_open path string true "Break opening Time Window"
+// @Param tw_close path string true "Break closing Time Window"
+// @Success 200 {object} database.BreakTimeWindow
+// @Router /breaks/{break_id}/time_windows/{tw_open}/{tw_close} [delete]
+func (server *Server) deleteBreakTimeWindow(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	break_id, err := strconv.ParseInt(vars["break_id"], 10, 64)
+	if err != nil {
+		panic(err)
+	}
+
+	userInput := map[string]interface{}{
+		"id":       break_id,
+		"tw_open":  vars["tw_open"],
+		"tw_close": vars["tw_close"],
+	}
+
+	// Validate the input type
+	if err := util.ValidateInput(userInput, database.CreateBreakTimeWindowParams{}); err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	// Decode map[string]interface{} to struct
+	userInputString, err := json.Marshal(userInput)
+	if err != nil {
+		logrus.Error(err)
+	}
+	break_tw := database.CreateBreakTimeWindowParams{}
+	json.Unmarshal(userInputString, &break_tw)
+
+	// Validate the struct
+	if err := server.validate.Struct(break_tw); err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	ctx := r.Context()
+	err = server.DBDeleteBreakTimeWindow(ctx, break_tw)
+	if err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	server.FormatJSON(w, http.StatusCreated, nil)
 }
