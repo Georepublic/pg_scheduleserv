@@ -124,7 +124,10 @@ CREATE TABLE IF NOT EXISTS locations (
   longitude   FLOAT GENERATED ALWAYS AS (ST_X(id_to_geom(id))) STORED,
 
   created_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  updated_at  TIMESTAMP NOT NULL DEFAULT current_timestamp
+  updated_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
+
+  CHECK(latitude >= -90 AND latitude <= 90),
+  CHECK(longitude >= -180 AND longitude <= 180)
 );
 -- LOCATIONS TABLE end
 
