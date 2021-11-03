@@ -49,9 +49,11 @@ import (
 // @Param Vehicle body database.CreateVehicleParams true "Create vehicle"
 // @Success 200 {object} database.Vehicle
 // @Router /projects/{project_id}/vehicles [post]
-func (server *Server) createVehicle(w http.ResponseWriter, r *http.Request) {
+func (server *Server) CreateVehicle(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
-	json.NewDecoder(r.Body).Decode(&userInput)
+	if r.Body != nil {
+		json.NewDecoder(r.Body).Decode(&userInput)
+	}
 
 	// Add the project_id path variable
 	vars := mux.Vars(r)
@@ -100,7 +102,7 @@ func (server *Server) createVehicle(w http.ResponseWriter, r *http.Request) {
 // @Param project_id path int true "Project ID"
 // @Success 200 {object} database.Vehicle
 // @Router /projects/{project_id}/vehicles [get]
-func (server *Server) listVehicles(w http.ResponseWriter, r *http.Request) {
+func (server *Server) ListVehicles(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	project_id, err := strconv.ParseInt(vars["project_id"], 10, 64)
 	if err != nil {
@@ -126,7 +128,7 @@ func (server *Server) listVehicles(w http.ResponseWriter, r *http.Request) {
 // @Param vehicle_id path int true "Vehicle ID"
 // @Success 200 {object} database.Vehicle
 // @Router /vehicles/{vehicle_id} [get]
-func (server *Server) getVehicle(w http.ResponseWriter, r *http.Request) {
+func (server *Server) GetVehicle(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	vehicle_id, err := strconv.ParseInt(vars["vehicle_id"], 10, 64)
 	if err != nil {
@@ -153,9 +155,11 @@ func (server *Server) getVehicle(w http.ResponseWriter, r *http.Request) {
 // @Param Vehicle body database.UpdateVehicleParams true "Update vehicle"
 // @Success 200 {object} database.Vehicle
 // @Router /vehicles/{vehicle_id} [patch]
-func (server *Server) updateVehicle(w http.ResponseWriter, r *http.Request) {
+func (server *Server) UpdateVehicle(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
-	json.NewDecoder(r.Body).Decode(&userInput)
+	if r.Body != nil {
+		json.NewDecoder(r.Body).Decode(&userInput)
+	}
 
 	vars := mux.Vars(r)
 	vehicle_id, err := strconv.ParseInt(vars["vehicle_id"], 10, 64)
@@ -202,7 +206,7 @@ func (server *Server) updateVehicle(w http.ResponseWriter, r *http.Request) {
 // @Param vehicle_id path int true "Vehicle ID"
 // @Success 200 {object} database.Vehicle
 // @Router /vehicles/{vehicle_id} [delete]
-func (server *Server) deleteVehicle(w http.ResponseWriter, r *http.Request) {
+func (server *Server) DeleteVehicle(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	vehicle_id, err := strconv.ParseInt(vars["vehicle_id"], 10, 64)
 	if err != nil {

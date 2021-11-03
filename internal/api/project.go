@@ -48,9 +48,11 @@ import (
 // @Param Project body database.CreateProjectParams true "Create project"
 // @Success 200 {object} database.Project
 // @Router /projects [post]
-func (server *Server) createProject(w http.ResponseWriter, r *http.Request) {
+func (server *Server) CreateProject(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
-	json.NewDecoder(r.Body).Decode(&userInput)
+	if r.Body != nil {
+		json.NewDecoder(r.Body).Decode(&userInput)
+	}
 
 	// Validate the input type
 	if err := util.ValidateInput(userInput, database.CreateProjectParams{}); err != nil {
@@ -90,7 +92,7 @@ func (server *Server) createProject(w http.ResponseWriter, r *http.Request) {
 // @Produce application/json
 // @Success 200 {object} database.Project
 // @Router /projects [get]
-func (server *Server) listProjects(w http.ResponseWriter, r *http.Request) {
+func (server *Server) ListProjects(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	created_project, err := server.DBListProjects(ctx)
 	if err != nil {
@@ -98,7 +100,7 @@ func (server *Server) listProjects(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, created_project)
+	server.FormatJSON(w, http.StatusOK, created_project)
 }
 
 // GetProject godoc
@@ -110,7 +112,7 @@ func (server *Server) listProjects(w http.ResponseWriter, r *http.Request) {
 // @Param project_id path int true "Project ID"
 // @Success 200 {object} database.Project
 // @Router /projects/{project_id} [get]
-func (server *Server) getProject(w http.ResponseWriter, r *http.Request) {
+func (server *Server) GetProject(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	project_id, err := strconv.ParseInt(vars["project_id"], 10, 64)
 	if err != nil {
@@ -124,7 +126,7 @@ func (server *Server) getProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, created_project)
+	server.FormatJSON(w, http.StatusOK, created_project)
 }
 
 // UpdateProject godoc
@@ -137,9 +139,11 @@ func (server *Server) getProject(w http.ResponseWriter, r *http.Request) {
 // @Param Project body database.CreateProjectParams true "Update project"
 // @Success 200 {object} database.Project
 // @Router /projects/{project_id} [patch]
-func (server *Server) updateProject(w http.ResponseWriter, r *http.Request) {
+func (server *Server) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
-	json.NewDecoder(r.Body).Decode(&userInput)
+	if r.Body != nil {
+		json.NewDecoder(r.Body).Decode(&userInput)
+	}
 
 	vars := mux.Vars(r)
 	project_id, err := strconv.ParseInt(vars["project_id"], 10, 64)
@@ -148,7 +152,7 @@ func (server *Server) updateProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate the input type
-	if err := util.ValidateInput(userInput, database.CreateProjectParams{}); err != nil {
+	if err := util.ValidateInput(userInput, database.UpdateProjectParams{}); err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
 	}
@@ -158,7 +162,7 @@ func (server *Server) updateProject(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logrus.Error(err)
 	}
-	project := database.CreateProjectParams{}
+	project := database.UpdateProjectParams{}
 	json.Unmarshal(userInputString, &project)
 
 	// Validate the struct
@@ -174,7 +178,7 @@ func (server *Server) updateProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, created_project)
+	server.FormatJSON(w, http.StatusOK, created_project)
 }
 
 // DeleteProject godoc
@@ -186,7 +190,7 @@ func (server *Server) updateProject(w http.ResponseWriter, r *http.Request) {
 // @Param project_id path int true "Project ID"
 // @Success 200 {object} database.Project
 // @Router /projects/{project_id} [delete]
-func (server *Server) deleteProject(w http.ResponseWriter, r *http.Request) {
+func (server *Server) DeleteProject(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	project_id, err := strconv.ParseInt(vars["project_id"], 10, 64)
 	if err != nil {
@@ -194,11 +198,11 @@ func (server *Server) deleteProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	err = server.DBDeleteProject(ctx, project_id)
+	_, err = server.DBDeleteProject(ctx, project_id)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, nil)
+	server.FormatJSON(w, http.StatusNoContent, nil)
 }

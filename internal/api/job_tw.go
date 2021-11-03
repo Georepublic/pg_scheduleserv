@@ -49,10 +49,11 @@ import (
 // @Param JobTimeWindow body database.CreateJobTimeWindowParams true "Create job time window"
 // @Success 200 {object} database.JobTimeWindow
 // @Router /jobs/{job_id}/time_windows [post]
-func (server *Server) createJobTimeWindow(w http.ResponseWriter, r *http.Request) {
+func (server *Server) CreateJobTimeWindow(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
-	logrus.Debug(r.Body)
-	json.NewDecoder(r.Body).Decode(&userInput)
+	if r.Body != nil {
+		json.NewDecoder(r.Body).Decode(&userInput)
+	}
 
 	// Add the job_id path variable
 	vars := mux.Vars(r)
@@ -100,7 +101,7 @@ func (server *Server) createJobTimeWindow(w http.ResponseWriter, r *http.Request
 // @Param job_id path int true "Job ID"
 // @Success 200 {object} database.JobTimeWindow
 // @Router /jobs/{job_id}/time_windows [get]
-func (server *Server) listJobTimeWindows(w http.ResponseWriter, r *http.Request) {
+func (server *Server) ListJobTimeWindows(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	job_id, err := strconv.ParseInt(vars["job_id"], 10, 64)
 	if err != nil {
@@ -128,7 +129,7 @@ func (server *Server) listJobTimeWindows(w http.ResponseWriter, r *http.Request)
 // @Param tw_close path string true "Job closing Time Window"
 // @Success 200 {object} database.JobTimeWindow
 // @Router /jobs/{job_id}/time_windows/{tw_open}/{tw_close} [delete]
-func (server *Server) deleteJobTimeWindow(w http.ResponseWriter, r *http.Request) {
+func (server *Server) DeleteJobTimeWindow(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	job_id, err := strconv.ParseInt(vars["job_id"], 10, 64)
 	if err != nil {

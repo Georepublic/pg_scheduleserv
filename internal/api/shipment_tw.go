@@ -49,10 +49,11 @@ import (
 // @Param ShipmentTimeWindow body database.CreateShipmentTimeWindowParams true "Create shipment time window"
 // @Success 200 {object} database.ShipmentTimeWindow
 // @Router /shipments/{shipment_id}/time_windows [post]
-func (server *Server) createShipmentTimeWindow(w http.ResponseWriter, r *http.Request) {
+func (server *Server) CreateShipmentTimeWindow(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
-	logrus.Debug(r.Body)
-	json.NewDecoder(r.Body).Decode(&userInput)
+	if r.Body != nil {
+		json.NewDecoder(r.Body).Decode(&userInput)
+	}
 
 	// Add the shipment_id path variable
 	vars := mux.Vars(r)
@@ -100,7 +101,7 @@ func (server *Server) createShipmentTimeWindow(w http.ResponseWriter, r *http.Re
 // @Param shipment_id path int true "Shipment ID"
 // @Success 200 {object} database.ShipmentTimeWindow
 // @Router /shipments/{shipment_id}/time_windows [get]
-func (server *Server) listShipmentTimeWindows(w http.ResponseWriter, r *http.Request) {
+func (server *Server) ListShipmentTimeWindows(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	shipment_id, err := strconv.ParseInt(vars["shipment_id"], 10, 64)
 	if err != nil {
@@ -128,7 +129,7 @@ func (server *Server) listShipmentTimeWindows(w http.ResponseWriter, r *http.Req
 // @Param tw_close path string true "Shipment closing Time Window"
 // @Success 200 {object} database.ShipmentTimeWindow
 // @Router /shipments/{shipment_id}/time_windows/{tw_open}/{tw_close} [delete]
-func (server *Server) deleteShipmentTimeWindow(w http.ResponseWriter, r *http.Request) {
+func (server *Server) DeleteShipmentTimeWindow(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	shipment_id, err := strconv.ParseInt(vars["shipment_id"], 10, 64)
 	if err != nil {

@@ -49,10 +49,11 @@ import (
 // @Param BreakTimeWindow body database.CreateBreakTimeWindowParams true "Create break time window"
 // @Success 200 {object} database.BreakTimeWindow
 // @Router /breaks/{break_id}/time_windows [post]
-func (server *Server) createBreakTimeWindow(w http.ResponseWriter, r *http.Request) {
+func (server *Server) CreateBreakTimeWindow(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
-	logrus.Debug(r.Body)
-	json.NewDecoder(r.Body).Decode(&userInput)
+	if r.Body != nil {
+		json.NewDecoder(r.Body).Decode(&userInput)
+	}
 
 	// Add the break_id path variable
 	vars := mux.Vars(r)
@@ -100,7 +101,7 @@ func (server *Server) createBreakTimeWindow(w http.ResponseWriter, r *http.Reque
 // @Param break_id path int true "Break ID"
 // @Success 200 {object} database.BreakTimeWindow
 // @Router /breaks/{break_id}/time_windows [get]
-func (server *Server) listBreakTimeWindows(w http.ResponseWriter, r *http.Request) {
+func (server *Server) ListBreakTimeWindows(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	break_id, err := strconv.ParseInt(vars["break_id"], 10, 64)
 	if err != nil {
@@ -128,7 +129,7 @@ func (server *Server) listBreakTimeWindows(w http.ResponseWriter, r *http.Reques
 // @Param tw_close path string true "Break closing Time Window"
 // @Success 200 {object} database.BreakTimeWindow
 // @Router /breaks/{break_id}/time_windows/{tw_open}/{tw_close} [delete]
-func (server *Server) deleteBreakTimeWindow(w http.ResponseWriter, r *http.Request) {
+func (server *Server) DeleteBreakTimeWindow(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	break_id, err := strconv.ParseInt(vars["break_id"], 10, 64)
 	if err != nil {

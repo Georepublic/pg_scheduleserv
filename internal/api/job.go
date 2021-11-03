@@ -49,9 +49,11 @@ import (
 // @Param Job body database.UpdateJobParams true "Update job"
 // @Success 200 {object} database.Job
 // @Router /projects/{project_id}/jobs [post]
-func (server *Server) createJob(w http.ResponseWriter, r *http.Request) {
+func (server *Server) CreateJob(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
-	json.NewDecoder(r.Body).Decode(&userInput)
+	if r.Body != nil {
+		json.NewDecoder(r.Body).Decode(&userInput)
+	}
 
 	// Add the project_id path variable
 	vars := mux.Vars(r)
@@ -96,7 +98,7 @@ func (server *Server) createJob(w http.ResponseWriter, r *http.Request) {
 // @Param project_id path int true "Project ID"
 // @Success 200 {object} database.Job
 // @Router /projects/{project_id}/jobs [get]
-func (server *Server) listJobs(w http.ResponseWriter, r *http.Request) {
+func (server *Server) ListJobs(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	project_id, err := strconv.ParseInt(vars["project_id"], 10, 64)
 	if err != nil {
@@ -122,7 +124,7 @@ func (server *Server) listJobs(w http.ResponseWriter, r *http.Request) {
 // @Param job_id path int true "Job ID"
 // @Success 200 {object} database.Job
 // @Router /jobs/{job_id} [get]
-func (server *Server) getJob(w http.ResponseWriter, r *http.Request) {
+func (server *Server) GetJob(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	job_id, err := strconv.ParseInt(vars["job_id"], 10, 64)
 	if err != nil {
@@ -148,9 +150,11 @@ func (server *Server) getJob(w http.ResponseWriter, r *http.Request) {
 // @Param job_id path int true "Job ID"
 // @Success 200 {object} database.Job
 // @Router /jobs/{job_id} [patch]
-func (server *Server) updateJob(w http.ResponseWriter, r *http.Request) {
+func (server *Server) UpdateJob(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
-	json.NewDecoder(r.Body).Decode(&userInput)
+	if r.Body != nil {
+		json.NewDecoder(r.Body).Decode(&userInput)
+	}
 
 	vars := mux.Vars(r)
 	job_id, err := strconv.ParseInt(vars["job_id"], 10, 64)
@@ -197,7 +201,7 @@ func (server *Server) updateJob(w http.ResponseWriter, r *http.Request) {
 // @Param job_id path int true "Job ID"
 // @Success 200 {object} database.Job
 // @Router /jobs/{job_id} [delete]
-func (server *Server) deleteJob(w http.ResponseWriter, r *http.Request) {
+func (server *Server) DeleteJob(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	job_id, err := strconv.ParseInt(vars["job_id"], 10, 64)
 	if err != nil {
@@ -211,5 +215,5 @@ func (server *Server) deleteJob(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, nil)
+	server.FormatJSON(w, http.StatusNoContent, nil)
 }

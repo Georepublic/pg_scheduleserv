@@ -49,9 +49,11 @@ import (
 // @Param Shipment body database.CreateShipmentParams true "Create shipment"
 // @Success 200 {object} database.Shipment
 // @Router /projects/{project_id}/shipments [post]
-func (server *Server) createShipment(w http.ResponseWriter, r *http.Request) {
+func (server *Server) CreateShipment(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
-	json.NewDecoder(r.Body).Decode(&userInput)
+	if r.Body != nil {
+		json.NewDecoder(r.Body).Decode(&userInput)
+	}
 
 	// Add the project_id path variable
 	vars := mux.Vars(r)
@@ -99,7 +101,7 @@ func (server *Server) createShipment(w http.ResponseWriter, r *http.Request) {
 // @Param project_id path int true "Project ID"
 // @Success 200 {object} database.Shipment
 // @Router /projects/{project_id}/shipments [get]
-func (server *Server) listShipments(w http.ResponseWriter, r *http.Request) {
+func (server *Server) ListShipments(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	project_id, err := strconv.ParseInt(vars["project_id"], 10, 64)
 	if err != nil {
@@ -125,7 +127,7 @@ func (server *Server) listShipments(w http.ResponseWriter, r *http.Request) {
 // @Param shipment_id path int true "Shipment ID"
 // @Success 200 {object} database.Shipment
 // @Router /shipments/{shipment_id} [get]
-func (server *Server) getShipment(w http.ResponseWriter, r *http.Request) {
+func (server *Server) GetShipment(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	shipment_id, err := strconv.ParseInt(vars["shipment_id"], 10, 64)
 	if err != nil {
@@ -152,9 +154,11 @@ func (server *Server) getShipment(w http.ResponseWriter, r *http.Request) {
 // @Param Shipment body database.UpdateShipmentParams true "Update shipment"
 // @Success 200 {object} database.Shipment
 // @Router /shipments/{shipment_id} [patch]
-func (server *Server) updateShipment(w http.ResponseWriter, r *http.Request) {
+func (server *Server) UpdateShipment(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
-	json.NewDecoder(r.Body).Decode(&userInput)
+	if r.Body != nil {
+		json.NewDecoder(r.Body).Decode(&userInput)
+	}
 
 	vars := mux.Vars(r)
 	shipment_id, err := strconv.ParseInt(vars["shipment_id"], 10, 64)
@@ -201,7 +205,7 @@ func (server *Server) updateShipment(w http.ResponseWriter, r *http.Request) {
 // @Param shipment_id path int true "Shipment ID"
 // @Success 200 {object} database.Shipment
 // @Router /shipments/{shipment_id} [delete]
-func (server *Server) deleteShipment(w http.ResponseWriter, r *http.Request) {
+func (server *Server) DeleteShipment(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	shipment_id, err := strconv.ParseInt(vars["shipment_id"], 10, 64)
 	if err != nil {

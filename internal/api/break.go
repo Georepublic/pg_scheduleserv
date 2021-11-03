@@ -49,9 +49,11 @@ import (
 // @Param Break body database.CreateBreakParams true "Create break"
 // @Success 200 {object} database.Break
 // @Router /vehicles/{vehicle_id}/breaks [post]
-func (server *Server) createBreak(w http.ResponseWriter, r *http.Request) {
+func (server *Server) CreateBreak(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
-	json.NewDecoder(r.Body).Decode(&userInput)
+	if r.Body != nil {
+		json.NewDecoder(r.Body).Decode(&userInput)
+	}
 
 	// Add the vehicle_id path variable
 	vars := mux.Vars(r)
@@ -95,7 +97,7 @@ func (server *Server) createBreak(w http.ResponseWriter, r *http.Request) {
 // @Produce application/json
 // @Success 200 {object} database.Break
 // @Router /vehicles/{vehicle_id}/breaks [get]
-func (server *Server) listBreaks(w http.ResponseWriter, r *http.Request) {
+func (server *Server) ListBreaks(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	vehicle_id, err := strconv.ParseInt(vars["vehicle_id"], 10, 64)
 	if err != nil {
@@ -121,7 +123,7 @@ func (server *Server) listBreaks(w http.ResponseWriter, r *http.Request) {
 // @Param break_id path int true "Break ID"
 // @Success 200 {object} database.Break
 // @Router /breaks/{break_id} [get]
-func (server *Server) getBreak(w http.ResponseWriter, r *http.Request) {
+func (server *Server) GetBreak(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	break_id, err := strconv.ParseInt(vars["break_id"], 10, 64)
 	if err != nil {
@@ -148,9 +150,11 @@ func (server *Server) getBreak(w http.ResponseWriter, r *http.Request) {
 // @Param Break body database.CreateBreakParams true "Update break"
 // @Success 200 {object} database.Break
 // @Router /breaks/{break_id} [patch]
-func (server *Server) updateBreak(w http.ResponseWriter, r *http.Request) {
+func (server *Server) UpdateBreak(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
-	json.NewDecoder(r.Body).Decode(&userInput)
+	if r.Body != nil {
+		json.NewDecoder(r.Body).Decode(&userInput)
+	}
 
 	vars := mux.Vars(r)
 	break_id, err := strconv.ParseInt(vars["break_id"], 10, 64)
@@ -197,7 +201,7 @@ func (server *Server) updateBreak(w http.ResponseWriter, r *http.Request) {
 // @Param break_id path int true "Break ID"
 // @Success 200 {object} database.Break
 // @Router /breaks/{break_id} [delete]
-func (server *Server) deleteBreak(w http.ResponseWriter, r *http.Request) {
+func (server *Server) DeleteBreak(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	break_id, err := strconv.ParseInt(vars["break_id"], 10, 64)
 	if err != nil {
