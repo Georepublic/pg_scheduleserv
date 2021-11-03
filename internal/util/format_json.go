@@ -36,10 +36,16 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/hashicorp/go-multierror"
+	"github.com/jackc/pgx/v4"
 	"github.com/sirupsen/logrus"
 )
 
 func (r *Formatter) FormatJSON(w http.ResponseWriter, respCode int, data interface{}) {
+	if data == pgx.ErrNoRows {
+		respCode = http.StatusNotFound
+		data = nil
+	}
+
 	// Set the content-type and response code in the header
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(respCode)

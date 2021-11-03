@@ -138,7 +138,7 @@ func GetOutputFields(resourceStruct interface{}) (sql string) {
 			fieldName = fmt.Sprintf("EXTRACT(epoch FROM %s)", fieldName)
 		}
 		if _, timestampFieldFound := TimestampFields[fieldName]; timestampFieldFound {
-			fieldName = fmt.Sprintf("to_char(%s, 'YYYY-MM-DD HH:MI:SS')", fieldName)
+			fieldName = fmt.Sprintf("to_char(%s, 'YYYY-MM-DD HH24:MI:SS')", fieldName)
 		}
 		sql += " " + fieldName
 	}
