@@ -83,6 +83,10 @@ func updateResource(resource string, resourceStruct interface{}, id int64) (sql 
 			restSQL += ", " + field + " = " + val
 		}
 	}
+	// If the request body is empty, do a fake update on ID
+	if restSQL == "" {
+		restSQL = fmt.Sprintf("id = %d", id)
+	}
 	sql = fmt.Sprintf("UPDATE %s SET %s WHERE id = %d", resource, restSQL, id)
 	args = partialSQL.Args
 	return
