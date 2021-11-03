@@ -109,12 +109,12 @@ RETURNING id, name, data, created_at, updated_at, deleted
 `
 
 type UpdateProjectParams struct {
-	ID   int64       `json:"id"`
-	Name string      `json:"name"`
-	Data interface{} `json:"data"`
+	ID   *int64       `json:"id"`
+	Name *string      `json:"name"`
+	Data *interface{} `json:"data"`
 }
 
-func (q *Queries) DBUpdateProject(ctx context.Context, arg CreateProjectParams, project_id int64) (Project, error) {
+func (q *Queries) DBUpdateProject(ctx context.Context, arg UpdateProjectParams, project_id int64) (Project, error) {
 	sql, args := updateResource("projects", arg, project_id)
 	return_sql := " RETURNING " + util.GetOutputFields(Project{})
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
@@ -126,10 +126,11 @@ UPDATE projects SET deleted = TRUE
 WHERE id = $1
 `
 
-func (q *Queries) DBDeleteProject(ctx context.Context, id int64) error {
+func (q *Queries) DBDeleteProject(ctx context.Context, id int64) (Project, error) {
 	sql := "UPDATE projects SET deleted = TRUE WHERE id = $1"
-	_, err := q.db.Exec(ctx, sql, id)
-	return err
+	return_sql := " RETURNING " + util.GetOutputFields(Project{})
+	row := q.db.QueryRow(ctx, sql+return_sql, id)
+	return scanProjectRow(row)
 }
 
 func scanProjectRow(row pgx.Row) (Project, error) {
