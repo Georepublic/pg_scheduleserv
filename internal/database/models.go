@@ -35,7 +35,7 @@ import (
 )
 
 type Break struct {
-	ID        int64       `json:"id"`
+	ID        int64       `json:"id,string"`
 	VehicleID int64       `json:"vehicle_id,string"`
 	Service   int64       `json:"service"`
 	Data      interface{} `json:"data"`
@@ -44,7 +44,7 @@ type Break struct {
 }
 
 type BreakTimeWindow struct {
-	ID        int64  `json:"id"`
+	ID        int64  `json:"id,string"`
 	TwOpen    string `json:"tw_open"`
 	TwClose   string `json:"tw_close"`
 	CreatedAt string `json:"created_at"`
@@ -66,7 +66,7 @@ type Job struct {
 }
 
 type JobTimeWindow struct {
-	ID        int64  `json:"id"`
+	ID        int64  `json:"id,string"`
 	TwOpen    string `json:"tw_open"`
 	TwClose   string `json:"tw_close"`
 	CreatedAt string `json:"created_at"`
@@ -74,7 +74,7 @@ type JobTimeWindow struct {
 }
 
 type Location struct {
-	ID        int64           `json:"id"`
+	ID        int64           `json:"id,string"`
 	Location  interface{}     `json:"location"`
 	Latitude  sql.NullFloat64 `json:"latitude"`
 	Longitude sql.NullFloat64 `json:"longitude"`
@@ -83,8 +83,8 @@ type Location struct {
 }
 
 type Matrix struct {
-	StartVid  int64  `json:"start_vid"`
-	EndVid    int64  `json:"end_vid"`
+	StartVid  int64  `json:"start_vid,string"`
+	EndVid    int64  `json:"end_vid,string"`
 	AggCost   int32  `json:"agg_cost"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
@@ -121,7 +121,7 @@ type Shipment struct {
 }
 
 type ShipmentTimeWindow struct {
-	ID        int64  `json:"id"`
+	ID        int64  `json:"id,string"`
 	Kind      string `json:"kind"`
 	TwOpen    string `json:"tw_open"`
 	TwClose   string `json:"tw_close"`

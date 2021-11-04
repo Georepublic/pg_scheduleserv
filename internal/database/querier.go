@@ -1,9 +1,39 @@
+/*GRP-GNU-AGPL******************************************************************
+
+File: querier.go
+
+Copyright (C) 2021  Team Georepublic <info@georepublic.de>
+
+Developer(s):
+Copyright (C) 2021  Ashish Kumar <ashishkr23438@gmail.com>
+
+-----
+
+This file is part of pg_scheduleserv.
+
+pg_scheduleserv is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+pg_scheduleserv is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with pg_scheduleserv.  If not, see <https://www.gnu.org/licenses/>.
+
+******************************************************************GRP-GNU-AGPL*/
+
 package database
 
 //go:generate mockgen -destination=../mock/mock_querier.go -package=mock -source=querier.go
 
 import (
 	"context"
+
+	"github.com/Georepublic/pg_scheduleserv/internal/util"
 )
 
 type Querier interface {
@@ -37,6 +67,11 @@ type Querier interface {
 	DBListProjects(ctx context.Context) ([]Project, error)
 	DBUpdateProject(ctx context.Context, arg UpdateProjectParams, project_id int64) (Project, error)
 	DBDeleteProject(ctx context.Context, id int64) (Project, error)
+
+	// Schedule
+	DBCreateSchedule(ctx context.Context, id int64) error
+	DBGetSchedule(ctx context.Context, id int64) ([]util.Schedule, error)
+	DBDeleteSchedule(ctx context.Context, id int64) error
 
 	// Shipment
 	DBCreateShipment(ctx context.Context, arg CreateShipmentParams) (Shipment, error)
