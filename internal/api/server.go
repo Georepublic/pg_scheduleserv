@@ -91,6 +91,11 @@ func (server *Server) handleRoutes(router *mux.Router) {
 	router.HandleFunc("/projects/{project_id}", server.UpdateProject).Methods("PATCH")
 	router.HandleFunc("/projects/{project_id}", server.DeleteProject).Methods("DELETE")
 
+	// Schedule related endpoints
+	router.HandleFunc("/projects/{project_id}/schedule", server.GetSchedule).Methods("GET")
+	router.HandleFunc("/projects/{project_id}/schedule", server.CreateSchedule).Methods("POST")
+	router.HandleFunc("/projects/{project_id}/schedule", server.DeleteSchedule).Methods("DELETE")
+
 	// Job endpoints
 	router.HandleFunc("/projects/{project_id}/jobs", server.CreateJob).Methods("POST")
 	router.HandleFunc("/projects/{project_id}/jobs", server.ListJobs).Methods("GET")
