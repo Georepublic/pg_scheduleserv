@@ -324,6 +324,35 @@ CREATE TABLE IF NOT EXISTS matrix (
 -- MATRIX TABLE end
 
 
+-- SCHEDULES TABLE start
+CREATE TABLE IF NOT EXISTS schedules (
+  id            BIGINT      DEFAULT random_bigint() PRIMARY KEY,
+  type          INTEGER     NOT NULL,
+  project_id    BIGINT      NOT NULL REFERENCES projects(id),
+  vehicle_id    BIGINT      NOT NULL REFERENCES vehicles(id),
+  job_id        BIGINT      REFERENCES jobs(id) DEFAULT NULL,
+  shipment_id   BIGINT      REFERENCES shipments(id) DEFAULT NULL,
+  break_id      BIGINT      REFERENCES breaks(id) DEFAULT NULL,
+
+  arrival       TIMESTAMP   NOT NULL,
+  travel_time   INTERVAL    NOT NULL,
+  service_time  INTERVAL    NOT NULL,
+  waiting_time  INTERVAL    NOT NULL,
+  load          BIGINT[]    NOT NULL,
+
+  created_at    TIMESTAMP   NOT NULL DEFAULT current_timestamp,
+  updated_at    TIMESTAMP   NOT NULL DEFAULT current_timestamp,
+
+  CHECK(id >= 0),
+  CHECK(type >= 1 AND type <= 6),
+  CHECK(travel_time >= '00:00:00'::INTERVAL),
+  CHECK(service_time >= '00:00:00'::INTERVAL),
+  CHECK(waiting_time >= '00:00:00'::INTERVAL),
+  CHECK(0 <= ALL(load))
+);
+-- SCHEDULE TABLE end
+
+
 
 -------------------------------------------------------------------------------
 -- TRIGGERS
@@ -465,7 +494,7 @@ BEGIN
     FOR EACH ROW EXECUTE PROCEDURE tgr_updated_at_field_func();', E'\n')
   FROM unnest('{locations, projects, project_locations, jobs,
     jobs_time_windows, shipments, shipments_time_windows, vehicles,
-    breaks, breaks_time_windows, matrix}'::text[]) T
+    breaks, breaks_time_windows, matrix, schedules}'::text[]) T
   );
 END
 $$;

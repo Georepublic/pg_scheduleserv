@@ -36,7 +36,7 @@ BEGIN
     ON ' || quote_ident(T) || ';', E'\n')
   FROM unnest('{locations, projects, project_locations, jobs,
     jobs_time_windows, shipments, shipments_time_windows, vehicles,
-    breaks, breaks_time_windows, matrix}'::text[]) T
+    breaks, breaks_time_windows, matrix, schedules}'::text[]) T
   );
 END
 $$;
@@ -57,6 +57,7 @@ DROP FUNCTION IF EXISTS tgr_shipments_insert_update_func;
 DROP TRIGGER IF EXISTS tgr_jobs_insert_update ON jobs;
 DROP FUNCTION IF EXISTS tgr_jobs_insert_update_func;
 
+DROP TABLE IF EXISTS schedules;
 DROP TABLE IF EXISTS matrix;
 DROP TABLE IF EXISTS breaks_time_windows;
 DROP TABLE IF EXISTS breaks;
