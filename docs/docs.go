@@ -685,6 +685,98 @@ var doc = `{
                 }
             }
         },
+        "/projects/{project_id}/schedule": {
+            "get": {
+                "description": "Get the schedule for a project",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "text/calendar"
+                ],
+                "tags": [
+                    "Schedule"
+                ],
+                "summary": "Get the schedule",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/util.Schedule"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Schedule the tasks present in a project",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schedule"
+                ],
+                "summary": "Schedule the tasks",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/util.Schedule"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete the schedule for a project",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Schedule"
+                ],
+                "summary": "Delete the schedule",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Project ID",
+                        "name": "project_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/util.Schedule"
+                        }
+                    }
+                }
+            }
+        },
         "/projects/{project_id}/shipments": {
             "get": {
                 "description": "Get a list of shipments for a project with project_id",
@@ -1218,7 +1310,8 @@ var doc = `{
                 },
                 "data": {},
                 "id": {
-                    "type": "integer"
+                    "type": "string",
+                    "example": "0"
                 },
                 "service": {
                     "type": "integer"
@@ -1239,7 +1332,8 @@ var doc = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string",
+                    "example": "0"
                 },
                 "tw_close": {
                     "type": "string"
@@ -1459,7 +1553,8 @@ var doc = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string",
+                    "example": "0"
                 },
                 "tw_close": {
                     "type": "string"
@@ -1545,7 +1640,8 @@ var doc = `{
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string",
+                    "example": "0"
                 },
                 "kind": {
                     "type": "string"
@@ -1748,6 +1844,65 @@ var doc = `{
                 },
                 "longitude": {
                     "type": "number"
+                }
+            }
+        },
+        "util.Schedule": {
+            "type": "object",
+            "properties": {
+                "arrival": {
+                    "type": "string"
+                },
+                "breakID": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "departure": {
+                    "type": "string"
+                },
+                "endLoad": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "jobID": {
+                    "type": "integer"
+                },
+                "projectID": {
+                    "type": "integer"
+                },
+                "serviceTime": {
+                    "type": "integer"
+                },
+                "shipmentID": {
+                    "type": "integer"
+                },
+                "startLoad": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "travelTime": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "vehicleID": {
+                    "type": "integer"
+                },
+                "waitingTime": {
+                    "type": "integer"
                 }
             }
         }
