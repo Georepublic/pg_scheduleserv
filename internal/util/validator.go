@@ -97,7 +97,7 @@ func ValidateInput(jsonStruct map[string]interface{}, originalStruct interface{}
 				}
 			}
 			if !convertible {
-				errors = multierror.Append(errors, fmt.Errorf(fmt.Sprintf("Field '%s' must be of %s type.", tag, requiredType)))
+				errors = multierror.Append(errors, fmt.Errorf(fmt.Sprintf("Field '%s' must be of '%s' type.", tag, requiredType)))
 			}
 			continue
 		}
@@ -106,7 +106,7 @@ func ValidateInput(jsonStruct map[string]interface{}, originalStruct interface{}
 		logrus.Debug(requiredType)
 
 		if !userType.ConvertibleTo(requiredType) {
-			errors = multierror.Append(errors, fmt.Errorf(fmt.Sprintf("Field '%s' must be of %s type.", tag, requiredType)))
+			errors = multierror.Append(errors, fmt.Errorf(fmt.Sprintf("Field '%s' must be of '%s' type.", tag, requiredType)))
 		}
 	}
 	return errors
