@@ -204,5 +204,5 @@ func (server *Server) DeleteProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusNoContent, nil)
+	server.FormatJSON(w, http.StatusOK, nil)
 }

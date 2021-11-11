@@ -163,7 +163,7 @@ func (server *Server) DeleteJobTimeWindow(w http.ResponseWriter, r *http.Request
 	}
 
 	ctx := r.Context()
-	err = server.DBDeleteJobTimeWindow(ctx, job_tw)
+	_, err = server.DBDeleteJobTimeWindow(ctx, job_tw)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return

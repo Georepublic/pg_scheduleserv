@@ -112,7 +112,7 @@ func (server *Server) ListJobs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, created_job)
+	server.FormatJSON(w, http.StatusOK, created_job)
 }
 
 // GetJob godoc
@@ -138,7 +138,7 @@ func (server *Server) GetJob(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, created_job)
+	server.FormatJSON(w, http.StatusOK, created_job)
 }
 
 // GetJob godoc
@@ -163,7 +163,7 @@ func (server *Server) UpdateJob(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate the input type
-	if err := util.ValidateInput(userInput, database.CreateJobParams{}); err != nil {
+	if err := util.ValidateInput(userInput, database.UpdateJobParams{}); err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
 	}
@@ -189,7 +189,7 @@ func (server *Server) UpdateJob(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, created_job)
+	server.FormatJSON(w, http.StatusOK, created_job)
 }
 
 // GetJob godoc
@@ -209,11 +209,11 @@ func (server *Server) DeleteJob(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	err = server.DBDeleteJob(ctx, job_id)
+	_, err = server.DBDeleteJob(ctx, job_id)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
 	}
 
-	server.FormatJSON(w, http.StatusNoContent, nil)
+	server.FormatJSON(w, http.StatusOK, nil)
 }

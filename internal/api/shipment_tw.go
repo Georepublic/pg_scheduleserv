@@ -163,7 +163,7 @@ func (server *Server) DeleteShipmentTimeWindow(w http.ResponseWriter, r *http.Re
 	}
 
 	ctx := r.Context()
-	err = server.DBDeleteShipmentTimeWindow(ctx, shipment_tw)
+	_, err = server.DBDeleteShipmentTimeWindow(ctx, shipment_tw)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return

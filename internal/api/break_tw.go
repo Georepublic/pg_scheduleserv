@@ -163,7 +163,7 @@ func (server *Server) DeleteBreakTimeWindow(w http.ResponseWriter, r *http.Reque
 	}
 
 	ctx := r.Context()
-	err = server.DBDeleteBreakTimeWindow(ctx, break_tw)
+	_, err = server.DBDeleteBreakTimeWindow(ctx, break_tw)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return

@@ -209,7 +209,7 @@ func (server *Server) DeleteBreak(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	err = server.DBDeleteBreak(ctx, break_id)
+	_, err = server.DBDeleteBreak(ctx, break_id)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return

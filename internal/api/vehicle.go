@@ -214,7 +214,7 @@ func (server *Server) DeleteVehicle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	err = server.DBDeleteVehicle(ctx, vehicle_id)
+	_, err = server.DBDeleteVehicle(ctx, vehicle_id)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
