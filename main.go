@@ -73,7 +73,15 @@ func main() {
 	if err != nil {
 		logrus.Error("Cannot load config:", err)
 	}
-	conn, err := pgx.Connect(context.Background(), config.DatabaseURL)
+	connectionURL := fmt.Sprintf(
+		"user=%s password=%s host=%s port=%s dbname=%s sslmode=disable",
+		config.DatabaseUser,
+		config.DatabasePassword,
+		config.DatabaseHost,
+		config.DatabasePort,
+		config.DatabaseName,
+	)
+	conn, err := pgx.Connect(context.Background(), connectionURL)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
