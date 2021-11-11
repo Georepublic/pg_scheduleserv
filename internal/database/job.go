@@ -138,7 +138,7 @@ RETURNING id, location_index, service, delivery, pickup, skills, priority, proje
 `
 
 type UpdateJobParams struct {
-	Location  *util.LocationParams `json:"location" validate:"required"`
+	Location  *util.LocationParams `json:"location"`
 	Service   *int64               `json:"service"`
 	Delivery  *[]int64             `json:"delivery"`
 	Pickup    *[]int64             `json:"pickup"`
@@ -160,10 +160,11 @@ UPDATE jobs SET deleted = TRUE
 WHERE id = $1
 `
 
-func (q *Queries) DBDeleteJob(ctx context.Context, id int64) error {
+func (q *Queries) DBDeleteJob(ctx context.Context, id int64) (Job, error) {
 	sql := "UPDATE jobs SET deleted = TRUE WHERE id = $1"
-	_, err := q.db.Exec(ctx, sql, id)
-	return err
+	return_sql := " RETURNING " + util.GetOutputFields(Job{})
+	row := q.db.QueryRow(ctx, sql+return_sql, id)
+	return scanJobRow(row)
 }
 
 func scanJobRow(row pgx.Row) (Job, error) {

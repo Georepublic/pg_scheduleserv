@@ -168,10 +168,11 @@ UPDATE vehicles SET deleted = TRUE
 WHERE id = $1
 `
 
-func (q *Queries) DBDeleteVehicle(ctx context.Context, id int64) error {
+func (q *Queries) DBDeleteVehicle(ctx context.Context, id int64) (Vehicle, error) {
 	sql := "UPDATE vehicles SET deleted = TRUE WHERE id = $1"
-	_, err := q.db.Exec(ctx, sql, id)
-	return err
+	return_sql := " RETURNING " + util.GetOutputFields(Vehicle{})
+	row := q.db.QueryRow(ctx, sql+return_sql, id)
+	return scanVehicleRow(row)
 }
 
 func scanVehicleRow(row pgx.Row) (Vehicle, error) {

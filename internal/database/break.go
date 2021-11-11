@@ -132,10 +132,11 @@ UPDATE breaks SET deleted = TRUE
 WHERE id = $1
 `
 
-func (q *Queries) DBDeleteBreak(ctx context.Context, id int64) error {
+func (q *Queries) DBDeleteBreak(ctx context.Context, id int64) (Break, error) {
 	sql := "UPDATE breaks SET deleted = TRUE WHERE id = $1"
-	_, err := q.db.Exec(ctx, sql, id)
-	return err
+	return_sql := " RETURNING " + util.GetOutputFields(Break{})
+	row := q.db.QueryRow(ctx, sql+return_sql, id)
+	return scanBreakRow(row)
 }
 
 func scanBreakRow(row pgx.Row) (Break, error) {

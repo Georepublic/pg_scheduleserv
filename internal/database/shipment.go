@@ -167,10 +167,11 @@ UPDATE shipments SET deleted = TRUE
 WHERE id = $1
 `
 
-func (q *Queries) DBDeleteShipment(ctx context.Context, id int64) error {
+func (q *Queries) DBDeleteShipment(ctx context.Context, id int64) (Shipment, error) {
 	sql := "UPDATE shipments SET deleted = TRUE WHERE id = $1"
-	_, err := q.db.Exec(ctx, sql, id)
-	return err
+	return_sql := " RETURNING " + util.GetOutputFields(Shipment{})
+	row := q.db.QueryRow(ctx, sql+return_sql, id)
+	return scanShipmentRow(row)
 }
 
 func scanShipmentRow(row pgx.Row) (Shipment, error) {

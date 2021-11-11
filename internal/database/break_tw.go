@@ -87,10 +87,11 @@ type DeleteBreakTimeWindowParams struct {
 	TwClose string `json:"tw_close"`
 }
 
-func (q *Queries) DBDeleteBreakTimeWindow(ctx context.Context, arg CreateBreakTimeWindowParams) error {
+func (q *Queries) DBDeleteBreakTimeWindow(ctx context.Context, arg CreateBreakTimeWindowParams) (BreakTimeWindow, error) {
 	sql := "DELETE FROM breaks_time_windows WHERE id = $1 AND tw_open = $2 AND tw_close = $3"
-	_, err := q.db.Exec(ctx, sql, arg.ID, arg.TwOpen, arg.TwClose)
-	return err
+	return_sql := " RETURNING " + util.GetOutputFields(BreakTimeWindow{})
+	row := q.db.QueryRow(ctx, sql+return_sql, arg.ID, arg.TwOpen, arg.TwClose)
+	return scanBreakTimeWindowRow(row)
 }
 
 func scanBreakTimeWindowRow(row pgx.Row) (BreakTimeWindow, error) {

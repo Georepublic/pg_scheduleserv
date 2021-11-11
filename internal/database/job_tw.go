@@ -84,10 +84,11 @@ type DeleteJobTimeWindowParams struct {
 	TwClose string `json:"tw_close"`
 }
 
-func (q *Queries) DBDeleteJobTimeWindow(ctx context.Context, arg CreateJobTimeWindowParams) error {
+func (q *Queries) DBDeleteJobTimeWindow(ctx context.Context, arg CreateJobTimeWindowParams) (JobTimeWindow, error) {
 	sql := "DELETE FROM jobs_time_windows WHERE id = $1 AND tw_open = $2 AND tw_close = $3"
-	_, err := q.db.Exec(ctx, sql, arg.ID, arg.TwOpen, arg.TwClose)
-	return err
+	return_sql := " RETURNING " + util.GetOutputFields(JobTimeWindow{})
+	row := q.db.QueryRow(ctx, sql+return_sql, arg.ID, arg.TwOpen, arg.TwClose)
+	return scanJobTimeWindowRow(row)
 }
 
 func scanJobTimeWindowRow(row pgx.Row) (JobTimeWindow, error) {

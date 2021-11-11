@@ -86,15 +86,16 @@ type DeleteShipmentTimeWindowParams struct {
 	TwClose string `json:"tw_close"`
 }
 
-func (q *Queries) DBDeleteShipmentTimeWindow(ctx context.Context, arg CreateShipmentTimeWindowParams) error {
+func (q *Queries) DBDeleteShipmentTimeWindow(ctx context.Context, arg CreateShipmentTimeWindowParams) (ShipmentTimeWindow, error) {
 	sql := "DELETE FROM shipments_time_windows WHERE id = $1 AND kind = $2 AND tw_open = $3 AND tw_close = $4"
-	_, err := q.db.Exec(ctx, sql,
+	return_sql := " RETURNING " + util.GetOutputFields(ShipmentTimeWindow{})
+	row := q.db.QueryRow(ctx, sql+return_sql,
 		arg.ID,
 		arg.Kind,
 		arg.TwOpen,
 		arg.TwClose,
 	)
-	return err
+	return scanShipmentTimeWindowRow(row)
 }
 
 func scanShipmentTimeWindowRow(row pgx.Row) (ShipmentTimeWindow, error) {
