@@ -43,8 +43,8 @@ import (
 )
 
 func TestCreateVehicle(t *testing.T) {
-	db := NewDatabase(t)
-	server, conn := setup(db)
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
 	defer conn.Close(context.Background())
 	mux := server.Router
 
@@ -149,8 +149,8 @@ func TestCreateVehicle(t *testing.T) {
 }
 
 func TestGetVehicle(t *testing.T) {
-	db := NewDatabase(t)
-	server, conn := setup(db)
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
 	defer conn.Close(context.Background())
 	mux := server.Router
 
@@ -207,8 +207,8 @@ func TestGetVehicle(t *testing.T) {
 }
 
 func TestListVehicles(t *testing.T) {
-	db := NewDatabase(t)
-	server, conn := setup(db)
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
 	defer conn.Close(context.Background())
 	mux := server.Router
 
@@ -270,8 +270,8 @@ func TestListVehicles(t *testing.T) {
 }
 
 func TestUpdateVehicle(t *testing.T) {
-	db := NewDatabase(t)
-	server, conn := setup(db)
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
 	defer conn.Close(context.Background())
 	mux := server.Router
 
@@ -402,8 +402,8 @@ func TestUpdateVehicle(t *testing.T) {
 }
 
 func TestDeleteVehicle(t *testing.T) {
-	db := NewDatabase(t)
-	server, conn := setup(db)
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
 	defer conn.Close(context.Background())
 	mux := server.Router
 

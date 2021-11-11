@@ -43,87 +43,269 @@ import (
 )
 
 func TestCreateShipment(t *testing.T) {
-	db := NewDatabase(t)
-	server, conn := setup(db)
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
 	defer conn.Close(context.Background())
 	mux := server.Router
 
 	testCases := []struct {
 		name       string
 		statusCode int
+		projectID  int
 		body       map[string]interface{}
 		resBody    map[string]interface{}
+		todo       bool
 	}{
 		{
 			name:       "Empty Body",
 			statusCode: 400,
+			projectID:  3909655254191459782,
 			body:       map[string]interface{}{},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'name' of type 'string' is required"},
+				"errors": []interface{}{
+					"Field 'p_location' of type 'util.LocationParams' is required",
+					"Field 'd_location' of type 'util.LocationParams' is required",
+				},
 			},
 		},
 		{
-			name:       "Only Name",
-			statusCode: 201,
+			name:       "Only Location - Wrong parameters 1",
+			statusCode: 400,
+			projectID:  3909655254191459782,
 			body: map[string]interface{}{
-				"name": "Sample Shipment",
+				"p_location": "Sample Location",
+				"d_location": "Sample Location",
 			},
 			resBody: map[string]interface{}{
-				"data": map[string]interface{}{},
-				"name": "Sample Shipment",
+				"errors": []interface{}{
+					"Field 'p_location' must be of 'util.LocationParams' type.",
+					"Field 'd_location' must be of 'util.LocationParams' type.",
+				},
+			},
+		},
+		{
+			name:       "Only Location - Wrong parameters 2",
+			statusCode: 400,
+			projectID:  3909655254191459782,
+			body: map[string]interface{}{
+				"p_location": map[string]interface{}{
+					"latitude":  "12.34567",
+					"longitude": "56.78",
+				},
+				"d_location": map[string]interface{}{
+					"latitude":  "12.34567",
+					"longitude": "56.78",
+				},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{
+					"Field 'latitude' of type 'float64' is required",
+					"Field 'longitude' of type 'float64' is required",
+					"Field 'latitude' of type 'float64' is required",
+					"Field 'longitude' of type 'float64' is required",
+				},
+			},
+			todo: true,
+		},
+		{
+			name:       "Only Location - Wrong range of parameters",
+			statusCode: 400,
+			projectID:  3909655254191459782,
+			body: map[string]interface{}{
+				"p_location": map[string]interface{}{
+					"latitude":  112.34567,
+					"longitude": 256.78,
+				},
+				"d_location": map[string]interface{}{
+					"latitude":  112.34567,
+					"longitude": 256.78,
+				},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{
+					"Field 'latitude' must be between -90 and 90",
+					"Field 'longitude' must be between -180 and 180",
+					"Field 'latitude' must be between -90 and 90",
+					"Field 'longitude' must be between -180 and 180",
+				},
+			},
+			todo: true,
+		},
+		{
+			name:       "Only Location",
+			statusCode: 201,
+			projectID:  3909655254191459782,
+			body: map[string]interface{}{
+				"p_location": map[string]interface{}{
+					"latitude":  12.34567,
+					"longitude": 56.78,
+				},
+				"d_location": map[string]interface{}{
+					"latitude":  -12.34567,
+					"longitude": -56.78,
+				},
+			},
+			resBody: map[string]interface{}{
+				"p_location": map[string]interface{}{
+					"latitude":  12.3457,
+					"longitude": 56.78,
+				},
+				"p_service": float64(0),
+				"d_location": map[string]interface{}{
+					"latitude":  -12.3457,
+					"longitude": -56.78,
+				},
+				"d_service":  float64(0),
+				"amount":     []interface{}{},
+				"skills":     []interface{}{},
+				"priority":   float64(0),
+				"project_id": "3909655254191459782",
+				"data":       map[string]interface{}{},
 			},
 		},
 		{
 			name:       "Only data",
 			statusCode: 400,
+			projectID:  3909655254191459782,
 			body: map[string]interface{}{
 				"data": map[string]interface{}{"key": "value"},
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'name' of type 'string' is required"},
+				"errors": []interface{}{
+					"Field 'p_location' of type 'util.LocationParams' is required",
+					"Field 'd_location' of type 'util.LocationParams' is required",
+				},
 			},
 		},
 		{
-			name:       "Integer name",
+			name:       "Priority Min Range incorrect",
 			statusCode: 400,
+			projectID:  3909655254191459782,
 			body: map[string]interface{}{
-				"name": 123,
+				"p_location": map[string]interface{}{
+					"latitude":  12.34567,
+					"longitude": 56.78,
+				},
+				"d_location": map[string]interface{}{
+					"latitude":  -12.34567,
+					"longitude": -56.78,
+				},
+				"priority": -1,
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'name' must be of string type."},
+				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
 			},
+			todo: true,
 		},
 		{
-			name:       "Integer data",
-			statusCode: 201,
+			name:       "Priority Max Range incorrect",
+			statusCode: 400,
+			projectID:  3909655254191459782,
 			body: map[string]interface{}{
-				"name": "123",
-				"data": 123,
+				"p_location": map[string]interface{}{
+					"latitude":  12.34567,
+					"longitude": 56.78,
+				},
+				"d_location": map[string]interface{}{
+					"latitude":  -12.34567,
+					"longitude": -56.78,
+				},
+				"priority": 101,
 			},
 			resBody: map[string]interface{}{
-				"name": "123",
-				"data": float64(123),
+				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
 			},
+			todo: true,
+		},
+		{
+			name:       "Negative skills",
+			statusCode: 400,
+			projectID:  3909655254191459782,
+			body: map[string]interface{}{
+				"p_location": map[string]interface{}{
+					"latitude":  12.34567,
+					"longitude": 56.78,
+				},
+				"d_location": map[string]interface{}{
+					"latitude":  -12.34567,
+					"longitude": -56.78,
+				},
+				"skills": []interface{}{-1, -2},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'skills' must have non-negative values"},
+			},
+			todo: true,
+		},
+		{
+			name:       "Negative amount",
+			statusCode: 400,
+			projectID:  3909655254191459782,
+			body: map[string]interface{}{
+				"p_location": map[string]interface{}{
+					"latitude":  12.34567,
+					"longitude": 56.78,
+				},
+				"d_location": map[string]interface{}{
+					"latitude":  -12.34567,
+					"longitude": -56.78,
+				},
+				"amount": []interface{}{-1, -2},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'amount' must have non-negative values"},
+			},
+			todo: true,
 		},
 		{
 			name:       "All fields",
 			statusCode: 201,
+			projectID:  3909655254191459782,
 			body: map[string]interface{}{
-				"name": "123",
-				"data": map[string]interface{}{"key": "value"},
+				"p_location": map[string]interface{}{
+					"latitude":  12.34567,
+					"longitude": 56.78,
+				},
+				"p_service": 115,
+				"d_location": map[string]interface{}{
+					"latitude":  -12.34567,
+					"longitude": -56.78,
+				},
+				"d_service": 215,
+				"amount":    []interface{}{15, 16},
+				"skills":    []interface{}{5, 50, 100},
+				"priority":  10,
+				"data":      map[string]interface{}{"key": "value"},
 			},
 			resBody: map[string]interface{}{
-				"name": "123",
-				"data": map[string]interface{}{"key": "value"},
+				"p_location": map[string]interface{}{
+					"latitude":  12.3457,
+					"longitude": 56.78,
+				},
+				"p_service": float64(115),
+				"d_location": map[string]interface{}{
+					"latitude":  -12.3457,
+					"longitude": -56.78,
+				},
+				"d_service":  float64(215),
+				"amount":     []interface{}{float64(15), float64(16)},
+				"skills":     []interface{}{float64(5), float64(50), float64(100)},
+				"priority":   float64(10),
+				"project_id": "3909655254191459782",
+				"data":       map[string]interface{}{"key": "value"},
 			},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			if tc.todo == true {
+				t.Skip("TODO")
+			}
 			m, b := tc.body, new(bytes.Buffer)
 			json.NewEncoder(b).Encode(m)
-			request, err := http.NewRequest("POST", "/shipments", b)
+			url := fmt.Sprintf("/projects/%d/shipments", tc.projectID)
+			request, err := http.NewRequest("POST", url, b)
 			request.Header.Set("Content-Type", "application/json")
 			require.NoError(t, err)
 
@@ -148,9 +330,101 @@ func TestCreateShipment(t *testing.T) {
 	}
 }
 
+func TestListShipments(t *testing.T) {
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
+	defer conn.Close(context.Background())
+	mux := server.Router
+
+	testCases := []struct {
+		name       string
+		statusCode int
+		projectID  int
+		resBody    []map[string]interface{}
+	}{
+		// TODO: Check this
+		{
+			name:       "Invalid ID",
+			statusCode: 200,
+			projectID:  100,
+			resBody:    []map[string]interface{}{},
+		},
+		{
+			name:       "Valid ID",
+			statusCode: 200,
+			projectID:  2593982828701335033,
+			resBody: []map[string]interface{}{
+				{
+					"id": "7794682317520784480",
+					"p_location": map[string]interface{}{
+						"latitude":  32.234,
+						"longitude": -23.2342,
+					},
+					"d_location": map[string]interface{}{
+						"latitude":  23.3458,
+						"longitude": 2.3242,
+					},
+					"service":    float64(145),
+					"delivery":   []interface{}{float64(10), float64(20)},
+					"pickup":     []interface{}{float64(20), float64(30)},
+					"skills":     []interface{}{float64(5), float64(50), float64(100)},
+					"priority":   float64(11),
+					"project_id": "2593982828701335033",
+					"data":       map[string]interface{}{"key": "value"},
+					"created_at": "2021-10-24 20:31:25",
+					"updated_at": "2021-10-24 20:31:25",
+				},
+				{
+					"id": "3329730179111013588",
+					"p_location": map[string]interface{}{
+						"latitude":  -32.234,
+						"longitude": -23.2342,
+					},
+					"d_location": map[string]interface{}{
+						"latitude":  23.3458,
+						"longitude": 2.3242,
+					},
+					"service":    float64(61),
+					"delivery":   []interface{}{float64(5), float64(6)},
+					"pickup":     []interface{}{float64(7), float64(8)},
+					"skills":     []interface{}{},
+					"priority":   float64(0),
+					"project_id": "2593982828701335033",
+					"data":       map[string]interface{}{"data": []interface{}{"value1", float64(2)}},
+					"created_at": "2021-10-24 21:12:24",
+					"updated_at": "2021-10-24 21:12:24",
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			url := fmt.Sprintf("/projects/%d/shipments", tc.projectID)
+			request, err := http.NewRequest("GET", url, nil)
+			require.NoError(t, err)
+
+			recorder := httptest.NewRecorder()
+			mux.ServeHTTP(recorder, request)
+
+			resp := recorder.Result()
+			body, err := io.ReadAll(resp.Body)
+			if err != nil {
+				t.Error(err)
+			}
+
+			assert.Equal(t, tc.statusCode, resp.StatusCode)
+			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
+			m := []map[string]interface{}{}
+			err = json.Unmarshal(body, &m)
+			assert.Equal(t, tc.resBody, m)
+		})
+	}
+}
+
 func TestGetShipment(t *testing.T) {
-	db := NewDatabase(t)
-	server, conn := setup(db)
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
 	defer conn.Close(context.Background())
 	mux := server.Router
 
@@ -171,13 +445,22 @@ func TestGetShipment(t *testing.T) {
 		{
 			name:       "Correct ID",
 			statusCode: 200,
-			shipmentID: 3909655254191459782,
+			shipmentID: 7794682317520784480,
 			resBody: map[string]interface{}{
-				"id":         "3909655254191459782",
-				"name":       "Sample Shipment",
-				"data":       "random",
-				"created_at": "2021-10-22 23:29:31",
-				"updated_at": "2021-10-22 23:29:31",
+				"id": "7794682317520784480",
+				"location": map[string]interface{}{
+					"latitude":  32.234,
+					"longitude": -23.2342,
+				},
+				"service":    float64(145),
+				"delivery":   []interface{}{float64(10), float64(20)},
+				"pickup":     []interface{}{float64(20), float64(30)},
+				"skills":     []interface{}{float64(5), float64(50), float64(100)},
+				"priority":   float64(11),
+				"project_id": "2593982828701335033",
+				"data":       map[string]interface{}{"key": "value"},
+				"created_at": "2021-10-24 20:31:25",
+				"updated_at": "2021-10-24 20:31:25",
 			},
 		},
 	}
@@ -206,72 +489,9 @@ func TestGetShipment(t *testing.T) {
 	}
 }
 
-func TestListShipments(t *testing.T) {
-	db := NewDatabase(t)
-	server, conn := setup(db)
-	defer conn.Close(context.Background())
-	mux := server.Router
-
-	testCases := []struct {
-		name       string
-		statusCode int
-		resBody    []map[string]interface{}
-	}{
-		{
-			name:       "Invalid ID",
-			statusCode: 200,
-			resBody: []map[string]interface{}{
-				{
-					"id":         "3909655254191459782",
-					"name":       "Sample Shipment",
-					"data":       "random",
-					"created_at": "2021-10-22 23:29:31",
-					"updated_at": "2021-10-22 23:29:31",
-				},
-				{
-					"id":         "2593982828701335033",
-					"name":       "",
-					"data":       map[string]interface{}{"s": float64(1)},
-					"created_at": "2021-10-24 19:52:52",
-					"updated_at": "2021-10-24 19:52:52",
-				},
-				{
-					"id":         "8943284028902589305",
-					"name":       "",
-					"data":       map[string]interface{}{"s": float64(1)},
-					"created_at": "2021-10-24 19:52:52",
-					"updated_at": "2021-10-24 19:52:52",
-				},
-			},
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			request, err := http.NewRequest("GET", "/shipments", nil)
-			require.NoError(t, err)
-
-			recorder := httptest.NewRecorder()
-			mux.ServeHTTP(recorder, request)
-
-			resp := recorder.Result()
-			body, err := io.ReadAll(resp.Body)
-			if err != nil {
-				t.Error(err)
-			}
-
-			assert.Equal(t, tc.statusCode, resp.StatusCode)
-			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
-			m := []map[string]interface{}{}
-			err = json.Unmarshal(body, &m)
-			assert.Equal(t, tc.resBody, m)
-		})
-	}
-}
-
 func TestUpdateShipment(t *testing.T) {
-	db := NewDatabase(t)
-	server, conn := setup(db)
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
 	defer conn.Close(context.Background())
 	mux := server.Router
 
@@ -281,17 +501,27 @@ func TestUpdateShipment(t *testing.T) {
 		shipmentID int
 		body       map[string]interface{}
 		resBody    map[string]interface{}
+		todo       bool
 	}{
 		{
 			name:       "Empty Body",
 			statusCode: 200,
-			shipmentID: 3909655254191459782,
+			shipmentID: 6362411701075685873,
 			body:       map[string]interface{}{},
 			resBody: map[string]interface{}{
-				"id":         "3909655254191459782",
-				"name":       "Sample Shipment",
-				"data":       "random",
-				"created_at": "2021-10-22 23:29:31",
+				"id": "6362411701075685873",
+				"location": map[string]interface{}{
+					"latitude":  32.234,
+					"longitude": -23.2342,
+				},
+				"service":    float64(145),
+				"delivery":   []interface{}{float64(10), float64(20)},
+				"pickup":     []interface{}{float64(20), float64(30)},
+				"skills":     []interface{}{float64(5), float64(50), float64(100)},
+				"priority":   float64(11),
+				"project_id": "2593982828701335033",
+				"data":       map[string]interface{}{"key": "value"},
+				"created_at": "2021-10-24 20:31:25",
 			},
 		},
 		{
@@ -304,77 +534,371 @@ func TestUpdateShipment(t *testing.T) {
 			},
 		},
 		{
-			name:       "Only Name",
-			statusCode: 200,
-			shipmentID: 3909655254191459782,
+			name:       "Only Location - Wrong parameters 1",
+			statusCode: 400,
+			shipmentID: 6362411701075685873,
 			body: map[string]interface{}{
-				"name": "Another Sample Shipment",
+				"location": "Sample Location",
 			},
 			resBody: map[string]interface{}{
-				"id":         "3909655254191459782",
-				"name":       "Another Sample Shipment",
-				"data":       "random",
-				"created_at": "2021-10-22 23:29:31",
+				"errors": []interface{}{"Field 'location' must be of 'util.LocationParams' type."},
+			},
+		},
+		{
+			name:       "Only Location - Wrong parameters 2",
+			statusCode: 400,
+			shipmentID: 6362411701075685873,
+			body: map[string]interface{}{
+				"location": map[string]interface{}{
+					"latitude":  "12.34567",
+					"longitude": "56.78",
+				},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{
+					"Field 'latitude' of type 'float64' is required",
+					"Field 'longitude' of type 'float64' is required",
+				},
+			},
+			todo: true,
+		},
+		{
+			name:       "Only Location - Wrong range of parameters",
+			statusCode: 400,
+			shipmentID: 6362411701075685873,
+			body: map[string]interface{}{
+				"location": map[string]interface{}{
+					"latitude":  112.34567,
+					"longitude": 256.78,
+				},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{
+					"Field 'latitude' must be between -90 and 90",
+					"Field 'longitude' must be between -180 and 180",
+				},
+			},
+			todo: true,
+		},
+		{
+			name:       "Priority Min Range incorrect",
+			statusCode: 400,
+			shipmentID: 6362411701075685873,
+			body: map[string]interface{}{
+				"priority": -1,
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
+			},
+			todo: true,
+		},
+		{
+			name:       "Priority Max Range incorrect",
+			statusCode: 400,
+			shipmentID: 6362411701075685873,
+			body: map[string]interface{}{
+				"priority": 101,
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
+			},
+			todo: true,
+		},
+		{
+			name:       "Negative skills",
+			statusCode: 400,
+			shipmentID: 6362411701075685873,
+			body: map[string]interface{}{
+				"skills": []interface{}{-1, -2},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'skills' must have non-negative values"},
+			},
+			todo: true,
+		},
+		{
+			name:       "Negative pickup",
+			statusCode: 400,
+			shipmentID: 6362411701075685873,
+			body: map[string]interface{}{
+				"pickup": []interface{}{-1, -2},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'pickup' must have non-negative values"},
+			},
+			todo: true,
+		},
+		{
+			name:       "Negative delivery",
+			statusCode: 400,
+			shipmentID: 6362411701075685873,
+			body: map[string]interface{}{
+				"pickup": []interface{}{-1, -2},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'delivery' must have non-negative values"},
+			},
+			todo: true,
+		},
+		{
+			name:       "Inconsistent pickup and delivery length",
+			statusCode: 400,
+			shipmentID: 6362411701075685873,
+			body: map[string]interface{}{
+				"pickup":   []interface{}{1},
+				"delivery": []interface{}{2, 3},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'pickup' and 'delivery' must have same length"},
+			},
+			todo: true,
+		},
+		{
+			name:       "Only location",
+			statusCode: 200,
+			shipmentID: 6362411701075685873,
+			body: map[string]interface{}{
+				"location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+			},
+			resBody: map[string]interface{}{
+				"id": "6362411701075685873",
+				"location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"service":    float64(145),
+				"delivery":   []interface{}{float64(10), float64(20)},
+				"pickup":     []interface{}{float64(20), float64(30)},
+				"skills":     []interface{}{float64(5), float64(50), float64(100)},
+				"priority":   float64(11),
+				"project_id": "2593982828701335033",
+				"data":       map[string]interface{}{"key": "value"},
+				"created_at": "2021-10-24 20:31:25",
+			},
+		},
+		{
+			name:       "Only service",
+			statusCode: 200,
+			shipmentID: 6362411701075685873,
+			body: map[string]interface{}{
+				"service": 1005,
+			},
+			resBody: map[string]interface{}{
+				"id": "6362411701075685873",
+				"location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"service":    float64(1005),
+				"delivery":   []interface{}{float64(10), float64(20)},
+				"pickup":     []interface{}{float64(20), float64(30)},
+				"skills":     []interface{}{float64(5), float64(50), float64(100)},
+				"priority":   float64(11),
+				"project_id": "2593982828701335033",
+				"data":       map[string]interface{}{"key": "value"},
+				"created_at": "2021-10-24 20:31:25",
+			},
+		},
+		{
+			name:       "Only delivery",
+			statusCode: 200,
+			shipmentID: 6362411701075685873,
+			body: map[string]interface{}{
+				"delivery": []interface{}{20, 30},
+			},
+			resBody: map[string]interface{}{
+				"id": "6362411701075685873",
+				"location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"service":    float64(1005),
+				"delivery":   []interface{}{float64(20), float64(30)},
+				"pickup":     []interface{}{float64(20), float64(30)},
+				"skills":     []interface{}{float64(5), float64(50), float64(100)},
+				"priority":   float64(11),
+				"project_id": "2593982828701335033",
+				"data":       map[string]interface{}{"key": "value"},
+				"created_at": "2021-10-24 20:31:25",
+			},
+		},
+		{
+			name:       "Only pickup",
+			statusCode: 200,
+			shipmentID: 6362411701075685873,
+			body: map[string]interface{}{
+				"pickup": []interface{}{10, 20},
+			},
+			resBody: map[string]interface{}{
+				"id": "6362411701075685873",
+				"location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"service":    float64(1005),
+				"delivery":   []interface{}{float64(20), float64(30)},
+				"pickup":     []interface{}{float64(10), float64(20)},
+				"skills":     []interface{}{float64(5), float64(50), float64(100)},
+				"priority":   float64(11),
+				"project_id": "2593982828701335033",
+				"data":       map[string]interface{}{"key": "value"},
+				"created_at": "2021-10-24 20:31:25",
+			},
+		},
+		{
+			name:       "Only skills",
+			statusCode: 200,
+			shipmentID: 6362411701075685873,
+			body: map[string]interface{}{
+				"skills": []interface{}{5},
+			},
+			resBody: map[string]interface{}{
+				"id": "6362411701075685873",
+				"location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"service":    float64(1005),
+				"delivery":   []interface{}{float64(20), float64(30)},
+				"pickup":     []interface{}{float64(10), float64(20)},
+				"skills":     []interface{}{float64(5)},
+				"priority":   float64(11),
+				"project_id": "2593982828701335033",
+				"data":       map[string]interface{}{"key": "value"},
+				"created_at": "2021-10-24 20:31:25",
+			},
+		},
+		{
+			name:       "Only priority",
+			statusCode: 200,
+			shipmentID: 6362411701075685873,
+			body: map[string]interface{}{
+				"priority": 100,
+			},
+			resBody: map[string]interface{}{
+				"id": "6362411701075685873",
+				"location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"service":    float64(1005),
+				"delivery":   []interface{}{float64(20), float64(30)},
+				"pickup":     []interface{}{float64(10), float64(20)},
+				"skills":     []interface{}{float64(5)},
+				"priority":   float64(100),
+				"project_id": "2593982828701335033",
+				"data":       map[string]interface{}{"key": "value"},
+				"created_at": "2021-10-24 20:31:25",
 			},
 		},
 		{
 			name:       "Only data",
 			statusCode: 200,
-			shipmentID: 3909655254191459782,
+			shipmentID: 6362411701075685873,
 			body: map[string]interface{}{
-				"data": map[string]interface{}{"key": "value"},
+				"data": map[string]interface{}{},
 			},
 			resBody: map[string]interface{}{
-				"id":         "3909655254191459782",
-				"name":       "Another Sample Shipment",
-				"data":       map[string]interface{}{"key": "value"},
-				"created_at": "2021-10-22 23:29:31",
+				"id": "6362411701075685873",
+				"location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"service":    float64(1005),
+				"delivery":   []interface{}{float64(20), float64(30)},
+				"pickup":     []interface{}{float64(10), float64(20)},
+				"skills":     []interface{}{float64(5)},
+				"priority":   float64(100),
+				"project_id": "2593982828701335033",
+				"data":       map[string]interface{}{},
+				"created_at": "2021-10-24 20:31:25",
 			},
 		},
 		{
-			name:       "Integer name",
+			name:       "Invalid projectID type",
 			statusCode: 400,
-			shipmentID: 3909655254191459782,
+			shipmentID: 6362411701075685873,
 			body: map[string]interface{}{
-				"name": 123,
+				"project_id": 100,
 			},
-			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'name' must be of string type."},
-			},
+			resBody: map[string]interface{}{"errors": []interface{}{"Field 'project_id' must be of 'string' type."}},
 		},
 		{
-			name:       "Integer data",
-			statusCode: 200,
-			shipmentID: 3909655254191459782,
+			name:       "Invalid projectID",
+			statusCode: 400,
+			shipmentID: 6362411701075685873,
 			body: map[string]interface{}{
-				"data": 123,
+				"project_id": "100",
+			},
+			resBody: map[string]interface{}{"errors": []interface{}{"Project with the given 'project_id' does not exist."}},
+			todo:    true,
+		},
+		{
+			name:       "Valid projectID",
+			statusCode: 200,
+			shipmentID: 6362411701075685873,
+			body: map[string]interface{}{
+				"project_id": "8943284028902589305",
 			},
 			resBody: map[string]interface{}{
-				"id":         "3909655254191459782",
-				"name":       "Another Sample Shipment",
-				"data":       float64(123),
-				"created_at": "2021-10-22 23:29:31",
+				"id": "6362411701075685873",
+				"location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"service":    float64(1005),
+				"delivery":   []interface{}{float64(20), float64(30)},
+				"pickup":     []interface{}{float64(10), float64(20)},
+				"skills":     []interface{}{float64(5)},
+				"priority":   float64(100),
+				"project_id": "8943284028902589305",
+				"data":       map[string]interface{}{},
+				"created_at": "2021-10-24 20:31:25",
 			},
 		},
 		{
 			name:       "All fields",
 			statusCode: 200,
-			shipmentID: 3909655254191459782,
+			shipmentID: 6362411701075685873,
 			body: map[string]interface{}{
-				"name": "Final Sample Shipment",
-				"data": map[string]interface{}{"key": "value"},
+				"location": map[string]interface{}{
+					"latitude":  -23.4567,
+					"longitude": 78.90,
+				},
+				"service":    105,
+				"delivery":   []interface{}{20},
+				"pickup":     []interface{}{4},
+				"skills":     []interface{}{},
+				"priority":   float64(0),
+				"project_id": "3909655254191459782",
+				"data":       map[string]interface{}{"key": 123.23},
 			},
 			resBody: map[string]interface{}{
-				"id":         "3909655254191459782",
-				"name":       "Final Sample Shipment",
-				"data":       map[string]interface{}{"key": "value"},
-				"created_at": "2021-10-22 23:29:31",
+				"id": "6362411701075685873",
+				"location": map[string]interface{}{
+					"latitude":  -23.4567,
+					"longitude": 78.90,
+				},
+				"service":    float64(105),
+				"delivery":   []interface{}{float64(20)},
+				"pickup":     []interface{}{float64(4)},
+				"skills":     []interface{}{},
+				"priority":   float64(0),
+				"project_id": "3909655254191459782",
+				"data":       map[string]interface{}{"key": 123.23},
+				"created_at": "2021-10-24 20:31:25",
 			},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			if tc.todo == true {
+				t.Skip("TODO")
+			}
 			m, b := tc.body, new(bytes.Buffer)
 			json.NewEncoder(b).Encode(m)
 			url := fmt.Sprintf("/shipments/%d", tc.shipmentID)
@@ -402,8 +926,8 @@ func TestUpdateShipment(t *testing.T) {
 }
 
 func TestDeleteShipment(t *testing.T) {
-	db := NewDatabase(t)
-	server, conn := setup(db)
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
 	defer conn.Close(context.Background())
 	mux := server.Router
 
@@ -423,8 +947,8 @@ func TestDeleteShipment(t *testing.T) {
 		},
 		{
 			name:       "Correct ID",
-			statusCode: 204,
-			shipmentID: 3909655254191459782,
+			statusCode: 200,
+			shipmentID: 7794682317520784480,
 			resBody: map[string]interface{}{
 				"success": true,
 			},

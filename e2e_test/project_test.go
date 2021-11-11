@@ -43,8 +43,8 @@ import (
 )
 
 func TestCreateProject(t *testing.T) {
-	db := NewDatabase(t)
-	server, conn := setup(db)
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
 	defer conn.Close(context.Background())
 	mux := server.Router
 
@@ -105,6 +105,18 @@ func TestCreateProject(t *testing.T) {
 				"data": float64(123),
 			},
 		},
+		{
+			name:       "All fields",
+			statusCode: 201,
+			body: map[string]interface{}{
+				"name": "123",
+				"data": map[string]interface{}{"key": "value"},
+			},
+			resBody: map[string]interface{}{
+				"name": "123",
+				"data": map[string]interface{}{"key": "value"},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
@@ -137,21 +149,21 @@ func TestCreateProject(t *testing.T) {
 }
 
 func TestGetProject(t *testing.T) {
-	db := NewDatabase(t)
-	server, conn := setup(db)
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
 	defer conn.Close(context.Background())
 	mux := server.Router
 
 	testCases := []struct {
 		name       string
 		statusCode int
-		projectId  int
+		projectID  int
 		resBody    map[string]interface{}
 	}{
 		{
 			name:       "Invalid ID",
 			statusCode: 404,
-			projectId:  100,
+			projectID:  100,
 			resBody: map[string]interface{}{
 				"error": "Not Found",
 			},
@@ -159,7 +171,7 @@ func TestGetProject(t *testing.T) {
 		{
 			name:       "Correct ID",
 			statusCode: 200,
-			projectId:  3909655254191459782,
+			projectID:  3909655254191459782,
 			resBody: map[string]interface{}{
 				"id":         "3909655254191459782",
 				"name":       "Sample Project",
@@ -172,7 +184,7 @@ func TestGetProject(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			url := fmt.Sprintf("/projects/%d", tc.projectId)
+			url := fmt.Sprintf("/projects/%d", tc.projectID)
 			request, err := http.NewRequest("GET", url, nil)
 			require.NoError(t, err)
 
@@ -195,8 +207,8 @@ func TestGetProject(t *testing.T) {
 }
 
 func TestListProjects(t *testing.T) {
-	db := NewDatabase(t)
-	server, conn := setup(db)
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
 	defer conn.Close(context.Background())
 	mux := server.Router
 
@@ -206,7 +218,7 @@ func TestListProjects(t *testing.T) {
 		resBody    []map[string]interface{}
 	}{
 		{
-			name:       "Invalid ID",
+			name:       "All projects",
 			statusCode: 200,
 			resBody: []map[string]interface{}{
 				{
@@ -258,22 +270,22 @@ func TestListProjects(t *testing.T) {
 }
 
 func TestUpdateProject(t *testing.T) {
-	db := NewDatabase(t)
-	server, conn := setup(db)
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
 	defer conn.Close(context.Background())
 	mux := server.Router
 
 	testCases := []struct {
 		name       string
 		statusCode int
-		projectId  int
+		projectID  int
 		body       map[string]interface{}
 		resBody    map[string]interface{}
 	}{
 		{
 			name:       "Empty Body",
 			statusCode: 200,
-			projectId:  3909655254191459782,
+			projectID:  3909655254191459782,
 			body:       map[string]interface{}{},
 			resBody: map[string]interface{}{
 				"id":         "3909655254191459782",
@@ -285,7 +297,7 @@ func TestUpdateProject(t *testing.T) {
 		{
 			name:       "Invalid ID",
 			statusCode: 404,
-			projectId:  100,
+			projectID:  100,
 			body:       map[string]interface{}{},
 			resBody: map[string]interface{}{
 				"error": "Not Found",
@@ -294,7 +306,7 @@ func TestUpdateProject(t *testing.T) {
 		{
 			name:       "Only Name",
 			statusCode: 200,
-			projectId:  3909655254191459782,
+			projectID:  3909655254191459782,
 			body: map[string]interface{}{
 				"name": "Another Sample Project",
 			},
@@ -308,7 +320,7 @@ func TestUpdateProject(t *testing.T) {
 		{
 			name:       "Only data",
 			statusCode: 200,
-			projectId:  3909655254191459782,
+			projectID:  3909655254191459782,
 			body: map[string]interface{}{
 				"data": map[string]interface{}{"key": "value"},
 			},
@@ -322,7 +334,7 @@ func TestUpdateProject(t *testing.T) {
 		{
 			name:       "Integer name",
 			statusCode: 400,
-			projectId:  3909655254191459782,
+			projectID:  3909655254191459782,
 			body: map[string]interface{}{
 				"name": 123,
 			},
@@ -333,7 +345,7 @@ func TestUpdateProject(t *testing.T) {
 		{
 			name:       "Integer data",
 			statusCode: 200,
-			projectId:  3909655254191459782,
+			projectID:  3909655254191459782,
 			body: map[string]interface{}{
 				"data": 123,
 			},
@@ -344,13 +356,28 @@ func TestUpdateProject(t *testing.T) {
 				"created_at": "2021-10-22 23:29:31",
 			},
 		},
+		{
+			name:       "All fields",
+			statusCode: 200,
+			projectID:  3909655254191459782,
+			body: map[string]interface{}{
+				"name": "Final Sample Project",
+				"data": map[string]interface{}{"key": "value"},
+			},
+			resBody: map[string]interface{}{
+				"id":         "3909655254191459782",
+				"name":       "Final Sample Project",
+				"data":       map[string]interface{}{"key": "value"},
+				"created_at": "2021-10-22 23:29:31",
+			},
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			m, b := tc.body, new(bytes.Buffer)
 			json.NewEncoder(b).Encode(m)
-			url := fmt.Sprintf("/projects/%d", tc.projectId)
+			url := fmt.Sprintf("/projects/%d", tc.projectID)
 			request, err := http.NewRequest("PATCH", url, b)
 			request.Header.Set("Content-Type", "application/json")
 			require.NoError(t, err)
@@ -375,29 +402,29 @@ func TestUpdateProject(t *testing.T) {
 }
 
 func TestDeleteProject(t *testing.T) {
-	db := NewDatabase(t)
-	server, conn := setup(db)
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
 	defer conn.Close(context.Background())
 	mux := server.Router
 
 	testCases := []struct {
 		name       string
 		statusCode int
-		projectId  int
+		projectID  int
 		resBody    map[string]interface{}
 	}{
 		{
 			name:       "Invalid ID",
 			statusCode: 404,
-			projectId:  100,
+			projectID:  100,
 			resBody: map[string]interface{}{
 				"error": "Not Found",
 			},
 		},
 		{
 			name:       "Correct ID",
-			statusCode: 204,
-			projectId:  3909655254191459782,
+			statusCode: 200,
+			projectID:  3909655254191459782,
 			resBody: map[string]interface{}{
 				"success": true,
 			},
@@ -406,7 +433,7 @@ func TestDeleteProject(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			url := fmt.Sprintf("/projects/%d", tc.projectId)
+			url := fmt.Sprintf("/projects/%d", tc.projectID)
 			request, err := http.NewRequest("DELETE", url, nil)
 			require.NoError(t, err)
 

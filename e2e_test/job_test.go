@@ -43,8 +43,8 @@ import (
 )
 
 func TestCreateJob(t *testing.T) {
-	db := NewDatabase(t)
-	server, conn := setup(db)
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
 	defer conn.Close(context.Background())
 	mux := server.Router
 
@@ -161,6 +161,7 @@ func TestCreateJob(t *testing.T) {
 			resBody: map[string]interface{}{
 				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
 			},
+			todo: true,
 		},
 		{
 			name:       "Priority Max Range incorrect",
@@ -176,6 +177,72 @@ func TestCreateJob(t *testing.T) {
 			resBody: map[string]interface{}{
 				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
 			},
+			todo: true,
+		},
+		{
+			name:       "Negative skills",
+			statusCode: 400,
+			projectID:  3909655254191459782,
+			body: map[string]interface{}{
+				"location": map[string]interface{}{
+					"latitude":  12.34567,
+					"longitude": 56.78,
+				},
+				"skills": []interface{}{-1, -2},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'skills' must have non-negative values"},
+			},
+			todo: true,
+		},
+		{
+			name:       "Negative pickup",
+			statusCode: 400,
+			projectID:  3909655254191459782,
+			body: map[string]interface{}{
+				"location": map[string]interface{}{
+					"latitude":  12.34567,
+					"longitude": 56.78,
+				},
+				"pickup": []interface{}{-1, -2},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'pickup' must have non-negative values"},
+			},
+			todo: true,
+		},
+		{
+			name:       "Negative delivery",
+			statusCode: 400,
+			projectID:  3909655254191459782,
+			body: map[string]interface{}{
+				"location": map[string]interface{}{
+					"latitude":  12.34567,
+					"longitude": 56.78,
+				},
+				"pickup": []interface{}{-1, -2},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'delivery' must have non-negative values"},
+			},
+			todo: true,
+		},
+		{
+			name:       "Inconsistent pickup and delivery length",
+			statusCode: 400,
+			projectID:  3909655254191459782,
+			body: map[string]interface{}{
+				"location": map[string]interface{}{
+					"latitude":  12.34567,
+					"longitude": 56.78,
+				},
+				"pickup":   []interface{}{1},
+				"delivery": []interface{}{2, 3},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'pickup' and 'delivery' must have same length"},
+			},
+			todo: true,
 		},
 		{
 			name:       "All fields",
@@ -186,10 +253,10 @@ func TestCreateJob(t *testing.T) {
 					"latitude":  12.3457,
 					"longitude": 56.78,
 				},
-				"service":  15,
-				"delivery": []interface{}{float64(10), float64(20)},
-				"pickup":   []interface{}{float64(15), float64(16)},
-				"skills":   []interface{}{float64(5), float64(50)},
+				"service":  215,
+				"delivery": []interface{}{10, 20},
+				"pickup":   []interface{}{15, 16},
+				"skills":   []interface{}{5, 50, 100},
 				"priority": 10,
 				"data":     map[string]interface{}{"key": "value"},
 			},
@@ -198,10 +265,10 @@ func TestCreateJob(t *testing.T) {
 					"latitude":  12.3457,
 					"longitude": 56.78,
 				},
-				"service":    float64(15),
+				"service":    float64(215),
 				"delivery":   []interface{}{float64(10), float64(20)},
 				"pickup":     []interface{}{float64(15), float64(16)},
-				"skills":     []interface{}{float64(5), float64(50)},
+				"skills":     []interface{}{float64(5), float64(50), float64(100)},
 				"priority":   float64(10),
 				"project_id": "3909655254191459782",
 				"data":       map[string]interface{}{"key": "value"},
@@ -242,22 +309,106 @@ func TestCreateJob(t *testing.T) {
 	}
 }
 
-func TestGetJob(t *testing.T) {
-	db := NewDatabase(t)
-	server, conn := setup(db)
+func TestListJobs(t *testing.T) {
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
 	defer conn.Close(context.Background())
 	mux := server.Router
 
 	testCases := []struct {
 		name       string
 		statusCode int
-		jobId      int
+		projectID  int
+		resBody    []map[string]interface{}
+	}{
+		// TODO: Check this
+		{
+			name:       "Invalid ID",
+			statusCode: 200,
+			projectID:  100,
+			resBody:    []map[string]interface{}{},
+		},
+		{
+			name:       "Valid ID",
+			statusCode: 200,
+			projectID:  2593982828701335033,
+			resBody: []map[string]interface{}{
+				{
+					"id": "6362411701075685873",
+					"location": map[string]interface{}{
+						"latitude":  32.234,
+						"longitude": -23.2342,
+					},
+					"service":    145,
+					"delivery":   []interface{}{10, 20},
+					"pickup":     []interface{}{20, 30},
+					"skills":     []interface{}{5, 50, 100},
+					"priority":   11,
+					"project_id": "2593982828701335033",
+					"data":       map[string]interface{}{"key": "value"},
+					"created_at": "2021-10-24 20:31:25",
+					"updated_at": "2021-10-24 20:31:25",
+				},
+				{
+					"id": "2229737119501208952",
+					"location": map[string]interface{}{
+						"latitude":  -81.23,
+						"longitude": float64(12),
+					},
+					"service":    float64(61),
+					"delivery":   []interface{}{float64(5), float64(6)},
+					"pickup":     []interface{}{float64(7), float64(8)},
+					"skills":     []interface{}{},
+					"priority":   float64(0),
+					"project_id": "2593982828701335033",
+					"data":       map[string]interface{}{"data": []interface{}{"value1", float64(2)}},
+					"created_at": "2021-10-24 21:12:24",
+					"updated_at": "2021-10-24 21:12:24",
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			url := fmt.Sprintf("/projects/%d/jobs", tc.projectID)
+			request, err := http.NewRequest("GET", url, nil)
+			require.NoError(t, err)
+
+			recorder := httptest.NewRecorder()
+			mux.ServeHTTP(recorder, request)
+
+			resp := recorder.Result()
+			body, err := io.ReadAll(resp.Body)
+			if err != nil {
+				t.Error(err)
+			}
+
+			assert.Equal(t, tc.statusCode, resp.StatusCode)
+			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
+			m := []map[string]interface{}{}
+			err = json.Unmarshal(body, &m)
+			assert.Equal(t, tc.resBody, m)
+		})
+	}
+}
+
+func TestGetJob(t *testing.T) {
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
+	defer conn.Close(context.Background())
+	mux := server.Router
+
+	testCases := []struct {
+		name       string
+		statusCode int
+		jobID      int
 		resBody    map[string]interface{}
 	}{
 		{
 			name:       "Invalid ID",
 			statusCode: 404,
-			jobId:      100,
+			jobID:      100,
 			resBody: map[string]interface{}{
 				"error": "Not Found",
 			},
@@ -265,20 +416,29 @@ func TestGetJob(t *testing.T) {
 		{
 			name:       "Correct ID",
 			statusCode: 200,
-			jobId:      6362411701075685873,
+			jobID:      6362411701075685873,
 			resBody: map[string]interface{}{
-				"id":         "6362411701075685873",
-				"name":       "Sample Job",
-				"data":       "random",
-				"created_at": "2021-10-22 23:29:31",
-				"updated_at": "2021-10-22 23:29:31",
+				"id": "6362411701075685873",
+				"location": map[string]interface{}{
+					"latitude":  32.234,
+					"longitude": -23.2342,
+				},
+				"service":    float64(145),
+				"delivery":   []interface{}{float64(10), float64(20)},
+				"pickup":     []interface{}{float64(20), float64(30)},
+				"skills":     []interface{}{float64(5), float64(50), float64(100)},
+				"priority":   float64(11),
+				"project_id": "2593982828701335033",
+				"data":       map[string]interface{}{"key": "value"},
+				"created_at": "2021-10-24 20:31:25",
+				"updated_at": "2021-10-24 20:31:25",
 			},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			url := fmt.Sprintf("/jobs/%d", tc.jobId)
+			url := fmt.Sprintf("/jobs/%d", tc.jobID)
 			request, err := http.NewRequest("GET", url, nil)
 			require.NoError(t, err)
 
@@ -300,163 +460,419 @@ func TestGetJob(t *testing.T) {
 	}
 }
 
-func TestListJobs(t *testing.T) {
-	db := NewDatabase(t)
-	server, conn := setup(db)
-	defer conn.Close(context.Background())
-	mux := server.Router
-
-	testCases := []struct {
-		name       string
-		statusCode int
-		resBody    []map[string]interface{}
-	}{
-		{
-			name:       "Invalid ID",
-			statusCode: 200,
-			resBody: []map[string]interface{}{
-				{
-					"id":         "3909655254191459782",
-					"name":       "Sample Job",
-					"data":       "random",
-					"created_at": "2021-10-22 23:29:31",
-					"updated_at": "2021-10-22 23:29:31",
-				},
-				{
-					"id":         "2593982828701335033",
-					"name":       "",
-					"data":       map[string]interface{}{"s": float64(1)},
-					"created_at": "2021-10-24 19:52:52",
-					"updated_at": "2021-10-24 19:52:52",
-				},
-				{
-					"id":         "8943284028902589305",
-					"name":       "",
-					"data":       map[string]interface{}{"s": float64(1)},
-					"created_at": "2021-10-24 19:52:52",
-					"updated_at": "2021-10-24 19:52:52",
-				},
-			},
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			request, err := http.NewRequest("GET", "/jobs", nil)
-			require.NoError(t, err)
-
-			recorder := httptest.NewRecorder()
-			mux.ServeHTTP(recorder, request)
-
-			resp := recorder.Result()
-			body, err := io.ReadAll(resp.Body)
-			if err != nil {
-				t.Error(err)
-			}
-
-			assert.Equal(t, tc.statusCode, resp.StatusCode)
-			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
-			m := []map[string]interface{}{}
-			err = json.Unmarshal(body, &m)
-			assert.Equal(t, tc.resBody, m)
-		})
-	}
-}
-
 func TestUpdateJob(t *testing.T) {
-	db := NewDatabase(t)
-	server, conn := setup(db)
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
 	defer conn.Close(context.Background())
 	mux := server.Router
 
 	testCases := []struct {
 		name       string
 		statusCode int
-		jobId      int
+		jobID      int
 		body       map[string]interface{}
 		resBody    map[string]interface{}
+		todo       bool
 	}{
 		{
 			name:       "Empty Body",
 			statusCode: 200,
-			jobId:      3909655254191459782,
+			jobID:      6362411701075685873,
 			body:       map[string]interface{}{},
 			resBody: map[string]interface{}{
-				"id":         "3909655254191459782",
-				"name":       "Sample Job",
-				"data":       "random",
-				"created_at": "2021-10-22 23:29:31",
+				"id": "6362411701075685873",
+				"location": map[string]interface{}{
+					"latitude":  32.234,
+					"longitude": -23.2342,
+				},
+				"service":    float64(145),
+				"delivery":   []interface{}{float64(10), float64(20)},
+				"pickup":     []interface{}{float64(20), float64(30)},
+				"skills":     []interface{}{float64(5), float64(50), float64(100)},
+				"priority":   float64(11),
+				"project_id": "2593982828701335033",
+				"data":       map[string]interface{}{"key": "value"},
+				"created_at": "2021-10-24 20:31:25",
 			},
 		},
 		{
 			name:       "Invalid ID",
 			statusCode: 404,
-			jobId:      100,
+			jobID:      100,
 			body:       map[string]interface{}{},
 			resBody: map[string]interface{}{
 				"error": "Not Found",
 			},
 		},
 		{
-			name:       "Only Name",
-			statusCode: 200,
-			jobId:      3909655254191459782,
+			name:       "Only Location - Wrong parameters 1",
+			statusCode: 400,
+			jobID:      6362411701075685873,
 			body: map[string]interface{}{
-				"name": "Another Sample Job",
+				"location": "Sample Location",
 			},
 			resBody: map[string]interface{}{
-				"id":         "3909655254191459782",
-				"name":       "Another Sample Job",
-				"data":       "random",
-				"created_at": "2021-10-22 23:29:31",
+				"errors": []interface{}{"Field 'location' must be of 'util.LocationParams' type."},
+			},
+		},
+		{
+			name:       "Only Location - Wrong parameters 2",
+			statusCode: 400,
+			jobID:      6362411701075685873,
+			body: map[string]interface{}{
+				"location": map[string]interface{}{
+					"latitude":  "12.34567",
+					"longitude": "56.78",
+				},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{
+					"Field 'latitude' of type 'float64' is required",
+					"Field 'longitude' of type 'float64' is required",
+				},
+			},
+			todo: true,
+		},
+		{
+			name:       "Only Location - Wrong range of parameters",
+			statusCode: 400,
+			jobID:      6362411701075685873,
+			body: map[string]interface{}{
+				"location": map[string]interface{}{
+					"latitude":  112.34567,
+					"longitude": 256.78,
+				},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{
+					"Field 'latitude' must be between -90 and 90",
+					"Field 'longitude' must be between -180 and 180",
+				},
+			},
+			todo: true,
+		},
+		{
+			name:       "Priority Min Range incorrect",
+			statusCode: 400,
+			jobID:      6362411701075685873,
+			body: map[string]interface{}{
+				"priority": -1,
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
+			},
+			todo: true,
+		},
+		{
+			name:       "Priority Max Range incorrect",
+			statusCode: 400,
+			jobID:      6362411701075685873,
+			body: map[string]interface{}{
+				"priority": 101,
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
+			},
+			todo: true,
+		},
+		{
+			name:       "Negative skills",
+			statusCode: 400,
+			jobID:      6362411701075685873,
+			body: map[string]interface{}{
+				"skills": []interface{}{-1, -2},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'skills' must have non-negative values"},
+			},
+			todo: true,
+		},
+		{
+			name:       "Negative pickup",
+			statusCode: 400,
+			jobID:      6362411701075685873,
+			body: map[string]interface{}{
+				"pickup": []interface{}{-1, -2},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'pickup' must have non-negative values"},
+			},
+			todo: true,
+		},
+		{
+			name:       "Negative delivery",
+			statusCode: 400,
+			jobID:      6362411701075685873,
+			body: map[string]interface{}{
+				"pickup": []interface{}{-1, -2},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'delivery' must have non-negative values"},
+			},
+			todo: true,
+		},
+		{
+			name:       "Inconsistent pickup and delivery length",
+			statusCode: 400,
+			jobID:      6362411701075685873,
+			body: map[string]interface{}{
+				"pickup":   []interface{}{1},
+				"delivery": []interface{}{2, 3},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'pickup' and 'delivery' must have same length"},
+			},
+			todo: true,
+		},
+		{
+			name:       "Only location",
+			statusCode: 200,
+			jobID:      6362411701075685873,
+			body: map[string]interface{}{
+				"location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+			},
+			resBody: map[string]interface{}{
+				"id": "6362411701075685873",
+				"location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"service":    float64(145),
+				"delivery":   []interface{}{float64(10), float64(20)},
+				"pickup":     []interface{}{float64(20), float64(30)},
+				"skills":     []interface{}{float64(5), float64(50), float64(100)},
+				"priority":   float64(11),
+				"project_id": "2593982828701335033",
+				"data":       map[string]interface{}{"key": "value"},
+				"created_at": "2021-10-24 20:31:25",
+			},
+		},
+		{
+			name:       "Only service",
+			statusCode: 200,
+			jobID:      6362411701075685873,
+			body: map[string]interface{}{
+				"service": 1005,
+			},
+			resBody: map[string]interface{}{
+				"id": "6362411701075685873",
+				"location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"service":    float64(1005),
+				"delivery":   []interface{}{float64(10), float64(20)},
+				"pickup":     []interface{}{float64(20), float64(30)},
+				"skills":     []interface{}{float64(5), float64(50), float64(100)},
+				"priority":   float64(11),
+				"project_id": "2593982828701335033",
+				"data":       map[string]interface{}{"key": "value"},
+				"created_at": "2021-10-24 20:31:25",
+			},
+		},
+		{
+			name:       "Only delivery",
+			statusCode: 200,
+			jobID:      6362411701075685873,
+			body: map[string]interface{}{
+				"delivery": []interface{}{20, 30},
+			},
+			resBody: map[string]interface{}{
+				"id": "6362411701075685873",
+				"location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"service":    float64(1005),
+				"delivery":   []interface{}{float64(20), float64(30)},
+				"pickup":     []interface{}{float64(20), float64(30)},
+				"skills":     []interface{}{float64(5), float64(50), float64(100)},
+				"priority":   float64(11),
+				"project_id": "2593982828701335033",
+				"data":       map[string]interface{}{"key": "value"},
+				"created_at": "2021-10-24 20:31:25",
+			},
+		},
+		{
+			name:       "Only pickup",
+			statusCode: 200,
+			jobID:      6362411701075685873,
+			body: map[string]interface{}{
+				"pickup": []interface{}{10, 20},
+			},
+			resBody: map[string]interface{}{
+				"id": "6362411701075685873",
+				"location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"service":    float64(1005),
+				"delivery":   []interface{}{float64(20), float64(30)},
+				"pickup":     []interface{}{float64(10), float64(20)},
+				"skills":     []interface{}{float64(5), float64(50), float64(100)},
+				"priority":   float64(11),
+				"project_id": "2593982828701335033",
+				"data":       map[string]interface{}{"key": "value"},
+				"created_at": "2021-10-24 20:31:25",
+			},
+		},
+		{
+			name:       "Only skills",
+			statusCode: 200,
+			jobID:      6362411701075685873,
+			body: map[string]interface{}{
+				"skills": []interface{}{5},
+			},
+			resBody: map[string]interface{}{
+				"id": "6362411701075685873",
+				"location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"service":    float64(1005),
+				"delivery":   []interface{}{float64(20), float64(30)},
+				"pickup":     []interface{}{float64(10), float64(20)},
+				"skills":     []interface{}{float64(5)},
+				"priority":   float64(11),
+				"project_id": "2593982828701335033",
+				"data":       map[string]interface{}{"key": "value"},
+				"created_at": "2021-10-24 20:31:25",
+			},
+		},
+		{
+			name:       "Only priority",
+			statusCode: 200,
+			jobID:      6362411701075685873,
+			body: map[string]interface{}{
+				"priority": 100,
+			},
+			resBody: map[string]interface{}{
+				"id": "6362411701075685873",
+				"location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"service":    float64(1005),
+				"delivery":   []interface{}{float64(20), float64(30)},
+				"pickup":     []interface{}{float64(10), float64(20)},
+				"skills":     []interface{}{float64(5)},
+				"priority":   float64(100),
+				"project_id": "2593982828701335033",
+				"data":       map[string]interface{}{"key": "value"},
+				"created_at": "2021-10-24 20:31:25",
 			},
 		},
 		{
 			name:       "Only data",
 			statusCode: 200,
-			jobId:      3909655254191459782,
+			jobID:      6362411701075685873,
 			body: map[string]interface{}{
-				"data": map[string]interface{}{"key": "value"},
+				"data": map[string]interface{}{},
 			},
 			resBody: map[string]interface{}{
-				"id":         "3909655254191459782",
-				"name":       "Another Sample Job",
-				"data":       map[string]interface{}{"key": "value"},
-				"created_at": "2021-10-22 23:29:31",
+				"id": "6362411701075685873",
+				"location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"service":    float64(1005),
+				"delivery":   []interface{}{float64(20), float64(30)},
+				"pickup":     []interface{}{float64(10), float64(20)},
+				"skills":     []interface{}{float64(5)},
+				"priority":   float64(100),
+				"project_id": "2593982828701335033",
+				"data":       map[string]interface{}{},
+				"created_at": "2021-10-24 20:31:25",
 			},
 		},
 		{
-			name:       "Integer name",
+			name:       "Invalid projectID type",
 			statusCode: 400,
-			jobId:      3909655254191459782,
+			jobID:      6362411701075685873,
 			body: map[string]interface{}{
-				"name": 123,
+				"project_id": 100,
+			},
+			resBody: map[string]interface{}{"errors": []interface{}{"Field 'project_id' must be of 'string' type."}},
+		},
+		{
+			name:       "Invalid projectID",
+			statusCode: 400,
+			jobID:      6362411701075685873,
+			body: map[string]interface{}{
+				"project_id": "100",
+			},
+			resBody: map[string]interface{}{"errors": []interface{}{"Project with the given 'project_id' does not exist."}},
+			todo:    true,
+		},
+		{
+			name:       "Valid projectID",
+			statusCode: 200,
+			jobID:      6362411701075685873,
+			body: map[string]interface{}{
+				"project_id": "8943284028902589305",
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'name' must be of string type."},
+				"id": "6362411701075685873",
+				"location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"service":    float64(1005),
+				"delivery":   []interface{}{float64(20), float64(30)},
+				"pickup":     []interface{}{float64(10), float64(20)},
+				"skills":     []interface{}{float64(5)},
+				"priority":   float64(100),
+				"project_id": "8943284028902589305",
+				"data":       map[string]interface{}{},
+				"created_at": "2021-10-24 20:31:25",
 			},
 		},
 		{
-			name:       "Integer data",
+			name:       "All fields",
 			statusCode: 200,
-			jobId:      3909655254191459782,
+			jobID:      6362411701075685873,
 			body: map[string]interface{}{
-				"data": 123,
+				"location": map[string]interface{}{
+					"latitude":  -23.4567,
+					"longitude": 78.90,
+				},
+				"service":    105,
+				"delivery":   []interface{}{20},
+				"pickup":     []interface{}{4},
+				"skills":     []interface{}{},
+				"priority":   float64(0),
+				"project_id": "3909655254191459782",
+				"data":       map[string]interface{}{"key": 123.23},
 			},
 			resBody: map[string]interface{}{
-				"id":         "3909655254191459782",
-				"name":       "Another Sample Job",
-				"data":       float64(123),
-				"created_at": "2021-10-22 23:29:31",
+				"id": "6362411701075685873",
+				"location": map[string]interface{}{
+					"latitude":  -23.4567,
+					"longitude": 78.90,
+				},
+				"service":    float64(105),
+				"delivery":   []interface{}{float64(20)},
+				"pickup":     []interface{}{float64(4)},
+				"skills":     []interface{}{},
+				"priority":   float64(0),
+				"project_id": "3909655254191459782",
+				"data":       map[string]interface{}{"key": 123.23},
+				"created_at": "2021-10-24 20:31:25",
 			},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			if tc.todo == true {
+				t.Skip("TODO")
+			}
 			m, b := tc.body, new(bytes.Buffer)
 			json.NewEncoder(b).Encode(m)
-			url := fmt.Sprintf("/jobs/%d", tc.jobId)
+			url := fmt.Sprintf("/jobs/%d", tc.jobID)
 			request, err := http.NewRequest("PATCH", url, b)
 			request.Header.Set("Content-Type", "application/json")
 			require.NoError(t, err)
@@ -481,29 +897,29 @@ func TestUpdateJob(t *testing.T) {
 }
 
 func TestDeleteJob(t *testing.T) {
-	db := NewDatabase(t)
-	server, conn := setup(db)
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
 	defer conn.Close(context.Background())
 	mux := server.Router
 
 	testCases := []struct {
 		name       string
 		statusCode int
-		jobId      int
+		jobID      int
 		resBody    map[string]interface{}
 	}{
 		{
 			name:       "Invalid ID",
 			statusCode: 404,
-			jobId:      100,
+			jobID:      100,
 			resBody: map[string]interface{}{
 				"error": "Not Found",
 			},
 		},
 		{
 			name:       "Correct ID",
-			statusCode: 204,
-			jobId:      3909655254191459782,
+			statusCode: 200,
+			jobID:      6362411701075685873,
 			resBody: map[string]interface{}{
 				"success": true,
 			},
@@ -512,7 +928,7 @@ func TestDeleteJob(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			url := fmt.Sprintf("/jobs/%d", tc.jobId)
+			url := fmt.Sprintf("/jobs/%d", tc.jobID)
 			request, err := http.NewRequest("DELETE", url, nil)
 			require.NoError(t, err)
 
