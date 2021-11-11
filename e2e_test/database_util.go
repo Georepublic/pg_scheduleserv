@@ -38,6 +38,7 @@ import (
 
 	"github.com/Georepublic/pg_scheduleserv/internal/config"
 	"github.com/jackc/pgx/v4"
+	"github.com/sirupsen/logrus"
 )
 
 func clone() (string, error) {
@@ -47,11 +48,21 @@ func clone() (string, error) {
 	}
 
 	ctx := context.Background()
-	databaseName := "scheduler_test"
-	q := fmt.Sprintf(`CREATE DATABASE "%s" WITH TEMPLATE "%s";`, name, databaseName)
+	q := fmt.Sprintf(`CREATE DATABASE "%s"`, name)
 
-	config, err := config.LoadConfig("../..")
-	conn, err := pgx.Connect(context.Background(), config.DatabaseURL)
+	config, err := config.LoadConfig("..")
+	if err != nil {
+		logrus.Errorf("Cannot load config: %s", err)
+	}
+	connectionURL := fmt.Sprintf(
+		"user=%s password=%s host=%s port=%s dbname=%s sslmode=disable",
+		config.DatabaseUser,
+		config.DatabasePassword,
+		config.DatabaseHost,
+		config.DatabasePort,
+		config.DatabaseName,
+	)
+	conn, err := pgx.Connect(context.Background(), connectionURL)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -63,24 +74,42 @@ func clone() (string, error) {
 	return name, nil
 }
 
-// NewDatabase creates a new database suitable for use in testing. It returns an
+// NewTestDatabase creates a new database suitable for use in testing. It returns an
 // established database connection and the configuration.
-func NewDatabase(t *testing.T) string {
+func NewTestDatabase(t *testing.T) string {
 	newDatabaseName, err := clone()
 	if err != nil {
 		t.Fatal(err)
 	}
-	connectionURL := fmt.Sprintf("postgres://postgres:password@localhost:5432/%s", newDatabaseName)
+	config, err := config.LoadConfig("..")
+	if err != nil {
+		logrus.Fatalf("Cannot load config: %s", err)
+	}
+	testConnectionURL := fmt.Sprintf(
+		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		config.DatabaseUser,
+		config.DatabasePassword,
+		config.DatabaseHost,
+		config.DatabasePort,
+		newDatabaseName,
+	)
 
 	t.Cleanup(func() {
 		ctx := context.Background()
 
 		q := fmt.Sprintf(`DROP DATABASE IF EXISTS "%s" WITH (FORCE);`, newDatabaseName)
 
-		config, err := config.LoadConfig("../..")
-		conn, err := pgx.Connect(context.Background(), config.DatabaseURL)
+		connectionURL := fmt.Sprintf(
+			"postgres://%s:%s@%s:%s/%s?sslmode=disable",
+			config.DatabaseUser,
+			config.DatabasePassword,
+			config.DatabaseHost,
+			config.DatabasePort,
+			config.DatabaseName,
+		)
+		conn, err := pgx.Connect(context.Background(), connectionURL)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+			t.Errorf("Unable to connect to database: %v\n", err)
 			os.Exit(1)
 		}
 
@@ -89,7 +118,7 @@ func NewDatabase(t *testing.T) string {
 		}
 	})
 
-	return connectionURL
+	return testConnectionURL
 }
 
 func randomDatabaseName() (string, error) {

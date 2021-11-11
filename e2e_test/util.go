@@ -31,18 +31,42 @@ package e2etest
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
+	"os/exec"
 
 	"github.com/Georepublic/pg_scheduleserv/internal/api"
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/jackc/pgx/v4"
+	"github.com/sirupsen/logrus"
 )
 
-func setup(db_url string) (*api.Server, *pgx.Conn) {
+func applyTestData(db_url string, filename string) {
+	filepath := fmt.Sprintf("../scripts/%s", filename)
+	cmd := exec.Command("psql", db_url, "-f", filepath)
+
+	err := cmd.Run()
+	if err != nil {
+		log.Fatalf("Error executing query: %s", err)
+	}
+}
+
+func setup(db_url string, filename string) (*api.Server, *pgx.Conn) {
 	conn, err := pgx.Connect(context.Background(), db_url)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		logrus.Printf("Unable to connect to database: %v\n", err)
 		os.Exit(1)
 	}
 	server := api.NewServer(conn)
+	logrus.Error(db_url)
+	m, err := migrate.New("file://../migrations/", db_url)
+	if err != nil {
+		logrus.Printf("Unable to apply the migrations: %v\n", err)
+		os.Exit(1)
+	}
+	m.Up()
+	applyTestData(db_url, filename)
 	return server, conn
 }

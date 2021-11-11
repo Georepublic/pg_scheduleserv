@@ -31,7 +31,11 @@ package config
 import "github.com/spf13/viper"
 
 type Config struct {
-	DatabaseURL       string `mapstructure:"DATABASE_URL"`
+	DatabaseUser      string `mapstructure:"POSTGRES_USER"`
+	DatabasePassword  string `mapstructure:"POSTGRES_PASSWORD"`
+	DatabaseHost      string `mapstructure:"POSTGRES_HOST"`
+	DatabasePort      string `mapstructure:"POSTGRES_PORT"`
+	DatabaseName      string `mapstructure:"POSTGRES_DB"`
 	ServerBindAddress string `mapstructure:"SERVER_BIND_ADDRESS"`
 }
 
