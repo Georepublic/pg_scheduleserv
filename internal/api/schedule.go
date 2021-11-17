@@ -111,5 +111,5 @@ func (server *Server) DeleteSchedule(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusNoContent, nil)
+	server.FormatJSON(w, http.StatusOK, nil)
 }

@@ -91,7 +91,7 @@ type GetShipmentRow struct {
 func (q *Queries) DBGetShipment(ctx context.Context, id int64) (Shipment, error) {
 	table_name := "shipments"
 	additional_query := " WHERE id = $1 AND deleted = FALSE LIMIT 1"
-	sql := "SELECT " + util.GetOutputFields(Job{}) + " FROM " + table_name + additional_query
+	sql := "SELECT " + util.GetOutputFields(Shipment{}) + " FROM " + table_name + additional_query
 	row := q.db.QueryRow(ctx, sql, id)
 	return scanShipmentRow(row)
 }
@@ -144,9 +144,9 @@ RETURNING id, p_location_index, p_service, d_location_index, d_service, amount, 
 `
 
 type UpdateShipmentParams struct {
-	PLocation *util.LocationParams `json:"p_location" validate:"required"`
+	PLocation *util.LocationParams `json:"p_location"`
 	PService  *int64               `json:"p_service"`
-	DLocation *util.LocationParams `json:"d_location" validate:"required"`
+	DLocation *util.LocationParams `json:"d_location"`
 	DService  *int64               `json:"d_service"`
 	Amount    *[]int64             `json:"amount"`
 	Skills    *[]int32             `json:"skills"`

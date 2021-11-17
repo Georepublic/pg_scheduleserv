@@ -111,7 +111,7 @@ func (server *Server) ListBreaks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, created_break)
+	server.FormatJSON(w, http.StatusOK, created_break)
 }
 
 // GetBreak godoc
@@ -137,7 +137,7 @@ func (server *Server) GetBreak(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, created_break)
+	server.FormatJSON(w, http.StatusOK, created_break)
 }
 
 // UpdateBreak godoc
@@ -189,7 +189,7 @@ func (server *Server) UpdateBreak(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, created_break)
+	server.FormatJSON(w, http.StatusOK, created_break)
 }
 
 // DeleteBreak godoc
@@ -215,5 +215,5 @@ func (server *Server) DeleteBreak(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, nil)
+	server.FormatJSON(w, http.StatusOK, nil)
 }

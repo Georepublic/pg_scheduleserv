@@ -92,7 +92,7 @@ type GetVehicleRow struct {
 func (q *Queries) DBGetVehicle(ctx context.Context, id int64) (Vehicle, error) {
 	table_name := "vehicles"
 	additional_query := " WHERE id = $1 AND deleted = FALSE LIMIT 1"
-	sql := "SELECT " + util.GetOutputFields(Job{}) + " FROM " + table_name + additional_query
+	sql := "SELECT " + util.GetOutputFields(Vehicle{}) + " FROM " + table_name + additional_query
 	row := q.db.QueryRow(ctx, sql, id)
 	return scanVehicleRow(row)
 }
@@ -145,8 +145,8 @@ RETURNING id, start_index, end_index, capacity, skills, tw_open, tw_close, speed
 `
 
 type UpdateVehicleParams struct {
-	StartLocation *util.LocationParams `json:"start_location" validate:"required"`
-	EndLocation   *util.LocationParams `json:"end_location" validate:"required"`
+	StartLocation *util.LocationParams `json:"start_location"`
+	EndLocation   *util.LocationParams `json:"end_location"`
 	Capacity      *[]int64             `json:"capacity"`
 	Skills        *[]int32             `json:"skills"`
 	TwOpen        *string              `json:"tw_open" validate:"omitempty,datetime=2006-01-02 15:04:05"`

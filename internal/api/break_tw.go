@@ -115,7 +115,7 @@ func (server *Server) ListBreakTimeWindows(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, created_vehicle)
+	server.FormatJSON(w, http.StatusOK, created_vehicle)
 }
 
 // DeleteBreakTimeWindows godoc
@@ -169,5 +169,5 @@ func (server *Server) DeleteBreakTimeWindow(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, nil)
+	server.FormatJSON(w, http.StatusOK, nil)
 }

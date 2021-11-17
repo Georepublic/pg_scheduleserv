@@ -115,7 +115,7 @@ func (server *Server) ListShipmentTimeWindows(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, created_vehicle)
+	server.FormatJSON(w, http.StatusOK, created_vehicle)
 }
 
 // DeleteShipmentTimeWindows godoc
@@ -169,5 +169,5 @@ func (server *Server) DeleteShipmentTimeWindow(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, nil)
+	server.FormatJSON(w, http.StatusOK, nil)
 }

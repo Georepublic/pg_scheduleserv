@@ -115,7 +115,7 @@ func (server *Server) ListShipments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, created_shipment)
+	server.FormatJSON(w, http.StatusOK, created_shipment)
 }
 
 // GetShipment godoc
@@ -141,7 +141,7 @@ func (server *Server) GetShipment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, created_shipment)
+	server.FormatJSON(w, http.StatusOK, created_shipment)
 }
 
 // UpdateShipment godoc
@@ -193,7 +193,7 @@ func (server *Server) UpdateShipment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, created_shipment)
+	server.FormatJSON(w, http.StatusOK, created_shipment)
 }
 
 // DeleteShipment godoc
@@ -219,5 +219,5 @@ func (server *Server) DeleteShipment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, nil)
+	server.FormatJSON(w, http.StatusOK, nil)
 }

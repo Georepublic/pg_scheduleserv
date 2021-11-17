@@ -116,7 +116,7 @@ func (server *Server) ListVehicles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, created_vehicle)
+	server.FormatJSON(w, http.StatusOK, created_vehicle)
 }
 
 // GetVehicle godoc
@@ -142,7 +142,7 @@ func (server *Server) GetVehicle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, created_vehicle)
+	server.FormatJSON(w, http.StatusOK, created_vehicle)
 }
 
 // UpdateVehicle godoc
@@ -194,7 +194,7 @@ func (server *Server) UpdateVehicle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, created_vehicle)
+	server.FormatJSON(w, http.StatusOK, created_vehicle)
 }
 
 // DeleteVehicle godoc
@@ -220,5 +220,5 @@ func (server *Server) DeleteVehicle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, nil)
+	server.FormatJSON(w, http.StatusOK, nil)
 }

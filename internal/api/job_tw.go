@@ -115,7 +115,7 @@ func (server *Server) ListJobTimeWindows(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, created_vehicle)
+	server.FormatJSON(w, http.StatusOK, created_vehicle)
 }
 
 // DeleteJobTimeWindows godoc
@@ -169,5 +169,5 @@ func (server *Server) DeleteJobTimeWindow(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, nil)
+	server.FormatJSON(w, http.StatusOK, nil)
 }
