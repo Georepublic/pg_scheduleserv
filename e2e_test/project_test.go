@@ -90,7 +90,7 @@ func TestCreateProject(t *testing.T) {
 				"name": 123,
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'name' must be of string type."},
+				"errors": []interface{}{"Field 'name' must be of 'string' type."},
 			},
 		},
 		{
@@ -339,7 +339,7 @@ func TestUpdateProject(t *testing.T) {
 				"name": 123,
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'name' must be of string type."},
+				"errors": []interface{}{"Field 'name' must be of 'string' type."},
 			},
 		},
 		{

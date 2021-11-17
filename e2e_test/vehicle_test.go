@@ -51,79 +51,261 @@ func TestCreateVehicle(t *testing.T) {
 	testCases := []struct {
 		name       string
 		statusCode int
+		projectID  int
 		body       map[string]interface{}
 		resBody    map[string]interface{}
+		todo       bool
 	}{
 		{
 			name:       "Empty Body",
 			statusCode: 400,
+			projectID:  3909655254191459782,
 			body:       map[string]interface{}{},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'name' of type 'string' is required"},
+				"errors": []interface{}{
+					"Field 'start_location' of type 'util.LocationParams' is required",
+					"Field 'end_location' of type 'util.LocationParams' is required",
+				},
 			},
 		},
 		{
-			name:       "Only Name",
-			statusCode: 201,
+			name:       "Only Location - Wrong parameters 1",
+			statusCode: 400,
+			projectID:  3909655254191459782,
 			body: map[string]interface{}{
-				"name": "Sample Vehicle",
+				"start_location": "Sample Location",
+				"end_location":   "Sample Location",
 			},
 			resBody: map[string]interface{}{
-				"data": map[string]interface{}{},
-				"name": "Sample Vehicle",
+				"errors": []interface{}{
+					"Field 'start_location' must be of 'util.LocationParams' type.",
+					"Field 'end_location' must be of 'util.LocationParams' type.",
+				},
+			},
+		},
+		{
+			name:       "Only Location - Wrong parameters 2",
+			statusCode: 400,
+			projectID:  3909655254191459782,
+			body: map[string]interface{}{
+				"start_location": map[string]interface{}{
+					"latitude":  "12.34567",
+					"longitude": "56.78",
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  "12.34567",
+					"longitude": "56.78",
+				},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{
+					"Field 'latitude' of type 'float64' is required",
+					"Field 'longitude' of type 'float64' is required",
+					"Field 'latitude' of type 'float64' is required",
+					"Field 'longitude' of type 'float64' is required",
+				},
+			},
+			todo: true,
+		},
+		{
+			name:       "Only Location - Wrong range of parameters",
+			statusCode: 400,
+			projectID:  3909655254191459782,
+			body: map[string]interface{}{
+				"start_location": map[string]interface{}{
+					"latitude":  112.34567,
+					"longitude": 256.78,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  112.34567,
+					"longitude": 256.78,
+				},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{
+					"Field 'latitude' must be between -90 and 90",
+					"Field 'longitude' must be between -180 and 180",
+					"Field 'latitude' must be between -90 and 90",
+					"Field 'longitude' must be between -180 and 180",
+				},
+			},
+			todo: true,
+		},
+		{
+			name:       "Only Location",
+			statusCode: 201,
+			projectID:  3909655254191459782,
+			body: map[string]interface{}{
+				"start_location": map[string]interface{}{
+					"latitude":  12.34567,
+					"longitude": 56.78,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  -12.34567,
+					"longitude": -56.78,
+				},
+			},
+			resBody: map[string]interface{}{
+				"start_location": map[string]interface{}{
+					"latitude":  12.3457,
+					"longitude": 56.78,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  -12.3457,
+					"longitude": -56.78,
+				},
+				"capacity":     []interface{}{},
+				"skills":       []interface{}{},
+				"tw_open":      "1970-01-01 00:00:00",
+				"tw_close":     "2038-01-19 03:14:07",
+				"speed_factor": float64(1),
+				"project_id":   "3909655254191459782",
+				"data":         map[string]interface{}{},
 			},
 		},
 		{
 			name:       "Only data",
 			statusCode: 400,
+			projectID:  3909655254191459782,
 			body: map[string]interface{}{
 				"data": map[string]interface{}{"key": "value"},
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'name' of type 'string' is required"},
+				"errors": []interface{}{
+					"Field 'start_location' of type 'util.LocationParams' is required",
+					"Field 'end_location' of type 'util.LocationParams' is required",
+				},
 			},
 		},
 		{
-			name:       "Integer name",
+			name:       "Priority Min Range incorrect",
 			statusCode: 400,
+			projectID:  3909655254191459782,
 			body: map[string]interface{}{
-				"name": 123,
+				"start_location": map[string]interface{}{
+					"latitude":  12.34567,
+					"longitude": 56.78,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  -12.34567,
+					"longitude": -56.78,
+				},
+				"priority": -1,
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'name' must be of string type."},
+				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
 			},
+			todo: true,
 		},
 		{
-			name:       "Integer data",
-			statusCode: 201,
+			name:       "Priority Max Range incorrect",
+			statusCode: 400,
+			projectID:  3909655254191459782,
 			body: map[string]interface{}{
-				"name": "123",
-				"data": 123,
+				"start_location": map[string]interface{}{
+					"latitude":  12.34567,
+					"longitude": 56.78,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  -12.34567,
+					"longitude": -56.78,
+				},
+				"priority": 101,
 			},
 			resBody: map[string]interface{}{
-				"name": "123",
-				"data": float64(123),
+				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
 			},
+			todo: true,
+		},
+		{
+			name:       "Negative skills",
+			statusCode: 400,
+			projectID:  3909655254191459782,
+			body: map[string]interface{}{
+				"start_location": map[string]interface{}{
+					"latitude":  12.34567,
+					"longitude": 56.78,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  -12.34567,
+					"longitude": -56.78,
+				},
+				"skills": []interface{}{-1, -2},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'skills' must have non-negative values"},
+			},
+			todo: true,
+		},
+		{
+			name:       "Negative capacity",
+			statusCode: 400,
+			projectID:  3909655254191459782,
+			body: map[string]interface{}{
+				"start_location": map[string]interface{}{
+					"latitude":  12.34567,
+					"longitude": 56.78,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  -12.34567,
+					"longitude": -56.78,
+				},
+				"capacity": []interface{}{-1, -2},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'capacity' must have non-negative values"},
+			},
+			todo: true,
 		},
 		{
 			name:       "All fields",
 			statusCode: 201,
+			projectID:  3909655254191459782,
 			body: map[string]interface{}{
-				"name": "123",
-				"data": map[string]interface{}{"key": "value"},
+				"start_location": map[string]interface{}{
+					"latitude":  12.34567,
+					"longitude": 56.78,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  -12.34567,
+					"longitude": -56.78,
+				},
+				"capacity":     []interface{}{15, 16},
+				"skills":       []interface{}{5, 50, 100},
+				"tw_open":      "2021-01-01 01:01:01",
+				"tw_close":     "2021-01-09 03:14:07",
+				"speed_factor": 10.45,
+				"data":         map[string]interface{}{"key": "value"},
 			},
 			resBody: map[string]interface{}{
-				"name": "123",
-				"data": map[string]interface{}{"key": "value"},
+				"start_location": map[string]interface{}{
+					"latitude":  12.3457,
+					"longitude": 56.78,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  -12.3457,
+					"longitude": -56.78,
+				},
+				"capacity":     []interface{}{float64(15), float64(16)},
+				"skills":       []interface{}{float64(5), float64(50), float64(100)},
+				"tw_open":      "2021-01-01 01:01:01",
+				"tw_close":     "2021-01-09 03:14:07",
+				"speed_factor": 10.45,
+				"project_id":   "3909655254191459782",
+				"data":         map[string]interface{}{"key": "value"},
 			},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			if tc.todo == true {
+				t.Skip("TODO")
+			}
 			m, b := tc.body, new(bytes.Buffer)
 			json.NewEncoder(b).Encode(m)
-			request, err := http.NewRequest("POST", "/vehicles", b)
+			url := fmt.Sprintf("/projects/%d/vehicles", tc.projectID)
+			request, err := http.NewRequest("POST", url, b)
 			request.Header.Set("Content-Type", "application/json")
 			require.NoError(t, err)
 
@@ -143,6 +325,98 @@ func TestCreateVehicle(t *testing.T) {
 			delete(m, "id")
 			delete(m, "created_at")
 			delete(m, "updated_at")
+			assert.Equal(t, tc.resBody, m)
+		})
+	}
+}
+
+func TestListVehicles(t *testing.T) {
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
+	defer conn.Close(context.Background())
+	mux := server.Router
+
+	testCases := []struct {
+		name       string
+		statusCode int
+		projectID  int
+		resBody    []map[string]interface{}
+	}{
+		// TODO: Check this
+		{
+			name:       "Invalid ID",
+			statusCode: 200,
+			projectID:  100,
+			resBody:    []map[string]interface{}{},
+		},
+		{
+			name:       "Valid ID",
+			statusCode: 200,
+			projectID:  3909655254191459782,
+			resBody: []map[string]interface{}{
+				{
+					"id": "2550908592071787332",
+					"start_location": map[string]interface{}{
+						"latitude":  32.234,
+						"longitude": -23.2342,
+					},
+					"end_location": map[string]interface{}{
+						"latitude":  23.3458,
+						"longitude": 2.3242,
+					},
+					"capacity":     []interface{}{float64(1), float64(3)},
+					"skills":       []interface{}{float64(10)},
+					"tw_open":      "2020-01-01 00:00:00",
+					"tw_close":     "2020-01-10 03:14:07",
+					"speed_factor": 1.5,
+					"project_id":   "3909655254191459782",
+					"data":         map[string]interface{}{"key": "value"},
+					"created_at":   "2021-10-26 10:46:41",
+					"updated_at":   "2021-10-26 10:46:41",
+				},
+				{
+					"id": "7300272137290532980",
+					"start_location": map[string]interface{}{
+						"latitude":  -32.234,
+						"longitude": -23.2342,
+					},
+					"end_location": map[string]interface{}{
+						"latitude":  23.3458,
+						"longitude": 2.3242,
+					},
+					"capacity":     []interface{}{float64(1), float64(3), float64(5), float64(0)},
+					"skills":       []interface{}{float64(1)},
+					"tw_open":      "2020-01-01 10:10:00",
+					"tw_close":     "2020-01-11 03:14:07",
+					"speed_factor": 34.25,
+					"project_id":   "3909655254191459782",
+					"data":         map[string]interface{}{"s": float64(1)},
+					"created_at":   "2021-10-26 10:47:54",
+					"updated_at":   "2021-10-26 10:47:54",
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			url := fmt.Sprintf("/projects/%d/vehicles", tc.projectID)
+			request, err := http.NewRequest("GET", url, nil)
+			require.NoError(t, err)
+
+			recorder := httptest.NewRecorder()
+			mux.ServeHTTP(recorder, request)
+
+			resp := recorder.Result()
+			body, err := io.ReadAll(resp.Body)
+			if err != nil {
+				t.Error(err)
+			}
+
+			assert.Equal(t, tc.statusCode, resp.StatusCode)
+			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
+			m := []map[string]interface{}{}
+			err = json.Unmarshal(body, &m)
 			assert.Equal(t, tc.resBody, m)
 		})
 	}
@@ -171,13 +445,26 @@ func TestGetVehicle(t *testing.T) {
 		{
 			name:       "Correct ID",
 			statusCode: 200,
-			vehicleID:  3909655254191459782,
+			vehicleID:  2550908592071787332,
 			resBody: map[string]interface{}{
-				"id":         "3909655254191459782",
-				"name":       "Sample Vehicle",
-				"data":       "random",
-				"created_at": "2021-10-22 23:29:31",
-				"updated_at": "2021-10-22 23:29:31",
+				"id": "2550908592071787332",
+				"start_location": map[string]interface{}{
+					"latitude":  32.234,
+					"longitude": -23.2342,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  23.3458,
+					"longitude": 2.3242,
+				},
+				"capacity":     []interface{}{float64(1), float64(3)},
+				"skills":       []interface{}{float64(10)},
+				"tw_open":      "2020-01-01 00:00:00",
+				"tw_close":     "2020-01-10 03:14:07",
+				"speed_factor": 1.5,
+				"project_id":   "3909655254191459782",
+				"data":         map[string]interface{}{"key": "value"},
+				"created_at":   "2021-10-26 10:46:41",
+				"updated_at":   "2021-10-26 10:46:41",
 			},
 		},
 	}
@@ -206,69 +493,6 @@ func TestGetVehicle(t *testing.T) {
 	}
 }
 
-func TestListVehicles(t *testing.T) {
-	test_db := NewTestDatabase(t)
-	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
-	mux := server.Router
-
-	testCases := []struct {
-		name       string
-		statusCode int
-		resBody    []map[string]interface{}
-	}{
-		{
-			name:       "Invalid ID",
-			statusCode: 200,
-			resBody: []map[string]interface{}{
-				{
-					"id":         "3909655254191459782",
-					"name":       "Sample Vehicle",
-					"data":       "random",
-					"created_at": "2021-10-22 23:29:31",
-					"updated_at": "2021-10-22 23:29:31",
-				},
-				{
-					"id":         "2593982828701335033",
-					"name":       "",
-					"data":       map[string]interface{}{"s": float64(1)},
-					"created_at": "2021-10-24 19:52:52",
-					"updated_at": "2021-10-24 19:52:52",
-				},
-				{
-					"id":         "8943284028902589305",
-					"name":       "",
-					"data":       map[string]interface{}{"s": float64(1)},
-					"created_at": "2021-10-24 19:52:52",
-					"updated_at": "2021-10-24 19:52:52",
-				},
-			},
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			request, err := http.NewRequest("GET", "/vehicles", nil)
-			require.NoError(t, err)
-
-			recorder := httptest.NewRecorder()
-			mux.ServeHTTP(recorder, request)
-
-			resp := recorder.Result()
-			body, err := io.ReadAll(resp.Body)
-			if err != nil {
-				t.Error(err)
-			}
-
-			assert.Equal(t, tc.statusCode, resp.StatusCode)
-			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
-			m := []map[string]interface{}{}
-			err = json.Unmarshal(body, &m)
-			assert.Equal(t, tc.resBody, m)
-		})
-	}
-}
-
 func TestUpdateVehicle(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
@@ -281,17 +505,31 @@ func TestUpdateVehicle(t *testing.T) {
 		vehicleID  int
 		body       map[string]interface{}
 		resBody    map[string]interface{}
+		todo       bool
 	}{
 		{
 			name:       "Empty Body",
 			statusCode: 200,
-			vehicleID:  3909655254191459782,
+			vehicleID:  2550908592071787332,
 			body:       map[string]interface{}{},
 			resBody: map[string]interface{}{
-				"id":         "3909655254191459782",
-				"name":       "Sample Vehicle",
-				"data":       "random",
-				"created_at": "2021-10-22 23:29:31",
+				"id": "2550908592071787332",
+				"start_location": map[string]interface{}{
+					"latitude":  32.234,
+					"longitude": -23.2342,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  23.3458,
+					"longitude": 2.3242,
+				},
+				"capacity":     []interface{}{float64(1), float64(3)},
+				"skills":       []interface{}{float64(10)},
+				"tw_open":      "2020-01-01 00:00:00",
+				"tw_close":     "2020-01-10 03:14:07",
+				"speed_factor": 1.5,
+				"project_id":   "3909655254191459782",
+				"data":         map[string]interface{}{"key": "value"},
+				"created_at":   "2021-10-26 10:46:41",
 			},
 		},
 		{
@@ -304,77 +542,352 @@ func TestUpdateVehicle(t *testing.T) {
 			},
 		},
 		{
-			name:       "Only Name",
-			statusCode: 200,
-			vehicleID:  3909655254191459782,
+			name:       "Only Location - Wrong parameters 1",
+			statusCode: 400,
+			vehicleID:  2550908592071787332,
 			body: map[string]interface{}{
-				"name": "Another Sample Vehicle",
+				"start_location": "Sample Location",
+				"end_location":   "Sample Location",
 			},
 			resBody: map[string]interface{}{
-				"id":         "3909655254191459782",
-				"name":       "Another Sample Vehicle",
-				"data":       "random",
-				"created_at": "2021-10-22 23:29:31",
+				"errors": []interface{}{
+					"Field 'start_location' must be of 'util.LocationParams' type.",
+					"Field 'end_location' must be of 'util.LocationParams' type.",
+				},
+			},
+		},
+		{
+			name:       "Only Location - Wrong parameters 2",
+			statusCode: 400,
+			vehicleID:  2550908592071787332,
+			body: map[string]interface{}{
+				"start_location": map[string]interface{}{
+					"latitude":  "12.34567",
+					"longitude": "56.78",
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  "12.34567",
+					"longitude": "56.78",
+				},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{
+					"Field 'latitude' of type 'float64' is required",
+					"Field 'longitude' of type 'float64' is required",
+					"Field 'latitude' of type 'float64' is required",
+					"Field 'longitude' of type 'float64' is required",
+				},
+			},
+			todo: true,
+		},
+		{
+			name:       "Only Location - Wrong range of parameters",
+			statusCode: 400,
+			vehicleID:  2550908592071787332,
+			body: map[string]interface{}{
+				"start_location": map[string]interface{}{
+					"latitude":  112.34567,
+					"longitude": 256.78,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  112.34567,
+					"longitude": 256.78,
+				},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{
+					"Field 'latitude' must be between -90 and 90",
+					"Field 'longitude' must be between -180 and 180",
+					"Field 'latitude' must be between -90 and 90",
+					"Field 'longitude' must be between -180 and 180",
+				},
+			},
+			todo: true,
+		},
+		{
+			name:       "Priority Min Range incorrect",
+			statusCode: 400,
+			vehicleID:  2550908592071787332,
+			body: map[string]interface{}{
+				"priority": -1,
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
+			},
+			todo: true,
+		},
+		{
+			name:       "Priority Max Range incorrect",
+			statusCode: 400,
+			vehicleID:  2550908592071787332,
+			body: map[string]interface{}{
+				"priority": 101,
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
+			},
+			todo: true,
+		},
+		{
+			name:       "Negative skills",
+			statusCode: 400,
+			vehicleID:  2550908592071787332,
+			body: map[string]interface{}{
+				"skills": []interface{}{-1, -2},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'skills' must have non-negative values"},
+			},
+			todo: true,
+		},
+		{
+			name:       "Negative capacity",
+			statusCode: 400,
+			vehicleID:  2550908592071787332,
+			body: map[string]interface{}{
+				"amount": []interface{}{-1, -2},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{"Field 'capacity' must have non-negative values"},
+			},
+			todo: true,
+		},
+		{
+			name:       "Only location",
+			statusCode: 200,
+			vehicleID:  2550908592071787332,
+			body: map[string]interface{}{
+				"start_location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  -23.4567,
+					"longitude": 78.90,
+				},
+			},
+			resBody: map[string]interface{}{
+				"id": "2550908592071787332",
+				"start_location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  -23.4567,
+					"longitude": 78.90,
+				},
+				"capacity":     []interface{}{float64(1), float64(3)},
+				"skills":       []interface{}{float64(10)},
+				"tw_open":      "2020-01-01 00:00:00",
+				"tw_close":     "2020-01-10 03:14:07",
+				"speed_factor": 1.5,
+				"project_id":   "3909655254191459782",
+				"data":         map[string]interface{}{"key": "value"},
+				"created_at":   "2021-10-26 10:46:41",
+			},
+		},
+		{
+			name:       "Only capacity",
+			statusCode: 200,
+			vehicleID:  2550908592071787332,
+			body: map[string]interface{}{
+				"capacity": []interface{}{10, 30},
+			},
+			resBody: map[string]interface{}{
+				"id": "2550908592071787332",
+				"start_location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  -23.4567,
+					"longitude": 78.90,
+				},
+				"capacity":     []interface{}{float64(10), float64(30)},
+				"skills":       []interface{}{float64(10)},
+				"tw_open":      "2020-01-01 00:00:00",
+				"tw_close":     "2020-01-10 03:14:07",
+				"speed_factor": 1.5,
+				"project_id":   "3909655254191459782",
+				"data":         map[string]interface{}{"key": "value"},
+				"created_at":   "2021-10-26 10:46:41",
+			},
+		},
+		{
+			name:       "Only skills",
+			statusCode: 200,
+			vehicleID:  2550908592071787332,
+			body: map[string]interface{}{
+				"skills": []interface{}{5},
+			},
+			resBody: map[string]interface{}{
+				"id": "2550908592071787332",
+				"start_location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  -23.4567,
+					"longitude": 78.90,
+				},
+				"capacity":     []interface{}{float64(10), float64(30)},
+				"skills":       []interface{}{float64(5)},
+				"tw_open":      "2020-01-01 00:00:00",
+				"tw_close":     "2020-01-10 03:14:07",
+				"speed_factor": 1.5,
+				"project_id":   "3909655254191459782",
+				"data":         map[string]interface{}{"key": "value"},
+				"created_at":   "2021-10-26 10:46:41",
+			},
+		},
+		{
+			name:       "Only speed_factor",
+			statusCode: 200,
+			vehicleID:  2550908592071787332,
+			body: map[string]interface{}{
+				"speed_factor": 1.234,
+			},
+			resBody: map[string]interface{}{
+				"id": "2550908592071787332",
+				"start_location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  -23.4567,
+					"longitude": 78.90,
+				},
+				"capacity":     []interface{}{float64(10), float64(30)},
+				"skills":       []interface{}{float64(5)},
+				"tw_open":      "2020-01-01 00:00:00",
+				"tw_close":     "2020-01-10 03:14:07",
+				"speed_factor": 1.234,
+				"project_id":   "3909655254191459782",
+				"data":         map[string]interface{}{"key": "value"},
+				"created_at":   "2021-10-26 10:46:41",
 			},
 		},
 		{
 			name:       "Only data",
 			statusCode: 200,
-			vehicleID:  3909655254191459782,
+			vehicleID:  2550908592071787332,
 			body: map[string]interface{}{
-				"data": map[string]interface{}{"key": "value"},
+				"data": map[string]interface{}{},
 			},
 			resBody: map[string]interface{}{
-				"id":         "3909655254191459782",
-				"name":       "Another Sample Vehicle",
-				"data":       map[string]interface{}{"key": "value"},
-				"created_at": "2021-10-22 23:29:31",
+				"id": "2550908592071787332",
+				"start_location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  -23.4567,
+					"longitude": 78.90,
+				},
+				"capacity":     []interface{}{float64(10), float64(30)},
+				"skills":       []interface{}{float64(5)},
+				"tw_open":      "2020-01-01 00:00:00",
+				"tw_close":     "2020-01-10 03:14:07",
+				"speed_factor": 1.234,
+				"project_id":   "3909655254191459782",
+				"data":         map[string]interface{}{},
+				"created_at":   "2021-10-26 10:46:41",
 			},
 		},
 		{
-			name:       "Integer name",
+			name:       "Invalid projectID type",
 			statusCode: 400,
-			vehicleID:  3909655254191459782,
+			vehicleID:  2550908592071787332,
 			body: map[string]interface{}{
-				"name": 123,
+				"project_id": 100,
 			},
-			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'name' must be of string type."},
-			},
+			resBody: map[string]interface{}{"errors": []interface{}{"Field 'project_id' must be of 'string' type."}},
 		},
 		{
-			name:       "Integer data",
-			statusCode: 200,
-			vehicleID:  3909655254191459782,
+			name:       "Invalid projectID",
+			statusCode: 400,
+			vehicleID:  2550908592071787332,
 			body: map[string]interface{}{
-				"data": 123,
+				"project_id": "100",
+			},
+			resBody: map[string]interface{}{"errors": []interface{}{"Project with the given 'project_id' does not exist."}},
+			todo:    true,
+		},
+		{
+			name:       "Valid projectID",
+			statusCode: 200,
+			vehicleID:  2550908592071787332,
+			body: map[string]interface{}{
+				"project_id": "8943284028902589305",
 			},
 			resBody: map[string]interface{}{
-				"id":         "3909655254191459782",
-				"name":       "Another Sample Vehicle",
-				"data":       float64(123),
-				"created_at": "2021-10-22 23:29:31",
+				"id": "2550908592071787332",
+				"start_location": map[string]interface{}{
+					"latitude":  23.4567,
+					"longitude": -78.90,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  -23.4567,
+					"longitude": 78.90,
+				},
+				"capacity":     []interface{}{float64(10), float64(30)},
+				"skills":       []interface{}{float64(5)},
+				"tw_open":      "2020-01-01 00:00:00",
+				"tw_close":     "2020-01-10 03:14:07",
+				"speed_factor": 1.234,
+				"project_id":   "8943284028902589305",
+				"data":         map[string]interface{}{},
+				"created_at":   "2021-10-26 10:46:41",
 			},
 		},
 		{
 			name:       "All fields",
 			statusCode: 200,
-			vehicleID:  3909655254191459782,
+			vehicleID:  2550908592071787332,
 			body: map[string]interface{}{
-				"name": "Final Sample Vehicle",
-				"data": map[string]interface{}{"key": "value"},
+				"start_location": map[string]interface{}{
+					"latitude":  3.4567,
+					"longitude": -8.90,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  -3.4567,
+					"longitude": 8.90,
+				},
+				"capacity":     []interface{}{float64(21)},
+				"skills":       []interface{}{float64(5), float64(6)},
+				"tw_open":      "2021-11-01 00:00:00",
+				"tw_close":     "2021-11-10 03:14:07",
+				"speed_factor": 11.234,
+				"project_id":   "3909655254191459782",
+				"data":         map[string]interface{}{"s": 1},
 			},
 			resBody: map[string]interface{}{
-				"id":         "3909655254191459782",
-				"name":       "Final Sample Vehicle",
-				"data":       map[string]interface{}{"key": "value"},
-				"created_at": "2021-10-22 23:29:31",
+				"id": "2550908592071787332",
+				"start_location": map[string]interface{}{
+					"latitude":  3.4567,
+					"longitude": -8.90,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  -3.4567,
+					"longitude": 8.90,
+				},
+				"capacity":     []interface{}{float64(21)},
+				"skills":       []interface{}{float64(5), float64(6)},
+				"tw_open":      "2021-11-01 00:00:00",
+				"tw_close":     "2021-11-10 03:14:07",
+				"speed_factor": 11.234,
+				"project_id":   "3909655254191459782",
+				"data":         map[string]interface{}{"s": float64(1)},
+				"created_at":   "2021-10-26 10:46:41",
 			},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			if tc.todo == true {
+				t.Skip("TODO")
+			}
 			m, b := tc.body, new(bytes.Buffer)
 			json.NewEncoder(b).Encode(m)
 			url := fmt.Sprintf("/vehicles/%d", tc.vehicleID)
@@ -423,8 +936,8 @@ func TestDeleteVehicle(t *testing.T) {
 		},
 		{
 			name:       "Correct ID",
-			statusCode: 204,
-			vehicleID:  3909655254191459782,
+			statusCode: 200,
+			vehicleID:  2550908592071787332,
 			resBody: map[string]interface{}{
 				"success": true,
 			},
