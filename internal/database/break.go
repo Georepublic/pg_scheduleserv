@@ -73,7 +73,7 @@ type GetBreakRow struct {
 func (q *Queries) DBGetBreak(ctx context.Context, id int64) (Break, error) {
 	table_name := "breaks"
 	additional_query := " WHERE id = $1 AND deleted = FALSE LIMIT 1"
-	sql := "SELECT " + util.GetOutputFields(Job{}) + " FROM " + table_name + additional_query
+	sql := "SELECT " + util.GetOutputFields(Break{}) + " FROM " + table_name + additional_query
 	row := q.db.QueryRow(ctx, sql, id)
 	return scanBreakRow(row)
 }

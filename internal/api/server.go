@@ -130,9 +130,9 @@ func (server *Server) handleRoutes(router *mux.Router) {
 	// Vehicle breaks endpoints
 	router.HandleFunc("/vehicles/{vehicle_id}/breaks", server.CreateBreak).Methods("POST")
 	router.HandleFunc("/vehicles/{vehicle_id}/breaks", server.ListBreaks).Methods("GET")
-	router.HandleFunc("/breaks/{vehicle_id}", server.GetBreak).Methods("GET")
-	router.HandleFunc("/breaks/{vehicle_id}", server.UpdateBreak).Methods("PATCH")
-	router.HandleFunc("/breaks/{vehicle_id}", server.DeleteBreak).Methods("DELETE")
+	router.HandleFunc("/breaks/{break_id}", server.GetBreak).Methods("GET")
+	router.HandleFunc("/breaks/{break_id}", server.UpdateBreak).Methods("PATCH")
+	router.HandleFunc("/breaks/{break_id}", server.DeleteBreak).Methods("DELETE")
 
 	// Break time windows endpoints
 	router.HandleFunc("/breaks/{break_id}/time_windows", server.CreateBreakTimeWindow).Methods("POST")

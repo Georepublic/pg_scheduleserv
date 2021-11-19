@@ -95,6 +95,7 @@ func (server *Server) CreateBreak(w http.ResponseWriter, r *http.Request) {
 // @Tags Break
 // @Accept application/json
 // @Produce application/json
+// @Param vehicle_id path int true "Vehicle ID"
 // @Success 200 {object} database.Break
 // @Router /vehicles/{vehicle_id}/breaks [get]
 func (server *Server) ListBreaks(w http.ResponseWriter, r *http.Request) {
