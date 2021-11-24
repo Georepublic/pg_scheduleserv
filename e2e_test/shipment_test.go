@@ -303,7 +303,9 @@ func TestCreateShipment(t *testing.T) {
 				t.Skip("TODO")
 			}
 			m, b := tc.body, new(bytes.Buffer)
-			json.NewEncoder(b).Encode(m)
+			if err := json.NewEncoder(b).Encode(m); err != nil {
+				t.Error(err)
+			}
 			url := fmt.Sprintf("/projects/%d/shipments", tc.projectID)
 			request, err := http.NewRequest("POST", url, b)
 			request.Header.Set("Content-Type", "application/json")
@@ -321,7 +323,9 @@ func TestCreateShipment(t *testing.T) {
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
 			m = map[string]interface{}{}
-			err = json.Unmarshal(body, &m)
+			if err = json.Unmarshal(body, &m); err != nil {
+				t.Error(err)
+			}
 			delete(m, "id")
 			delete(m, "created_at")
 			delete(m, "updated_at")
@@ -416,7 +420,9 @@ func TestListShipments(t *testing.T) {
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
 			m := []map[string]interface{}{}
-			err = json.Unmarshal(body, &m)
+			if err = json.Unmarshal(body, &m); err != nil {
+				t.Error(err)
+			}
 			assert.Equal(t, tc.resBody, m)
 		})
 	}
@@ -487,7 +493,9 @@ func TestGetShipment(t *testing.T) {
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
 			m := map[string]interface{}{}
-			err = json.Unmarshal(body, &m)
+			if err = json.Unmarshal(body, &m); err != nil {
+				t.Error(err)
+			}
 			assert.Equal(t, tc.resBody, m)
 		})
 	}
@@ -917,7 +925,9 @@ func TestUpdateShipment(t *testing.T) {
 				t.Skip("TODO")
 			}
 			m, b := tc.body, new(bytes.Buffer)
-			json.NewEncoder(b).Encode(m)
+			if err := json.NewEncoder(b).Encode(m); err != nil {
+				t.Error(err)
+			}
 			url := fmt.Sprintf("/shipments/%d", tc.shipmentID)
 			request, err := http.NewRequest("PATCH", url, b)
 			request.Header.Set("Content-Type", "application/json")
@@ -935,7 +945,9 @@ func TestUpdateShipment(t *testing.T) {
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
 			m = map[string]interface{}{}
-			err = json.Unmarshal(body, &m)
+			if err = json.Unmarshal(body, &m); err != nil {
+				t.Error(err)
+			}
 			delete(m, "updated_at")
 			assert.Equal(t, tc.resBody, m)
 		})
@@ -990,7 +1002,9 @@ func TestDeleteShipment(t *testing.T) {
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
 			m := map[string]interface{}{}
-			err = json.Unmarshal(body, &m)
+			if err = json.Unmarshal(body, &m); err != nil {
+				t.Error(err)
+			}
 			assert.Equal(t, tc.resBody, m)
 		})
 	}

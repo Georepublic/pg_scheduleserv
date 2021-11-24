@@ -34,7 +34,7 @@ mylicensecheck() {
     licensecheck -r --copyright -l 30 --tail 0 -i "$EXCLUDE_LIST" docs e2e_test internal migrations scripts Makefile main.go
 }
 
-missing=$(! { mylicensecheck;}  | grep "No copyright\|UNKNOWN" | grep -v "generated file")
+missing=$(! { mylicensecheck;}  | grep -i "No copyright\|UNKNOWN" | grep -iv "GENERATED FILE")
 
 if [[ $missing ]]; then
   echo " ****************************************************"

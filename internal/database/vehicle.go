@@ -35,16 +35,6 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-const createVehicle = `-- name: CreateVehicle :one
-INSERT INTO vehicles (
-  start_index, end_index, capacity, skills,
-  tw_open, tw_close, speed_factor, project_id, data
-) VALUES (
-  coord_to_id($1, $2), coord_to_id($3, $4), $5, $6, $7, $8, $9, $10, $11
-)
-RETURNING id, start_index, end_index, capacity, skills, tw_open, tw_close, speed_factor, project_id, data, created_at, updated_at, deleted
-`
-
 type CreateVehicleParams struct {
 	StartLocation *util.LocationParams `json:"start_location" validate:"required"`
 	EndLocation   *util.LocationParams `json:"end_location" validate:"required"`
@@ -63,16 +53,6 @@ func (q *Queries) DBCreateVehicle(ctx context.Context, arg CreateVehicleParams) 
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	return scanVehicleRow(row)
 }
-
-const getVehicle = `-- name: GetVehicle :one
-SELECT
-  id, start_index, end_index, capacity, skills,
-  tw_open, tw_close, speed_factor, project_id,
-  data, created_at, updated_at
-FROM vehicles
-WHERE id = $1 AND deleted = FALSE
-LIMIT 1
-`
 
 type GetVehicleRow struct {
 	ID          int64       `json:"id"`
@@ -96,16 +76,6 @@ func (q *Queries) DBGetVehicle(ctx context.Context, id int64) (Vehicle, error) {
 	row := q.db.QueryRow(ctx, sql, id)
 	return scanVehicleRow(row)
 }
-
-const listVehicles = `-- name: ListVehicles :many
-SELECT
-  id, start_index, end_index, capacity, skills,
-  tw_open, tw_close, speed_factor, project_id,
-  data, created_at, updated_at
-FROM vehicles
-WHERE project_id = $1 AND deleted = FALSE
-ORDER BY created_at
-`
 
 type ListVehiclesRow struct {
 	ID          int64       `json:"id"`
@@ -134,16 +104,6 @@ func (q *Queries) DBListVehicles(ctx context.Context, projectID int64) ([]Vehicl
 	return scanVehicleRows(rows)
 }
 
-const updateVehicle = `-- name: UpdateVehicle :one
-UPDATE vehicles
-SET
-  start_index = coord_to_id($2, $3), end_index = coord_to_id($4, $5),
-  capacity = $6, skills = $7, tw_open = $8, tw_close = $9,
-  speed_factor = $10, project_id = $11, data = $12
-WHERE id = $1 AND deleted = FALSE
-RETURNING id, start_index, end_index, capacity, skills, tw_open, tw_close, speed_factor, project_id, data, created_at, updated_at, deleted
-`
-
 type UpdateVehicleParams struct {
 	StartLocation *util.LocationParams `json:"start_location"`
 	EndLocation   *util.LocationParams `json:"end_location"`
@@ -162,11 +122,6 @@ func (q *Queries) DBUpdateVehicle(ctx context.Context, arg UpdateVehicleParams, 
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	return scanVehicleRow(row)
 }
-
-const deleteVehicle = `-- name: DeleteVehicle :exec
-UPDATE vehicles SET deleted = TRUE
-WHERE id = $1
-`
 
 func (q *Queries) DBDeleteVehicle(ctx context.Context, id int64) (Vehicle, error) {
 	sql := "UPDATE vehicles SET deleted = TRUE WHERE id = $1"

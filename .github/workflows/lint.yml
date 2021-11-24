@@ -61,7 +61,7 @@ jobs:
         run: |
           sudo apt install -y licensecheck
       - name: Run License Check
-        run: ./tools/scripts/test_license.sh
+        run: ./scripts/license/check_license.sh
 
   shell-check:
     runs-on: ubuntu-latest

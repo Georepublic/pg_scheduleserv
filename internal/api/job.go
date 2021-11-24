@@ -52,7 +52,9 @@ import (
 func (server *Server) CreateJob(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
 	if r.Body != nil {
-		json.NewDecoder(r.Body).Decode(&userInput)
+		if err := json.NewDecoder(r.Body).Decode(&userInput); err != nil {
+			logrus.Error(err)
+		}
 	}
 
 	// Add the project_id path variable
@@ -71,7 +73,9 @@ func (server *Server) CreateJob(w http.ResponseWriter, r *http.Request) {
 		logrus.Error(err)
 	}
 	job := database.CreateJobParams{}
-	json.Unmarshal(userInputString, &job)
+	if err = json.Unmarshal(userInputString, &job); err != nil {
+		logrus.Error(err)
+	}
 
 	// Validate the struct
 	if err := server.validate.Struct(job); err != nil {
@@ -153,7 +157,9 @@ func (server *Server) GetJob(w http.ResponseWriter, r *http.Request) {
 func (server *Server) UpdateJob(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
 	if r.Body != nil {
-		json.NewDecoder(r.Body).Decode(&userInput)
+		if err := json.NewDecoder(r.Body).Decode(&userInput); err != nil {
+			logrus.Error(err)
+		}
 	}
 
 	vars := mux.Vars(r)
@@ -174,7 +180,9 @@ func (server *Server) UpdateJob(w http.ResponseWriter, r *http.Request) {
 		logrus.Error(err)
 	}
 	job := database.UpdateJobParams{}
-	json.Unmarshal(userInputString, &job)
+	if err = json.Unmarshal(userInputString, &job); err != nil {
+		logrus.Error(err)
+	}
 
 	// Validate the struct
 	if err := server.validate.Struct(job); err != nil {

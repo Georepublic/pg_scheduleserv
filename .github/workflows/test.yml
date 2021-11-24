@@ -60,22 +60,18 @@ jobs:
             ~/vroom-${{ env.VROOMVER }}
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ env.VROOMVER }}
 
-      - name: Clone VROOM
+      - name: Build VROOM
         if: steps.cache-vroom.outputs.cache-hit != 'true'
         run: |
           wget https://github.com/VROOM-Project/vroom/archive/refs/tags/v${{ env.VROOMVER }}.tar.gz -O /tmp/${{ env.VROOMVER }}.tar.gz
           tar -zvxf /tmp/${{ env.VROOMVER }}.tar.gz -C ~/
-
-      - name: Build VROOM
-        run: |
           cd ~/vroom-${{ env.VROOMVER }}/src
 
           # Create object file with position independent code using -fPIC flag
           sed -i 's/CXXFLAGS = /CXXFLAGS = -fPIC /' makefile
 
+          cd ~/vroom-${{ env.VROOMVER }}/src
           make
-          cd ..
-          echo "VROOM_INSTALL_PATH=$(pwd)" >> $GITHUB_ENV
 
       - name: Cache vrpRouting
         id: cache-vrprouting
@@ -92,6 +88,9 @@ jobs:
         run: |
           wget https://github.com/pgRouting/vrprouting/archive/refs/tags/v${{ env.VRPVER }}.tar.gz -O /tmp/${{ env.VRPVER }}.tar.gz
           tar -zvxf /tmp/${{ env.VRPVER }}.tar.gz -C ~/
+          cd ~/vrprouting-${{ env.VRPVER }}
+          # TEMP: Adding support for postgresql-14
+          sed -i 's/PostgreSQL_ADDITIONAL_VERSIONS "12" "13"/PostgreSQL_ADDITIONAL_VERSIONS "12" "13" "14"/' CMakeLists.txt
 
       - name: Configure vrpRouting
         run: |
@@ -99,7 +98,7 @@ jobs:
           export PATH=/usr/lib/postgresql/${PGVER}/bin:$PATH
           mkdir build
           cd build
-          cmake -DPOSTGRESQL_VERSION=${PGVER} -DCMAKE_BUILD_TYPE=Release -DVROOM_INSTALL_PATH=${VROOM_INSTALL_PATH} ..
+          cmake -DPOSTGRESQL_VERSION=${PGVER} -DCMAKE_BUILD_TYPE=Release -DVROOM_INSTALL_PATH=$HOME/vroom-${{ env.VROOMVER }} ..
 
       - name: Build vrpRouting
         run: |
@@ -124,6 +123,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-${{ env.cache-name }}-
             ${{ runner.os }}-go-
+
+      - name: Configure
+        run: |
+          cp app.env.example app.env
+          sudo -u postgres createdb -p ${PGPORT} scheduler
+          sudo -u postgres psql -p ${PGPORT} -c "CREATE ROLE username SUPERUSER INHERIT LOGIN PASSWORD 'password'" -d scheduler
 
       - name: go-test
         shell: bash

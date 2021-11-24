@@ -122,7 +122,9 @@ func TestCreateProject(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			m, b := tc.body, new(bytes.Buffer)
-			json.NewEncoder(b).Encode(m)
+			if err := json.NewEncoder(b).Encode(m); err != nil {
+				t.Error(err)
+			}
 			request, err := http.NewRequest("POST", "/projects", b)
 			request.Header.Set("Content-Type", "application/json")
 			require.NoError(t, err)
@@ -139,7 +141,9 @@ func TestCreateProject(t *testing.T) {
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
 			m = map[string]interface{}{}
-			err = json.Unmarshal(body, &m)
+			if err = json.Unmarshal(body, &m); err != nil {
+				t.Error(err)
+			}
 			delete(m, "id")
 			delete(m, "created_at")
 			delete(m, "updated_at")
@@ -200,7 +204,9 @@ func TestGetProject(t *testing.T) {
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
 			m := map[string]interface{}{}
-			err = json.Unmarshal(body, &m)
+			if err = json.Unmarshal(body, &m); err != nil {
+				t.Error(err)
+			}
 			assert.Equal(t, tc.resBody, m)
 		})
 	}
@@ -263,7 +269,9 @@ func TestListProjects(t *testing.T) {
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
 			m := []map[string]interface{}{}
-			err = json.Unmarshal(body, &m)
+			if err = json.Unmarshal(body, &m); err != nil {
+				t.Error(err)
+			}
 			assert.Equal(t, tc.resBody, m)
 		})
 	}
@@ -376,7 +384,9 @@ func TestUpdateProject(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			m, b := tc.body, new(bytes.Buffer)
-			json.NewEncoder(b).Encode(m)
+			if err := json.NewEncoder(b).Encode(m); err != nil {
+				t.Error(err)
+			}
 			url := fmt.Sprintf("/projects/%d", tc.projectID)
 			request, err := http.NewRequest("PATCH", url, b)
 			request.Header.Set("Content-Type", "application/json")
@@ -394,7 +404,9 @@ func TestUpdateProject(t *testing.T) {
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
 			m = map[string]interface{}{}
-			err = json.Unmarshal(body, &m)
+			if err = json.Unmarshal(body, &m); err != nil {
+				t.Error(err)
+			}
 			delete(m, "updated_at")
 			assert.Equal(t, tc.resBody, m)
 		})
@@ -449,7 +461,9 @@ func TestDeleteProject(t *testing.T) {
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
 			m := map[string]interface{}{}
-			err = json.Unmarshal(body, &m)
+			if err = json.Unmarshal(body, &m); err != nil {
+				t.Error(err)
+			}
 			assert.Equal(t, tc.resBody, m)
 		})
 	}

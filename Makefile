@@ -44,12 +44,12 @@ check-mod:
 .PHONY: check-mod
 
 lint:
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	golangci-lint run
 .PHONY: lint
 
 test:
-	go install gotest.tools/gotestsum
+	go install gotest.tools/gotestsum@latest
 	gotestsum --format=testname -- -count=1 -timeout=20m -coverprofile=coverage.out ./...
 .PHONY: test
 

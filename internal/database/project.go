@@ -35,11 +35,6 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-const createProject = `-- name: CreateProject :one
-INSERT INTO projects (name, data) VALUES ($1, $2)
-RETURNING id, name, data, created_at, updated_at, deleted
-`
-
 type CreateProjectParams struct {
 	Name *string      `json:"name" example:"sample_project" validate:"required"`
 	Data *interface{} `json:"data" swaggertype:"object"`
@@ -51,12 +46,6 @@ func (q *Queries) DBCreateProject(ctx context.Context, arg CreateProjectParams) 
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	return scanProjectRow(row)
 }
-
-const getProject = `-- name: GetProject :one
-SELECT id, name, data, created_at, updated_at
-FROM projects
-WHERE id = $1 AND deleted = FALSE LIMIT 1
-`
 
 type GetProjectRow struct {
 	ID        int64       `json:"id"`
@@ -73,13 +62,6 @@ func (q *Queries) DBGetProject(ctx context.Context, id int64) (Project, error) {
 	row := q.db.QueryRow(ctx, sql, id)
 	return scanProjectRow(row)
 }
-
-const listProjects = `-- name: ListProjects :many
-SELECT id, name, data, created_at, updated_at
-FROM projects
-WHERE deleted = FALSE
-ORDER BY created_at
-`
 
 type ListProjectsRow struct {
 	ID        int64       `json:"id"`
@@ -101,13 +83,6 @@ func (q *Queries) DBListProjects(ctx context.Context) ([]Project, error) {
 	return scanProjectRows(rows)
 }
 
-const updateProject = `-- name: UpdateProject :one
-UPDATE projects
-SET name = $2, data = $3
-WHERE id = $1 AND deleted = FALSE
-RETURNING id, name, data, created_at, updated_at, deleted
-`
-
 type UpdateProjectParams struct {
 	ID   *int64       `json:"id"`
 	Name *string      `json:"name"`
@@ -120,11 +95,6 @@ func (q *Queries) DBUpdateProject(ctx context.Context, arg UpdateProjectParams, 
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	return scanProjectRow(row)
 }
-
-const deleteProject = `-- name: DeleteProject :exec
-UPDATE projects SET deleted = TRUE
-WHERE id = $1
-`
 
 func (q *Queries) DBDeleteProject(ctx context.Context, id int64) (Project, error) {
 	sql := "UPDATE projects SET deleted = TRUE WHERE id = $1"

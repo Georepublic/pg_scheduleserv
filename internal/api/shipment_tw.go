@@ -52,7 +52,9 @@ import (
 func (server *Server) CreateShipmentTimeWindow(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
 	if r.Body != nil {
-		json.NewDecoder(r.Body).Decode(&userInput)
+		if err := json.NewDecoder(r.Body).Decode(&userInput); err != nil {
+			logrus.Error(err)
+		}
 	}
 
 	// Add the shipment_id path variable
@@ -71,7 +73,9 @@ func (server *Server) CreateShipmentTimeWindow(w http.ResponseWriter, r *http.Re
 		logrus.Error(err)
 	}
 	shipment := database.CreateShipmentTimeWindowParams{}
-	json.Unmarshal(userInputString, &shipment)
+	if err = json.Unmarshal(userInputString, &shipment); err != nil {
+		logrus.Error(err)
+	}
 
 	logrus.Debugf("%v", userInput)
 	logrus.Debugf("%+v", shipment)
@@ -154,7 +158,9 @@ func (server *Server) DeleteShipmentTimeWindow(w http.ResponseWriter, r *http.Re
 		logrus.Error(err)
 	}
 	shipment_tw := database.CreateShipmentTimeWindowParams{}
-	json.Unmarshal(userInputString, &shipment_tw)
+	if err = json.Unmarshal(userInputString, &shipment_tw); err != nil {
+		logrus.Error(err)
+	}
 
 	// Validate the struct
 	if err := server.validate.Struct(shipment_tw); err != nil {

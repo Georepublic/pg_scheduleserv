@@ -35,12 +35,6 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-const createJobTimeWindow = `-- name: CreateJobTimeWindow :one
-INSERT INTO jobs_time_windows (id, tw_open, tw_close)
-VALUES ($1, $2, $3)
-RETURNING id, tw_open, tw_close, created_at, updated_at
-`
-
 type CreateJobTimeWindowParams struct {
 	ID      *int64  `json:"id,string" example:"1234567890123456789" validate:"required" swaggerignore:"true"`
 	TwOpen  *string `json:"tw_open" validate:"required,datetime=2006-01-02 15:04:05"`
@@ -54,13 +48,6 @@ func (q *Queries) DBCreateJobTimeWindow(ctx context.Context, arg CreateJobTimeWi
 	return scanJobTimeWindowRow(row)
 }
 
-const listJobTimeWindow = `-- name: ListJobTimeWindow :many
-SELECT id, tw_open, tw_close, created_at, updated_at
-FROM jobs_time_windows
-WHERE id = $1
-ORDER BY created_at
-`
-
 func (q *Queries) DBListJobTimeWindows(ctx context.Context, id int64) ([]JobTimeWindow, error) {
 	table_name := "jobs_time_windows"
 	additional_query := " WHERE id = $1 ORDER BY created_at"
@@ -72,11 +59,6 @@ func (q *Queries) DBListJobTimeWindows(ctx context.Context, id int64) ([]JobTime
 	defer rows.Close()
 	return scanJobTimeWindowRows(rows)
 }
-
-const deleteJobTimeWindow = `-- name: DeleteJobTimeWindow :exec
-DELETE FROM jobs_time_windows
-WHERE id = $1 AND tw_open = $2 AND tw_close = $3
-`
 
 type DeleteJobTimeWindowParams struct {
 	ID      int64  `json:"id"`

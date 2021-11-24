@@ -52,7 +52,9 @@ import (
 func (server *Server) CreateBreakTimeWindow(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
 	if r.Body != nil {
-		json.NewDecoder(r.Body).Decode(&userInput)
+		if err := json.NewDecoder(r.Body).Decode(&userInput); err != nil {
+			logrus.Error(err)
+		}
 	}
 
 	// Add the break_id path variable
@@ -71,7 +73,9 @@ func (server *Server) CreateBreakTimeWindow(w http.ResponseWriter, r *http.Reque
 		logrus.Error(err)
 	}
 	v_break := database.CreateBreakTimeWindowParams{}
-	json.Unmarshal(userInputString, &v_break)
+	if err = json.Unmarshal(userInputString, &v_break); err != nil {
+		logrus.Error(err)
+	}
 
 	logrus.Debugf("%v", userInput)
 	logrus.Debugf("%+v", v_break)
@@ -154,7 +158,9 @@ func (server *Server) DeleteBreakTimeWindow(w http.ResponseWriter, r *http.Reque
 		logrus.Error(err)
 	}
 	break_tw := database.CreateBreakTimeWindowParams{}
-	json.Unmarshal(userInputString, &break_tw)
+	if err = json.Unmarshal(userInputString, &break_tw); err != nil {
+		logrus.Error(err)
+	}
 
 	// Validate the struct
 	if err := server.validate.Struct(break_tw); err != nil {

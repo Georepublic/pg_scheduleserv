@@ -52,7 +52,9 @@ import (
 func (server *Server) CreateShipment(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
 	if r.Body != nil {
-		json.NewDecoder(r.Body).Decode(&userInput)
+		if err := json.NewDecoder(r.Body).Decode(&userInput); err != nil {
+			logrus.Error(err)
+		}
 	}
 
 	// Add the project_id path variable
@@ -71,7 +73,9 @@ func (server *Server) CreateShipment(w http.ResponseWriter, r *http.Request) {
 		logrus.Error(err)
 	}
 	shipment := database.CreateShipmentParams{}
-	json.Unmarshal(userInputString, &shipment)
+	if err = json.Unmarshal(userInputString, &shipment); err != nil {
+		logrus.Error(err)
+	}
 
 	logrus.Debugf("%v", userInput)
 	logrus.Debugf("%+v", shipment)
@@ -157,7 +161,9 @@ func (server *Server) GetShipment(w http.ResponseWriter, r *http.Request) {
 func (server *Server) UpdateShipment(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
 	if r.Body != nil {
-		json.NewDecoder(r.Body).Decode(&userInput)
+		if err := json.NewDecoder(r.Body).Decode(&userInput); err != nil {
+			logrus.Error(err)
+		}
 	}
 
 	vars := mux.Vars(r)
@@ -178,7 +184,9 @@ func (server *Server) UpdateShipment(w http.ResponseWriter, r *http.Request) {
 		logrus.Error(err)
 	}
 	shipment := database.UpdateShipmentParams{}
-	json.Unmarshal(userInputString, &shipment)
+	if err = json.Unmarshal(userInputString, &shipment); err != nil {
+		logrus.Error(err)
+	}
 
 	// Validate the struct
 	if err := server.validate.Struct(shipment); err != nil {
