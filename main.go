@@ -1,6 +1,6 @@
 /*GRP-GNU-AGPL******************************************************************
 
-File: pg_scheduleserv.go
+File: main.go
 
 Copyright (C) 2021  Team Georepublic <info@georepublic.de>
 
@@ -25,6 +25,7 @@ You should have received a copy of the GNU Affero General Public License
 along with pg_scheduleserv.  If not, see <https://www.gnu.org/licenses/>.
 
 ******************************************************************GRP-GNU-AGPL*/
+
 
 package main
 

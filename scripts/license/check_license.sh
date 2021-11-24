@@ -2,7 +2,7 @@
 
 # GRP-GNU-AGPL******************************************************************
 
-# File: create_migrations.sh - script to create a new database migration file
+# File: check_license.sh - script to check file license
 
 # Copyright (C) 2021  Team Georepublic <info@georepublic.de>
 
@@ -28,28 +28,18 @@
 
 # ******************************************************************GRP-GNU-AGPL
 
+EXCLUDE_LIST="internal/mock"
 
-if [[ -z "$1" ]]; then
-    echo "Please provide the migration file name."
-    exit 1
-fi
-
-command -v migrate >/dev/null 2>&1 || {
-    echo >&2 "Migrate command not found. Please install golang-migrate";
-    exit 1;
+mylicensecheck() {
+    licensecheck -r --copyright -l 30 --tail 0 -i "$EXCLUDE_LIST" docs e2e_test internal migrations scripts Makefile main.go
 }
 
-migrate create -ext sql -dir migrations -seq "$1"
+missing=$(! { mylicensecheck;}  | grep "No copyright\|UNKNOWN" | grep -v "generated file")
 
-TEMPLATE='BEGIN;
-
-
-
-END;'
-
-SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-
-for m in $(find migrations -maxdepth 1 ! -name migrations | sort | tail -n 2); do
-    echo "$TEMPLATE" >> "$m";
-    "$SCRIPT_DIR/../license/add_license.sh" "$m"
-done
+if [[ $missing ]]; then
+  echo " ****************************************************"
+  echo " *** Found source files without valid license headers"
+  echo " ****************************************************"
+  echo "$missing"
+  exit 1
+fi
