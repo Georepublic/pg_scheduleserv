@@ -1,0 +1,144 @@
+name: 'Test'
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: get postgres version
+        run: |
+          sudo service postgresql start
+          PGVER=$(psql --version | grep -Po '(?<=psql \(PostgreSQL\) )[^;]+(?=\.\d \()')
+          echo "PGVER=${PGVER}" >> $GITHUB_ENV
+          echo "PGPORT=5432" >> $GITHUB_ENV
+          echo "PGIS=3" >> $GITHUB_ENV
+          echo "VROOMVER=1.10.0" >> $GITHUB_ENV
+          echo "VRPVER=0.2.0" >> $GITHUB_ENV
+
+      - name: Add PostgreSQL APT repository
+        run: |
+          sudo apt-get install curl ca-certificates gnupg
+          curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ \
+            $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libboost-graph-dev \
+            libtap-parser-sourcehandler-pgtap-perl \
+            postgresql-${PGVER} \
+            postgresql-${PGVER}-pgtap \
+            postgresql-${PGVER}-postgis-${PGIS} \
+            postgresql-${PGVER}-postgis-${PGIS}-scripts \
+            postgresql-${PGVER}-pgrouting \
+            postgresql-server-dev-${PGVER}
+
+      - name: Install VROOM dependencies
+        run: |
+          sudo apt-get install libssl-dev libasio-dev libglpk-dev
+
+      - name: Cache VROOM
+        id: cache-vroom
+        uses: actions/cache@v2
+        env:
+          cache-name: vroom
+        with:
+          path: |
+            ~/vroom-${{ env.VROOMVER }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ env.VROOMVER }}
+
+      - name: Clone VROOM
+        if: steps.cache-vroom.outputs.cache-hit != 'true'
+        run: |
+          wget https://github.com/VROOM-Project/vroom/archive/refs/tags/v${{ env.VROOMVER }}.tar.gz -O /tmp/${{ env.VROOMVER }}.tar.gz
+          tar -zvxf /tmp/${{ env.VROOMVER }}.tar.gz -C ~/
+
+      - name: Build VROOM
+        run: |
+          cd ~/vroom-${{ env.VROOMVER }}/src
+
+          # Create object file with position independent code using -fPIC flag
+          sed -i 's/CXXFLAGS = /CXXFLAGS = -fPIC /' makefile
+
+          make
+          cd ..
+          echo "VROOM_INSTALL_PATH=$(pwd)" >> $GITHUB_ENV
+
+      - name: Cache vrpRouting
+        id: cache-vrprouting
+        uses: actions/cache@v2
+        env:
+          cache-name: vrprouting
+        with:
+          path: |
+            ~/vrprouting-${{ env.VRPVER }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ env.VRPVER }}
+
+      - name: Clone vrpRouting
+        if: steps.cache-vroom.outputs.cache-hit != 'true'
+        run: |
+          wget https://github.com/pgRouting/vrprouting/archive/refs/tags/v${{ env.VRPVER }}.tar.gz -O /tmp/${{ env.VRPVER }}.tar.gz
+          tar -zvxf /tmp/${{ env.VRPVER }}.tar.gz -C ~/
+
+      - name: Configure vrpRouting
+        run: |
+          cd ~/vrprouting-${{ env.VRPVER }}
+          export PATH=/usr/lib/postgresql/${PGVER}/bin:$PATH
+          mkdir build
+          cd build
+          cmake -DPOSTGRESQL_VERSION=${PGVER} -DCMAKE_BUILD_TYPE=Release -DVROOM_INSTALL_PATH=${VROOM_INSTALL_PATH} ..
+
+      - name: Build vrpRouting
+        run: |
+          cd ~/vrprouting-${{ env.VRPVER }}
+          cd build
+          make -j 4
+          sudo make install
+
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.17.x'
+
+      - name: Cache Go modules
+        uses: actions/cache@v2
+        env:
+          cache-name: modules
+        with:
+          path: |
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ env.cache-name }}-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-${{ env.cache-name }}-
+            ${{ runner.os }}-go-
+
+      - name: go-test
+        shell: bash
+        run: make test
+
+      - name: go-coverage
+        shell: bash
+        run: |-
+          OUTPUT="$(make test-coverage)"
+          TOTAL="$(echo $OUTPUT | awk 'END{print $NF}')"
+          echo "::group::Coverage (${TOTAL})"
+          echo "${OUTPUT}"
+          echo "::endgroup::"
+
+      - name: Upload to codecov
+        uses: codecov/codecov-action@v2
+        with:
+          files: coverage.out
