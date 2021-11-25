@@ -36,10 +36,10 @@ import (
 )
 
 type CreateShipmentTimeWindowParams struct {
-	ID      *int64  `json:"id,string" example:"1234567890123456789" validate:"required" swaggerignore:"true"`
+	ID      *int64  `json:"id,string" example:"1234567812345678" validate:"required" swaggerignore:"true"`
 	Kind    *string `json:"kind" validate:"required"`
-	TwOpen  *string `json:"tw_open" validate:"required,datetime=2006-01-02 15:04:05"`
-	TwClose *string `json:"tw_close" validate:"required,datetime=2006-01-02 15:04:05"`
+	TwOpen  *string `json:"tw_open" validate:"required,datetime=2006-01-02 15:04:05" example:"2021-12-31 23:00:00"`
+	TwClose *string `json:"tw_close" validate:"required,datetime=2006-01-02 15:04:05" example:"2021-12-31 23:59:00"`
 }
 
 func (q *Queries) DBCreateShipmentTimeWindow(ctx context.Context, arg CreateShipmentTimeWindowParams) (ShipmentTimeWindow, error) {
@@ -59,13 +59,6 @@ func (q *Queries) DBListShipmentTimeWindows(ctx context.Context, id int64) ([]Sh
 	}
 	defer rows.Close()
 	return scanShipmentTimeWindowRows(rows)
-}
-
-type DeleteShipmentTimeWindowParams struct {
-	ID      int64  `json:"id"`
-	Kind    string `json:"kind"`
-	TwOpen  string `json:"tw_open"`
-	TwClose string `json:"tw_close"`
 }
 
 func (q *Queries) DBDeleteShipmentTimeWindow(ctx context.Context, arg CreateShipmentTimeWindowParams) (ShipmentTimeWindow, error) {

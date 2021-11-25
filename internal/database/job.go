@@ -37,13 +37,24 @@ import (
 
 type CreateJobParams struct {
 	Location  *util.LocationParams `json:"location" validate:"required"`
-	Service   *int64               `json:"service"`
-	Delivery  *[]int64             `json:"delivery"`
-	Pickup    *[]int64             `json:"pickup"`
-	Skills    *[]int32             `json:"skills"`
-	Priority  *int32               `json:"priority"`
+	Service   *int64               `json:"service"  example:"120"`
+	Delivery  *[]int64             `json:"delivery" example:"10,20"`
+	Pickup    *[]int64             `json:"pickup"   example:"5,15"`
+	Skills    *[]int32             `json:"skills"   example:"1,5"`
+	Priority  *int32               `json:"priority" example:"10"`
 	ProjectID *int64               `json:"project_id,string" validate:"required" swaggerignore:"true"`
-	Data      *interface{}         `json:"data" swaggertype:"object"`
+	Data      *interface{}         `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
+}
+
+type UpdateJobParams struct {
+	Location  *util.LocationParams `json:"location"`
+	Service   *int64               `json:"service" example:"120"`
+	Delivery  *[]int64             `json:"delivery" example:"10,20"`
+	Pickup    *[]int64             `json:"pickup" example:"5,15"`
+	Skills    *[]int32             `json:"skills" example:"1,5"`
+	Priority  *int32               `json:"priority" example:"10"`
+	ProjectID *int64               `json:"project_id,string" example:"1234567812345678"`
+	Data      *interface{}         `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 }
 
 func (q *Queries) DBCreateJob(ctx context.Context, arg CreateJobParams) (Job, error) {
@@ -53,40 +64,12 @@ func (q *Queries) DBCreateJob(ctx context.Context, arg CreateJobParams) (Job, er
 	return scanJobRow(row)
 }
 
-type GetJobRow struct {
-	ID            int64       `json:"id"`
-	LocationIndex int64       `json:"location_index"`
-	Service       int64       `json:"service"`
-	Delivery      []int64     `json:"delivery"`
-	Pickup        []int64     `json:"pickup"`
-	Skills        []int32     `json:"skills"`
-	Priority      int32       `json:"priority"`
-	ProjectID     int64       `json:"project_id"`
-	Data          interface{} `json:"data"`
-	CreatedAt     string      `json:"created_at"`
-	UpdatedAt     string      `json:"updated_at"`
-}
-
 func (q *Queries) DBGetJob(ctx context.Context, id int64) (Job, error) {
 	table_name := "jobs"
 	additional_query := " WHERE id = $1 AND deleted = FALSE LIMIT 1"
 	sql := "SELECT " + util.GetOutputFields(Job{}) + " FROM " + table_name + additional_query
 	row := q.db.QueryRow(ctx, sql, id)
 	return scanJobRow(row)
-}
-
-type ListJobsRow struct {
-	ID            int64       `json:"id"`
-	LocationIndex int64       `json:"location_index"`
-	Service       int64       `json:"service"`
-	Delivery      []int64     `json:"delivery"`
-	Pickup        []int64     `json:"pickup"`
-	Skills        []int32     `json:"skills"`
-	Priority      int32       `json:"priority"`
-	ProjectID     int64       `json:"project_id"`
-	Data          interface{} `json:"data"`
-	CreatedAt     string      `json:"created_at"`
-	UpdatedAt     string      `json:"updated_at"`
 }
 
 func (q *Queries) DBListJobs(ctx context.Context, projectID int64) ([]Job, error) {
@@ -99,17 +82,6 @@ func (q *Queries) DBListJobs(ctx context.Context, projectID int64) ([]Job, error
 	}
 	defer rows.Close()
 	return scanJobRows(rows)
-}
-
-type UpdateJobParams struct {
-	Location  *util.LocationParams `json:"location"`
-	Service   *int64               `json:"service"`
-	Delivery  *[]int64             `json:"delivery"`
-	Pickup    *[]int64             `json:"pickup"`
-	Skills    *[]int32             `json:"skills"`
-	Priority  *int32               `json:"priority"`
-	ProjectID *int64               `json:"project_id,string"`
-	Data      *interface{}         `json:"data" swaggertype:"object"`
 }
 
 func (q *Queries) DBUpdateJob(ctx context.Context, arg UpdateJobParams, job_id int64) (Job, error) {

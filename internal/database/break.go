@@ -36,9 +36,15 @@ import (
 )
 
 type CreateBreakParams struct {
-	VehicleID *int64       `json:"vehicle_id,string" example:"1234567890123456789" validate:"required" swaggerignore:"true"`
-	Service   *int64       `json:"service"`
-	Data      *interface{} `json:"data" swaggertype:"object"`
+	VehicleID *int64       `json:"vehicle_id,string" example:"1234567812345678" validate:"required" swaggerignore:"true"`
+	Service   *int64       `json:"service" example:"120"`
+	Data      *interface{} `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
+}
+
+type UpdateBreakParams struct {
+	VehicleID *int64       `json:"vehicle_id,string" example:"1234567812345678"`
+	Service   *int64       `json:"service" example:"120"`
+	Data      *interface{} `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 }
 
 func (q *Queries) DBCreateBreak(ctx context.Context, arg CreateBreakParams) (Break, error) {
@@ -48,30 +54,12 @@ func (q *Queries) DBCreateBreak(ctx context.Context, arg CreateBreakParams) (Bre
 	return scanBreakRow(row)
 }
 
-type GetBreakRow struct {
-	ID        int64       `json:"id"`
-	VehicleID int64       `json:"vehicle_id"`
-	Service   int64       `json:"service"`
-	Data      interface{} `json:"data"`
-	CreatedAt string      `json:"created_at"`
-	UpdatedAt string      `json:"updated_at"`
-}
-
 func (q *Queries) DBGetBreak(ctx context.Context, id int64) (Break, error) {
 	table_name := "breaks"
 	additional_query := " WHERE id = $1 AND deleted = FALSE LIMIT 1"
 	sql := "SELECT " + util.GetOutputFields(Break{}) + " FROM " + table_name + additional_query
 	row := q.db.QueryRow(ctx, sql, id)
 	return scanBreakRow(row)
-}
-
-type ListBreaksRow struct {
-	ID        int64       `json:"id"`
-	VehicleID int64       `json:"vehicle_id"`
-	Service   int64       `json:"service"`
-	Data      interface{} `json:"data"`
-	CreatedAt string      `json:"created_at"`
-	UpdatedAt string      `json:"updated_at"`
 }
 
 func (q *Queries) DBListBreaks(ctx context.Context, vehicleID int64) ([]Break, error) {
@@ -84,12 +72,6 @@ func (q *Queries) DBListBreaks(ctx context.Context, vehicleID int64) ([]Break, e
 	}
 	defer rows.Close()
 	return scanBreakRows(rows)
-}
-
-type UpdateBreakParams struct {
-	VehicleID *int64       `json:"vehicle_id,string" example:"1234567890123456789"`
-	Service   *int64       `json:"service"`
-	Data      *interface{} `json:"data" swaggertype:"object"`
 }
 
 func (q *Queries) DBUpdateBreak(ctx context.Context, arg UpdateBreakParams, break_id int64) (Break, error) {

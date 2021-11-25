@@ -36,8 +36,13 @@ import (
 )
 
 type CreateProjectParams struct {
-	Name *string      `json:"name" example:"sample_project" validate:"required"`
-	Data *interface{} `json:"data" swaggertype:"object"`
+	Name *string      `json:"name" example:"Sample Project" validate:"required"`
+	Data *interface{} `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
+}
+
+type UpdateProjectParams struct {
+	Name *string      `json:"name" example:"Sample Project" validate:"required"`
+	Data *interface{} `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 }
 
 func (q *Queries) DBCreateProject(ctx context.Context, arg CreateProjectParams) (Project, error) {
@@ -47,28 +52,12 @@ func (q *Queries) DBCreateProject(ctx context.Context, arg CreateProjectParams) 
 	return scanProjectRow(row)
 }
 
-type GetProjectRow struct {
-	ID        int64       `json:"id"`
-	Name      string      `json:"name"`
-	Data      interface{} `json:"data"`
-	CreatedAt string      `json:"created_at"`
-	UpdatedAt string      `json:"updated_at"`
-}
-
 func (q *Queries) DBGetProject(ctx context.Context, id int64) (Project, error) {
 	table_name := "projects"
 	additional_query := " WHERE id = $1 AND deleted = FALSE LIMIT 1"
 	sql := "SELECT " + util.GetOutputFields(Project{}) + " FROM " + table_name + additional_query
 	row := q.db.QueryRow(ctx, sql, id)
 	return scanProjectRow(row)
-}
-
-type ListProjectsRow struct {
-	ID        int64       `json:"id"`
-	Name      string      `json:"name"`
-	Data      interface{} `json:"data"`
-	CreatedAt string      `json:"created_at"`
-	UpdatedAt string      `json:"updated_at"`
 }
 
 func (q *Queries) DBListProjects(ctx context.Context) ([]Project, error) {
@@ -81,12 +70,6 @@ func (q *Queries) DBListProjects(ctx context.Context) ([]Project, error) {
 	}
 	defer rows.Close()
 	return scanProjectRows(rows)
-}
-
-type UpdateProjectParams struct {
-	ID   *int64       `json:"id"`
-	Name *string      `json:"name"`
-	Data *interface{} `json:"data"`
 }
 
 func (q *Queries) DBUpdateProject(ctx context.Context, arg UpdateProjectParams, project_id int64) (Project, error) {

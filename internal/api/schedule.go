@@ -43,6 +43,7 @@ import (
 // @Produce application/json
 // @Param project_id path int true "Project ID"
 // @Success 200 {object} util.Schedule
+// @Failure 400 {object} util.MultiError
 // @Router /projects/{project_id}/schedule [post]
 func (server *Server) CreateSchedule(w http.ResponseWriter, r *http.Request) {
 	// Add the project_id path variable
@@ -70,6 +71,7 @@ func (server *Server) CreateSchedule(w http.ResponseWriter, r *http.Request) {
 // @Produce text/calendar
 // @Param project_id path int true "Project ID"
 // @Success 200 {object} util.Schedule
+// @Failure 400 {object} util.MultiError
 // @Router /projects/{project_id}/schedule [get]
 func (server *Server) GetSchedule(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -95,7 +97,8 @@ func (server *Server) GetSchedule(w http.ResponseWriter, r *http.Request) {
 // @Accept application/json
 // @Produce application/json
 // @Param project_id path int true "Project ID"
-// @Success 200 {object} util.Schedule
+// @Success 200 {object} util.Success
+// @Failure 400 {object} util.MultiError
 // @Router /projects/{project_id}/schedule [delete]
 func (server *Server) DeleteSchedule(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)

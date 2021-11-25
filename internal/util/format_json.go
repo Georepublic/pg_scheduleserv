@@ -61,7 +61,7 @@ func (r *Formatter) FormatJSON(w http.ResponseWriter, respCode int, data interfa
 
 	// Convert validation errors to multi errors
 	if typ, ok := data.(validator.ValidationErrors); ok {
-		data = &multiError{Errors: getErrorMsg(typ)}
+		data = &MultiError{Errors: getErrorMsg(typ)}
 	}
 
 	// Handle multi errors
@@ -72,12 +72,12 @@ func (r *Formatter) FormatJSON(w http.ResponseWriter, respCode int, data interfa
 		for _, err := range errs {
 			msgs = append(msgs, err.Error())
 		}
-		data = &multiError{Errors: msgs}
+		data = &MultiError{Errors: msgs}
 	}
 
 	// Handle single error
 	if typ, ok := data.(error); ok {
-		data = &singleError{Error: typ.Error()}
+		data = &MultiError{Errors: []string{typ.Error()}}
 	}
 
 	b := r.pool.Get().(*bytes.Buffer)
@@ -100,10 +100,14 @@ const jsonSuccessResp = `{"success": true}`
 
 const jsonErrResp = `{"error": "%s"}`
 
-type singleError struct {
-	Error string `json:"error,omitempty"`
+type MultiError struct {
+	Errors []string `json:"errors,omitempty" example:"Error message1,Error message2"`
 }
 
-type multiError struct {
-	Errors []string `json:"errors,omitempty"`
+type NotFound struct {
+	Error string `json:"error" example:"Not Found"`
+}
+
+type Success struct {
+	Success string `json:"success" example:"true"`
 }

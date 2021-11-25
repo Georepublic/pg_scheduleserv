@@ -42,8 +42,8 @@ type PartialSQL struct {
 }
 
 type LocationParams struct {
-	Latitude  *float64 `json:"latitude"  validate:"required"`
-	Longitude *float64 `json:"longitude" validate:"required"`
+	Latitude  *float64 `json:"latitude"  validate:"required" example:"2.0365"`
+	Longitude *float64 `json:"longitude" validate:"required" example:"48.6113"`
 }
 
 // Get an SQL query with partial fields

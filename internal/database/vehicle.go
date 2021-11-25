@@ -39,12 +39,24 @@ type CreateVehicleParams struct {
 	StartLocation *util.LocationParams `json:"start_location" validate:"required"`
 	EndLocation   *util.LocationParams `json:"end_location" validate:"required"`
 	Capacity      *[]int64             `json:"capacity"`
-	Skills        *[]int32             `json:"skills"`
+	Skills        *[]int32             `json:"skills" example:"1,5"`
 	TwOpen        *string              `json:"tw_open" validate:"omitempty,datetime=2006-01-02 15:04:05"`
 	TwClose       *string              `json:"tw_close" validate:"omitempty,datetime=2006-01-02 15:04:05"`
 	SpeedFactor   *float64             `json:"speed_factor"`
 	ProjectID     *int64               `json:"project_id,string" validate:"required" swaggerignore:"true"`
-	Data          *interface{}         `json:"data" swaggertype:"object"`
+	Data          *interface{}         `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
+}
+
+type UpdateVehicleParams struct {
+	StartLocation *util.LocationParams `json:"start_location"`
+	EndLocation   *util.LocationParams `json:"end_location"`
+	Capacity      *[]int64             `json:"capacity"`
+	Skills        *[]int32             `json:"skills" example:"1,5"`
+	TwOpen        *string              `json:"tw_open" validate:"omitempty,datetime=2006-01-02 15:04:05"`
+	TwClose       *string              `json:"tw_close" validate:"omitempty,datetime=2006-01-02 15:04:05"`
+	SpeedFactor   *float64             `json:"speed_factor"`
+	ProjectID     *int64               `json:"project_id,string" example:"1234567812345678"`
+	Data          *interface{}         `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 }
 
 func (q *Queries) DBCreateVehicle(ctx context.Context, arg CreateVehicleParams) (Vehicle, error) {
@@ -54,42 +66,12 @@ func (q *Queries) DBCreateVehicle(ctx context.Context, arg CreateVehicleParams) 
 	return scanVehicleRow(row)
 }
 
-type GetVehicleRow struct {
-	ID          int64       `json:"id"`
-	StartIndex  int64       `json:"start_index"`
-	EndIndex    int64       `json:"end_index"`
-	Capacity    []int64     `json:"capacity"`
-	Skills      []int32     `json:"skills"`
-	TwOpen      string      `json:"tw_open"`
-	TwClose     string      `json:"tw_close"`
-	SpeedFactor float64     `json:"speed_factor"`
-	ProjectID   int64       `json:"project_id"`
-	Data        interface{} `json:"data"`
-	CreatedAt   string      `json:"created_at"`
-	UpdatedAt   string      `json:"updated_at"`
-}
-
 func (q *Queries) DBGetVehicle(ctx context.Context, id int64) (Vehicle, error) {
 	table_name := "vehicles"
 	additional_query := " WHERE id = $1 AND deleted = FALSE LIMIT 1"
 	sql := "SELECT " + util.GetOutputFields(Vehicle{}) + " FROM " + table_name + additional_query
 	row := q.db.QueryRow(ctx, sql, id)
 	return scanVehicleRow(row)
-}
-
-type ListVehiclesRow struct {
-	ID          int64       `json:"id"`
-	StartIndex  int64       `json:"start_index"`
-	EndIndex    int64       `json:"end_index"`
-	Capacity    []int64     `json:"capacity"`
-	Skills      []int32     `json:"skills"`
-	TwOpen      string      `json:"tw_open"`
-	TwClose     string      `json:"tw_close"`
-	SpeedFactor float64     `json:"speed_factor"`
-	ProjectID   int64       `json:"project_id"`
-	Data        interface{} `json:"data"`
-	CreatedAt   string      `json:"created_at"`
-	UpdatedAt   string      `json:"updated_at"`
 }
 
 func (q *Queries) DBListVehicles(ctx context.Context, projectID int64) ([]Vehicle, error) {
@@ -102,18 +84,6 @@ func (q *Queries) DBListVehicles(ctx context.Context, projectID int64) ([]Vehicl
 	}
 	defer rows.Close()
 	return scanVehicleRows(rows)
-}
-
-type UpdateVehicleParams struct {
-	StartLocation *util.LocationParams `json:"start_location"`
-	EndLocation   *util.LocationParams `json:"end_location"`
-	Capacity      *[]int64             `json:"capacity"`
-	Skills        *[]int32             `json:"skills"`
-	TwOpen        *string              `json:"tw_open" validate:"omitempty,datetime=2006-01-02 15:04:05"`
-	TwClose       *string              `json:"tw_close" validate:"omitempty,datetime=2006-01-02 15:04:05"`
-	SpeedFactor   *float64             `json:"speed_factor"`
-	ProjectID     *int64               `json:"project_id,string"`
-	Data          *interface{}         `json:"data" swaggertype:"object"`
 }
 
 func (q *Queries) DBUpdateVehicle(ctx context.Context, arg UpdateVehicleParams, vehicle_id int64) (Vehicle, error) {

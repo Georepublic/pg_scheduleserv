@@ -41,10 +41,22 @@ type CreateShipmentParams struct {
 	DLocation *util.LocationParams `json:"d_location" validate:"required"`
 	DService  *int64               `json:"d_service"`
 	Amount    *[]int64             `json:"amount"`
-	Skills    *[]int32             `json:"skills"`
-	Priority  *int32               `json:"priority"`
+	Skills    *[]int32             `json:"skills" example:"1,5"`
+	Priority  *int32               `json:"priority" example:"10"`
 	ProjectID *int64               `json:"project_id,string" validate:"required" swaggerignore:"true"`
-	Data      *interface{}         `json:"data" swaggertype:"object"`
+	Data      *interface{}         `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
+}
+
+type UpdateShipmentParams struct {
+	PLocation *util.LocationParams `json:"p_location"`
+	PService  *int64               `json:"p_service"`
+	DLocation *util.LocationParams `json:"d_location"`
+	DService  *int64               `json:"d_service"`
+	Amount    *[]int64             `json:"amount"`
+	Skills    *[]int32             `json:"skills" example:"1,5"`
+	Priority  *int32               `json:"priority" example:"10"`
+	ProjectID *int64               `json:"project_id,string" example:"1234567812345678"`
+	Data      *interface{}         `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 }
 
 func (q *Queries) DBCreateShipment(ctx context.Context, arg CreateShipmentParams) (Shipment, error) {
@@ -54,42 +66,12 @@ func (q *Queries) DBCreateShipment(ctx context.Context, arg CreateShipmentParams
 	return scanShipmentRow(row)
 }
 
-type GetShipmentRow struct {
-	ID             int64       `json:"id"`
-	PLocationIndex int64       `json:"p_location_index"`
-	PService       int64       `json:"p_service"`
-	DLocationIndex int64       `json:"d_location_index"`
-	DService       int64       `json:"d_service"`
-	Amount         []int64     `json:"amount"`
-	Skills         []int32     `json:"skills"`
-	Priority       int32       `json:"priority"`
-	ProjectID      int64       `json:"project_id"`
-	Data           interface{} `json:"data"`
-	CreatedAt      string      `json:"created_at"`
-	UpdatedAt      string      `json:"updated_at"`
-}
-
 func (q *Queries) DBGetShipment(ctx context.Context, id int64) (Shipment, error) {
 	table_name := "shipments"
 	additional_query := " WHERE id = $1 AND deleted = FALSE LIMIT 1"
 	sql := "SELECT " + util.GetOutputFields(Shipment{}) + " FROM " + table_name + additional_query
 	row := q.db.QueryRow(ctx, sql, id)
 	return scanShipmentRow(row)
-}
-
-type ListShipmentsRow struct {
-	ID             int64       `json:"id"`
-	PLocationIndex int64       `json:"p_location_index"`
-	PService       int64       `json:"p_service"`
-	DLocationIndex int64       `json:"d_location_index"`
-	DService       int64       `json:"d_service"`
-	Amount         []int64     `json:"amount"`
-	Skills         []int32     `json:"skills"`
-	Priority       int32       `json:"priority"`
-	ProjectID      int64       `json:"project_id"`
-	Data           interface{} `json:"data"`
-	CreatedAt      string      `json:"created_at"`
-	UpdatedAt      string      `json:"updated_at"`
 }
 
 func (q *Queries) DBListShipments(ctx context.Context, projectID int64) ([]Shipment, error) {
@@ -102,18 +84,6 @@ func (q *Queries) DBListShipments(ctx context.Context, projectID int64) ([]Shipm
 	}
 	defer rows.Close()
 	return scanShipmentRows(rows)
-}
-
-type UpdateShipmentParams struct {
-	PLocation *util.LocationParams `json:"p_location"`
-	PService  *int64               `json:"p_service"`
-	DLocation *util.LocationParams `json:"d_location"`
-	DService  *int64               `json:"d_service"`
-	Amount    *[]int64             `json:"amount"`
-	Skills    *[]int32             `json:"skills"`
-	Priority  *int32               `json:"priority"`
-	ProjectID *int64               `json:"project_id,string"`
-	Data      *interface{}         `json:"data" swaggertype:"object"`
 }
 
 func (q *Queries) DBUpdateShipment(ctx context.Context, arg UpdateShipmentParams, shipment_id int64) (Shipment, error) {

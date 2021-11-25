@@ -48,6 +48,7 @@ import (
 // @Param job_id path int true "Job ID"
 // @Param JobTimeWindow body database.CreateJobTimeWindowParams true "Create job time window"
 // @Success 200 {object} database.JobTimeWindow
+// @Failure 400 {object} util.MultiError
 // @Router /jobs/{job_id}/time_windows [post]
 func (server *Server) CreateJobTimeWindow(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
@@ -104,6 +105,7 @@ func (server *Server) CreateJobTimeWindow(w http.ResponseWriter, r *http.Request
 // @Produce application/json
 // @Param job_id path int true "Job ID"
 // @Success 200 {object} database.JobTimeWindow
+// @Failure 400 {object} util.MultiError
 // @Router /jobs/{job_id}/time_windows [get]
 func (server *Server) ListJobTimeWindows(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -131,7 +133,8 @@ func (server *Server) ListJobTimeWindows(w http.ResponseWriter, r *http.Request)
 // @Param job_id path int true "Job ID"
 // @Param tw_open path string true "Job opening Time Window"
 // @Param tw_close path string true "Job closing Time Window"
-// @Success 200 {object} database.JobTimeWindow
+// @Success 200 {object} util.Success
+// @Failure 400 {object} util.MultiError
 // @Router /jobs/{job_id}/time_windows/{tw_open}/{tw_close} [delete]
 func (server *Server) DeleteJobTimeWindow(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)

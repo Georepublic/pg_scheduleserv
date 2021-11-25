@@ -37,9 +37,9 @@ import (
 )
 
 type CreateBreakTimeWindowParams struct {
-	ID      *int64  `json:"id,string" example:"1234567890123456789" validate:"required" swaggerignore:"true"`
-	TwOpen  *string `json:"tw_open" validate:"required,datetime=2006-01-02 15:04:05"`
-	TwClose *string `json:"tw_close" validate:"required,datetime=2006-01-02 15:04:05"`
+	ID      *int64  `json:"id,string" example:"1234567812345678" validate:"required" swaggerignore:"true"`
+	TwOpen  *string `json:"tw_open" validate:"required,datetime=2006-01-02 15:04:05" example:"2021-12-31 23:00:00"`
+	TwClose *string `json:"tw_close" validate:"required,datetime=2006-01-02 15:04:05" example:"2021-12-31 23:59:00"`
 }
 
 func (q *Queries) DBCreateBreakTimeWindow(ctx context.Context, arg CreateBreakTimeWindowParams) (BreakTimeWindow, error) {
@@ -61,12 +61,6 @@ func (q *Queries) DBListBreakTimeWindows(ctx context.Context, id int64) ([]Break
 	}
 	defer rows.Close()
 	return scanBreakTimeWindowRows(rows)
-}
-
-type DeleteBreakTimeWindowParams struct {
-	ID      int64  `json:"id"`
-	TwOpen  string `json:"tw_open"`
-	TwClose string `json:"tw_close"`
 }
 
 func (q *Queries) DBDeleteBreakTimeWindow(ctx context.Context, arg CreateBreakTimeWindowParams) (BreakTimeWindow, error) {

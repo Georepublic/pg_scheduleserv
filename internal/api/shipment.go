@@ -48,6 +48,7 @@ import (
 // @Param project_id path int true "Project ID"
 // @Param Shipment body database.CreateShipmentParams true "Create shipment"
 // @Success 200 {object} database.Shipment
+// @Failure 400 {object} util.MultiError
 // @Router /projects/{project_id}/shipments [post]
 func (server *Server) CreateShipment(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
@@ -104,6 +105,7 @@ func (server *Server) CreateShipment(w http.ResponseWriter, r *http.Request) {
 // @Produce application/json
 // @Param project_id path int true "Project ID"
 // @Success 200 {object} database.Shipment
+// @Failure 400 {object} util.MultiError
 // @Router /projects/{project_id}/shipments [get]
 func (server *Server) ListShipments(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -130,6 +132,8 @@ func (server *Server) ListShipments(w http.ResponseWriter, r *http.Request) {
 // @Produce application/json
 // @Param shipment_id path int true "Shipment ID"
 // @Success 200 {object} database.Shipment
+// @Failure 400 {object} util.MultiError
+// @Failure 404 {object} util.NotFound
 // @Router /shipments/{shipment_id} [get]
 func (server *Server) GetShipment(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -157,6 +161,7 @@ func (server *Server) GetShipment(w http.ResponseWriter, r *http.Request) {
 // @Param shipment_id path int true "Shipment ID"
 // @Param Shipment body database.UpdateShipmentParams true "Update shipment"
 // @Success 200 {object} database.Shipment
+// @Failure 400 {object} util.MultiError
 // @Router /shipments/{shipment_id} [patch]
 func (server *Server) UpdateShipment(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
@@ -211,7 +216,8 @@ func (server *Server) UpdateShipment(w http.ResponseWriter, r *http.Request) {
 // @Accept application/json
 // @Produce application/json
 // @Param shipment_id path int true "Shipment ID"
-// @Success 200 {object} database.Shipment
+// @Success 200 {object} util.Success
+// @Failure 400 {object} util.MultiError
 // @Router /shipments/{shipment_id} [delete]
 func (server *Server) DeleteShipment(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)

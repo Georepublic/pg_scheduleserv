@@ -59,6 +59,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/database.Break"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
+                        }
                     }
                 }
             },
@@ -87,7 +93,13 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Break"
+                            "$ref": "#/definitions/util.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
                         }
                     }
                 }
@@ -128,6 +140,18 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/database.Break"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
+                        }
                     }
                 }
             }
@@ -159,6 +183,12 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/database.BreakTimeWindow"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
                         }
                     }
                 }
@@ -198,6 +228,12 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/database.BreakTimeWindow"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
                         }
                     }
                 }
@@ -243,7 +279,13 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.BreakTimeWindow"
+                            "$ref": "#/definitions/util.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
                         }
                     }
                 }
@@ -277,6 +319,18 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/database.Job"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
+                        }
                     }
                 }
             },
@@ -305,7 +359,13 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Job"
+                            "$ref": "#/definitions/util.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
                         }
                     }
                 }
@@ -336,6 +396,12 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/database.Job"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
                         }
                     }
                 }
@@ -368,6 +434,12 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/database.JobTimeWindow"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
                         }
                     }
                 }
@@ -407,6 +479,12 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/database.JobTimeWindow"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
                         }
                     }
                 }
@@ -452,7 +530,13 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.JobTimeWindow"
+                            "$ref": "#/definitions/util.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
                         }
                     }
                 }
@@ -476,6 +560,12 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/database.Project"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
                         }
                     }
                 }
@@ -509,6 +599,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/database.Project"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
+                        }
                     }
                 }
             }
@@ -541,6 +637,18 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/database.Project"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
+                        }
                     }
                 }
             },
@@ -569,7 +677,13 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Project"
+                            "$ref": "#/definitions/util.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
                         }
                     }
                 }
@@ -610,6 +724,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/database.Project"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
+                        }
                     }
                 }
             }
@@ -642,6 +762,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/database.Job"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
+                        }
                     }
                 }
             },
@@ -666,12 +792,12 @@ var doc = `{
                         "required": true
                     },
                     {
-                        "description": "Update job",
+                        "description": "Job object",
                         "name": "Job",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/database.UpdateJobParams"
+                            "$ref": "#/definitions/database.CreateJobParams"
                         }
                     }
                 ],
@@ -680,6 +806,12 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/database.Job"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
                         }
                     }
                 }
@@ -713,6 +845,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/util.Schedule"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
+                        }
                     }
                 }
             },
@@ -743,6 +881,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/util.Schedule"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
+                        }
                     }
                 }
             },
@@ -771,7 +915,13 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/util.Schedule"
+                            "$ref": "#/definitions/util.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
                         }
                     }
                 }
@@ -804,6 +954,12 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/database.Shipment"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
                         }
                     }
                 }
@@ -844,6 +1000,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/database.Shipment"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
+                        }
                     }
                 }
             }
@@ -875,6 +1037,12 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/database.Vehicle"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
                         }
                     }
                 }
@@ -915,6 +1083,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/database.Vehicle"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
+                        }
                     }
                 }
             }
@@ -947,6 +1121,18 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/database.Shipment"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
+                        }
                     }
                 }
             },
@@ -975,7 +1161,13 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Shipment"
+                            "$ref": "#/definitions/util.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
                         }
                     }
                 }
@@ -1016,6 +1208,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/database.Shipment"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
+                        }
                     }
                 }
             }
@@ -1047,6 +1245,12 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/database.ShipmentTimeWindow"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
                         }
                     }
                 }
@@ -1086,6 +1290,12 @@ var doc = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/database.ShipmentTimeWindow"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
                         }
                     }
                 }
@@ -1131,7 +1341,13 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.ShipmentTimeWindow"
+                            "$ref": "#/definitions/util.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
                         }
                     }
                 }
@@ -1165,6 +1381,18 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/database.Vehicle"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
+                        }
                     }
                 }
             },
@@ -1193,7 +1421,13 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Vehicle"
+                            "$ref": "#/definitions/util.Success"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
                         }
                     }
                 }
@@ -1234,6 +1468,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/database.Vehicle"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
+                        }
                     }
                 }
             }
@@ -1251,11 +1491,26 @@ var doc = `{
                     "Break"
                 ],
                 "summary": "List breaks",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Vehicle ID",
+                        "name": "vehicle_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/database.Break"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
                         }
                     }
                 }
@@ -1296,6 +1551,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/database.Break"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
+                        }
                     }
                 }
             }
@@ -1306,22 +1567,34 @@ var doc = `{
             "type": "object",
             "properties": {
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
                 },
-                "data": {},
+                "data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
+                },
                 "id": {
                     "type": "string",
-                    "example": "0"
+                    "example": "1234567812345678"
                 },
                 "service": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 120
                 },
                 "updated_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
                 },
                 "vehicle_id": {
                     "type": "string",
-                    "example": "0"
+                    "example": "1234567812345678"
                 }
             }
         },
@@ -1329,20 +1602,24 @@ var doc = `{
             "type": "object",
             "properties": {
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
                 },
                 "id": {
                     "type": "string",
-                    "example": "0"
+                    "example": "1234567812345678"
                 },
                 "tw_close": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-31 23:59:00"
                 },
                 "tw_open": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-31 23:00:00"
                 },
                 "updated_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
                 }
             }
         },
@@ -1350,10 +1627,18 @@ var doc = `{
             "type": "object",
             "properties": {
                 "data": {
-                    "type": "object"
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
                 },
                 "service": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 120
                 }
             }
         },
@@ -1365,10 +1650,71 @@ var doc = `{
             ],
             "properties": {
                 "tw_close": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-31 23:59:00"
                 },
                 "tw_open": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-31 23:00:00"
+                }
+            }
+        },
+        "database.CreateJobParams": {
+            "type": "object",
+            "required": [
+                "location"
+            ],
+            "properties": {
+                "data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
+                },
+                "delivery": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "example": [
+                        10,
+                        20
+                    ]
+                },
+                "location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "pickup": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "example": [
+                        5,
+                        15
+                    ]
+                },
+                "priority": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "service": {
+                    "type": "integer",
+                    "example": 120
+                },
+                "skills": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "example": [
+                        1,
+                        5
+                    ]
                 }
             }
         },
@@ -1380,10 +1726,12 @@ var doc = `{
             ],
             "properties": {
                 "tw_close": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-31 23:59:00"
                 },
                 "tw_open": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-31 23:00:00"
                 }
             }
         },
@@ -1394,11 +1742,18 @@ var doc = `{
             ],
             "properties": {
                 "data": {
-                    "type": "object"
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
                 },
                 "name": {
                     "type": "string",
-                    "example": "sample_project"
+                    "example": "Sample Project"
                 }
             }
         },
@@ -1422,7 +1777,14 @@ var doc = `{
                     "type": "integer"
                 },
                 "data": {
-                    "type": "object"
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
                 },
                 "p_location": {
                     "$ref": "#/definitions/util.LocationParams"
@@ -1431,13 +1793,18 @@ var doc = `{
                     "type": "integer"
                 },
                 "priority": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 10
                 },
                 "skills": {
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
+                    },
+                    "example": [
+                        1,
+                        5
+                    ]
                 }
             }
         },
@@ -1453,10 +1820,12 @@ var doc = `{
                     "type": "string"
                 },
                 "tw_close": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-31 23:59:00"
                 },
                 "tw_open": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-31 23:00:00"
                 }
             }
         },
@@ -1474,7 +1843,14 @@ var doc = `{
                     }
                 },
                 "data": {
-                    "type": "object"
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
                 },
                 "end_location": {
                     "$ref": "#/definitions/util.LocationParams"
@@ -1483,7 +1859,11 @@ var doc = `{
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
+                    },
+                    "example": [
+                        1,
+                        5
+                    ]
                 },
                 "speed_factor": {
                     "type": "number"
@@ -1503,18 +1883,32 @@ var doc = `{
             "type": "object",
             "properties": {
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
                 },
-                "data": {},
+                "data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
+                },
                 "delivery": {
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
+                    },
+                    "example": [
+                        10,
+                        20
+                    ]
                 },
                 "id": {
                     "type": "string",
-                    "example": "0"
+                    "example": "1234567812345678"
                 },
                 "location": {
                     "$ref": "#/definitions/util.LocationParams"
@@ -1523,26 +1917,37 @@ var doc = `{
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
+                    },
+                    "example": [
+                        5,
+                        15
+                    ]
                 },
                 "priority": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 10
                 },
                 "project_id": {
                     "type": "string",
-                    "example": "0"
+                    "example": "1234567812345678"
                 },
                 "service": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 120
                 },
                 "skills": {
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
+                    },
+                    "example": [
+                        1,
+                        5
+                    ]
                 },
                 "updated_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
                 }
             }
         },
@@ -1550,20 +1955,24 @@ var doc = `{
             "type": "object",
             "properties": {
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
                 },
                 "id": {
                     "type": "string",
-                    "example": "0"
+                    "example": "1234567812345678"
                 },
                 "tw_close": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-31 23:59:00"
                 },
                 "tw_open": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-31 23:00:00"
                 },
                 "updated_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
                 }
             }
         },
@@ -1571,18 +1980,29 @@ var doc = `{
             "type": "object",
             "properties": {
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
                 },
-                "data": {},
+                "data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
+                },
                 "id": {
                     "type": "string",
-                    "example": "0"
+                    "example": "1234567812345678"
                 },
                 "name": {
                     "type": "string"
                 },
                 "updated_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
                 }
             }
         },
@@ -1596,7 +2016,8 @@ var doc = `{
                     }
                 },
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
                 },
                 "d_location": {
                     "$ref": "#/definitions/util.LocationParams"
@@ -1604,10 +2025,19 @@ var doc = `{
                 "d_service": {
                     "type": "integer"
                 },
-                "data": {},
+                "data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
+                },
                 "id": {
                     "type": "string",
-                    "example": "0"
+                    "example": "1234567812345678"
                 },
                 "p_location": {
                     "$ref": "#/definitions/util.LocationParams"
@@ -1616,20 +2046,26 @@ var doc = `{
                     "type": "integer"
                 },
                 "priority": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 10
                 },
                 "project_id": {
                     "type": "string",
-                    "example": "0"
+                    "example": "1234567812345678"
                 },
                 "skills": {
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
+                    },
+                    "example": [
+                        1,
+                        5
+                    ]
                 },
                 "updated_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
                 }
             }
         },
@@ -1637,74 +2073,32 @@ var doc = `{
             "type": "object",
             "properties": {
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
                 },
                 "id": {
                     "type": "string",
-                    "example": "0"
+                    "example": "1234567812345678"
                 },
                 "kind": {
                     "type": "string"
                 },
                 "tw_close": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-31 23:59:00"
                 },
                 "tw_open": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-31 23:00:00"
                 },
                 "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "database.UpdateJobParams": {
-            "type": "object",
-            "required": [
-                "location"
-            ],
-            "properties": {
-                "data": {
-                    "type": "object"
-                },
-                "delivery": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "location": {
-                    "$ref": "#/definitions/util.LocationParams"
-                },
-                "pickup": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "priority": {
-                    "type": "integer"
-                },
-                "project_id": {
                     "type": "string",
-                    "example": "0"
-                },
-                "service": {
-                    "type": "integer"
-                },
-                "skills": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                    "example": "2021-12-01 13:00:00"
                 }
             }
         },
         "database.UpdateShipmentParams": {
             "type": "object",
-            "required": [
-                "d_location",
-                "p_location"
-            ],
             "properties": {
                 "amount": {
                     "type": "array",
@@ -1719,7 +2113,14 @@ var doc = `{
                     "type": "integer"
                 },
                 "data": {
-                    "type": "object"
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
                 },
                 "p_location": {
                     "$ref": "#/definitions/util.LocationParams"
@@ -1728,26 +2129,27 @@ var doc = `{
                     "type": "integer"
                 },
                 "priority": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 10
                 },
                 "project_id": {
                     "type": "string",
-                    "example": "0"
+                    "example": "1234567812345678"
                 },
                 "skills": {
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
+                    },
+                    "example": [
+                        1,
+                        5
+                    ]
                 }
             }
         },
         "database.UpdateVehicleParams": {
             "type": "object",
-            "required": [
-                "end_location",
-                "start_location"
-            ],
             "properties": {
                 "capacity": {
                     "type": "array",
@@ -1756,20 +2158,31 @@ var doc = `{
                     }
                 },
                 "data": {
-                    "type": "object"
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
                 },
                 "end_location": {
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "project_id": {
                     "type": "string",
-                    "example": "0"
+                    "example": "1234567812345678"
                 },
                 "skills": {
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
+                    },
+                    "example": [
+                        1,
+                        5
+                    ]
                 },
                 "speed_factor": {
                     "type": "number"
@@ -1795,25 +2208,39 @@ var doc = `{
                     }
                 },
                 "created_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
                 },
-                "data": {},
+                "data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
+                },
                 "end_location": {
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "id": {
                     "type": "string",
-                    "example": "0"
+                    "example": "1234567812345678"
                 },
                 "project_id": {
                     "type": "string",
-                    "example": "0"
+                    "example": "1234567812345678"
                 },
                 "skills": {
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
+                    },
+                    "example": [
+                        1,
+                        5
+                    ]
                 },
                 "speed_factor": {
                     "type": "number"
@@ -1822,13 +2249,16 @@ var doc = `{
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "tw_close": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-31 23:59:00"
                 },
                 "tw_open": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-31 23:00:00"
                 },
                 "updated_at": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
                 }
             }
         },
@@ -1840,10 +2270,36 @@ var doc = `{
             ],
             "properties": {
                 "latitude": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 2.0365
                 },
                 "longitude": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 48.6113
+                }
+            }
+        },
+        "util.MultiError": {
+            "type": "object",
+            "properties": {
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "Error message1",
+                        "Error message2"
+                    ]
+                }
+            }
+        },
+        "util.NotFound": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "Not Found"
                 }
             }
         },
@@ -1903,6 +2359,15 @@ var doc = `{
                 },
                 "waitingTime": {
                     "type": "integer"
+                }
+            }
+        },
+        "util.Success": {
+            "type": "object",
+            "properties": {
+                "success": {
+                    "type": "string",
+                    "example": "true"
                 }
             }
         }

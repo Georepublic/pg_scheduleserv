@@ -46,8 +46,9 @@ import (
 // @Accept application/json
 // @Produce application/json
 // @Param project_id path int true "Project ID"
-// @Param Job body database.UpdateJobParams true "Update job"
+// @Param Job body database.CreateJobParams true "Job object"
 // @Success 200 {object} database.Job
+// @Failure 400 {object} util.MultiError
 // @Router /projects/{project_id}/jobs [post]
 func (server *Server) CreateJob(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
@@ -101,6 +102,7 @@ func (server *Server) CreateJob(w http.ResponseWriter, r *http.Request) {
 // @Produce application/json
 // @Param project_id path int true "Project ID"
 // @Success 200 {object} database.Job
+// @Failure 400 {object} util.MultiError
 // @Router /projects/{project_id}/jobs [get]
 func (server *Server) ListJobs(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -127,6 +129,8 @@ func (server *Server) ListJobs(w http.ResponseWriter, r *http.Request) {
 // @Produce application/json
 // @Param job_id path int true "Job ID"
 // @Success 200 {object} database.Job
+// @Failure 400 {object} util.MultiError
+// @Failure 404 {object} util.NotFound
 // @Router /jobs/{job_id} [get]
 func (server *Server) GetJob(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -153,6 +157,7 @@ func (server *Server) GetJob(w http.ResponseWriter, r *http.Request) {
 // @Produce application/json
 // @Param job_id path int true "Job ID"
 // @Success 200 {object} database.Job
+// @Failure 400 {object} util.MultiError
 // @Router /jobs/{job_id} [patch]
 func (server *Server) UpdateJob(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
@@ -207,7 +212,8 @@ func (server *Server) UpdateJob(w http.ResponseWriter, r *http.Request) {
 // @Accept application/json
 // @Produce application/json
 // @Param job_id path int true "Job ID"
-// @Success 200 {object} database.Job
+// @Success 200 {object} util.Success
+// @Failure 400 {object} util.MultiError
 // @Router /jobs/{job_id} [delete]
 func (server *Server) DeleteJob(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)

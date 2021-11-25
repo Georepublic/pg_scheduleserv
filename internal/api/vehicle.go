@@ -48,6 +48,7 @@ import (
 // @Param project_id path int true "Project ID"
 // @Param Vehicle body database.CreateVehicleParams true "Create vehicle"
 // @Success 200 {object} database.Vehicle
+// @Failure 400 {object} util.MultiError
 // @Router /projects/{project_id}/vehicles [post]
 func (server *Server) CreateVehicle(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
@@ -105,6 +106,7 @@ func (server *Server) CreateVehicle(w http.ResponseWriter, r *http.Request) {
 // @Produce application/json
 // @Param project_id path int true "Project ID"
 // @Success 200 {object} database.Vehicle
+// @Failure 400 {object} util.MultiError
 // @Router /projects/{project_id}/vehicles [get]
 func (server *Server) ListVehicles(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -131,6 +133,8 @@ func (server *Server) ListVehicles(w http.ResponseWriter, r *http.Request) {
 // @Produce application/json
 // @Param vehicle_id path int true "Vehicle ID"
 // @Success 200 {object} database.Vehicle
+// @Failure 400 {object} util.MultiError
+// @Failure 404 {object} util.NotFound
 // @Router /vehicles/{vehicle_id} [get]
 func (server *Server) GetVehicle(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -158,6 +162,7 @@ func (server *Server) GetVehicle(w http.ResponseWriter, r *http.Request) {
 // @Param vehicle_id path int true "Vehicle ID"
 // @Param Vehicle body database.UpdateVehicleParams true "Update vehicle"
 // @Success 200 {object} database.Vehicle
+// @Failure 400 {object} util.MultiError
 // @Router /vehicles/{vehicle_id} [patch]
 func (server *Server) UpdateVehicle(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
@@ -212,7 +217,8 @@ func (server *Server) UpdateVehicle(w http.ResponseWriter, r *http.Request) {
 // @Accept application/json
 // @Produce application/json
 // @Param vehicle_id path int true "Vehicle ID"
-// @Success 200 {object} database.Vehicle
+// @Success 200 {object} util.Success
+// @Failure 400 {object} util.MultiError
 // @Router /vehicles/{vehicle_id} [delete]
 func (server *Server) DeleteVehicle(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)

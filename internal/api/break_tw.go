@@ -48,6 +48,7 @@ import (
 // @Param break_id path int true "Break ID"
 // @Param BreakTimeWindow body database.CreateBreakTimeWindowParams true "Create break time window"
 // @Success 200 {object} database.BreakTimeWindow
+// @Failure 400 {object} util.MultiError
 // @Router /breaks/{break_id}/time_windows [post]
 func (server *Server) CreateBreakTimeWindow(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
@@ -104,6 +105,7 @@ func (server *Server) CreateBreakTimeWindow(w http.ResponseWriter, r *http.Reque
 // @Produce application/json
 // @Param break_id path int true "Break ID"
 // @Success 200 {object} database.BreakTimeWindow
+// @Failure 400 {object} util.MultiError
 // @Router /breaks/{break_id}/time_windows [get]
 func (server *Server) ListBreakTimeWindows(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -131,7 +133,8 @@ func (server *Server) ListBreakTimeWindows(w http.ResponseWriter, r *http.Reques
 // @Param break_id path int true "Break ID"
 // @Param tw_open path string true "Break opening Time Window"
 // @Param tw_close path string true "Break closing Time Window"
-// @Success 200 {object} database.BreakTimeWindow
+// @Success 200 {object} util.Success
+// @Failure 400 {object} util.MultiError
 // @Router /breaks/{break_id}/time_windows/{tw_open}/{tw_close} [delete]
 func (server *Server) DeleteBreakTimeWindow(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
