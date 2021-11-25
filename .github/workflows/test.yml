@@ -96,7 +96,7 @@ jobs:
         run: |
           cd ~/vrprouting-${{ env.VRPVER }}
           export PATH=/usr/lib/postgresql/${PGVER}/bin:$PATH
-          mkdir build
+          mkdir -p build
           cd build
           cmake -DPOSTGRESQL_VERSION=${PGVER} -DCMAKE_BUILD_TYPE=Release -DVROOM_INSTALL_PATH=$HOME/vroom-${{ env.VROOMVER }} ..
 

@@ -41,7 +41,7 @@ type CreateProjectParams struct {
 }
 
 type UpdateProjectParams struct {
-	Name *string      `json:"name" example:"Sample Project" validate:"required"`
+	Name *string      `json:"name" example:"Sample Project"`
 	Data *interface{} `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 }
 
