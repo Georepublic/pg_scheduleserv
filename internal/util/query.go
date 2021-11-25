@@ -71,7 +71,7 @@ func GetPartialSQL(resource interface{}) PartialSQL {
 
 		// Change any alias fields
 		alias, aliasFound := AliasFields[tag]
-		if aliasFound == true {
+		if aliasFound {
 			tag = alias
 		}
 

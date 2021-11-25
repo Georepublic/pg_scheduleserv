@@ -35,11 +35,6 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-const createBreak = `-- name: CreateBreak :one
-INSERT INTO breaks (vehicle_id, service, data) VALUES ($1, $2, $3)
-RETURNING id, vehicle_id, service, data, created_at, updated_at, deleted
-`
-
 type CreateBreakParams struct {
 	VehicleID *int64       `json:"vehicle_id,string" example:"1234567890123456789" validate:"required" swaggerignore:"true"`
 	Service   *int64       `json:"service"`
@@ -52,14 +47,6 @@ func (q *Queries) DBCreateBreak(ctx context.Context, arg CreateBreakParams) (Bre
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	return scanBreakRow(row)
 }
-
-const getBreak = `-- name: GetBreak :one
-SELECT
-  id, vehicle_id, service, data, created_at, updated_at
-FROM breaks
-WHERE id = $1 AND deleted = FALSE
-LIMIT 1
-`
 
 type GetBreakRow struct {
 	ID        int64       `json:"id"`
@@ -77,14 +64,6 @@ func (q *Queries) DBGetBreak(ctx context.Context, id int64) (Break, error) {
 	row := q.db.QueryRow(ctx, sql, id)
 	return scanBreakRow(row)
 }
-
-const listBreaks = `-- name: ListBreaks :many
-SELECT
-  id, vehicle_id, service, data, created_at, updated_at
-FROM breaks
-WHERE vehicle_id = $1 AND deleted = FALSE
-ORDER BY created_at
-`
 
 type ListBreaksRow struct {
 	ID        int64       `json:"id"`
@@ -107,13 +86,6 @@ func (q *Queries) DBListBreaks(ctx context.Context, vehicleID int64) ([]Break, e
 	return scanBreakRows(rows)
 }
 
-const updateBreak = `-- name: UpdateBreak :one
-UPDATE breaks
-SET vehicle_id = $2, service = $3, data = $4
-WHERE id = $1 AND deleted = FALSE
-RETURNING id, vehicle_id, service, data, created_at, updated_at, deleted
-`
-
 type UpdateBreakParams struct {
 	VehicleID *int64       `json:"vehicle_id,string" example:"1234567890123456789"`
 	Service   *int64       `json:"service"`
@@ -126,11 +98,6 @@ func (q *Queries) DBUpdateBreak(ctx context.Context, arg UpdateBreakParams, brea
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	return scanBreakRow(row)
 }
-
-const deleteBreak = `-- name: DeleteBreak :exec
-UPDATE breaks SET deleted = TRUE
-WHERE id = $1
-`
 
 func (q *Queries) DBDeleteBreak(ctx context.Context, id int64) (Break, error) {
 	sql := "UPDATE breaks SET deleted = TRUE WHERE id = $1"

@@ -196,7 +196,9 @@ func TestCreateShipmentTimeWindow(t *testing.T) {
 				t.Skip("TODO")
 			}
 			m, b := tc.body, new(bytes.Buffer)
-			json.NewEncoder(b).Encode(m)
+			if err := json.NewEncoder(b).Encode(m); err != nil {
+				t.Error(err)
+			}
 			url := fmt.Sprintf("/shipments/%d/time_windows", tc.shipmentID)
 			request, err := http.NewRequest("POST", url, b)
 			request.Header.Set("Content-Type", "application/json")
@@ -214,7 +216,9 @@ func TestCreateShipmentTimeWindow(t *testing.T) {
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
 			m = map[string]interface{}{}
-			err = json.Unmarshal(body, &m)
+			if err = json.Unmarshal(body, &m); err != nil {
+				t.Error(err)
+			}
 			delete(m, "id")
 			delete(m, "created_at")
 			delete(m, "updated_at")
@@ -314,7 +318,9 @@ func TestListShipmentTimeWindows(t *testing.T) {
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
 			m := []map[string]interface{}{}
-			err = json.Unmarshal(body, &m)
+			if err = json.Unmarshal(body, &m); err != nil {
+				t.Error(err)
+			}
 			assert.Equal(t, tc.resBody, m)
 		})
 	}
@@ -334,6 +340,7 @@ func TestDeleteShipmentTimeWindow(t *testing.T) {
 		twClose    string
 		kind       string
 		resBody    map[string]interface{}
+		todo       bool
 	}{
 		{
 			name:       "Invalid ID",
@@ -342,6 +349,7 @@ func TestDeleteShipmentTimeWindow(t *testing.T) {
 			resBody: map[string]interface{}{
 				"error": "Not Found",
 			},
+			todo: true,
 		},
 		{
 			name:       "Correct ID",
@@ -350,6 +358,7 @@ func TestDeleteShipmentTimeWindow(t *testing.T) {
 			resBody: map[string]interface{}{
 				"success": true,
 			},
+			todo: true,
 		},
 		{
 			name:       "Correct ID but no time window",
@@ -358,11 +367,15 @@ func TestDeleteShipmentTimeWindow(t *testing.T) {
 			resBody: map[string]interface{}{
 				"success": true,
 			},
+			todo: true,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			if tc.todo == true {
+				t.Skip("TODO")
+			}
 			url := fmt.Sprintf("/shipments/%d/time_windows/%s/%s", tc.shipmentID, tc.twOpen, tc.twClose)
 			request, err := http.NewRequest("DELETE", url, nil)
 			require.NoError(t, err)
@@ -379,7 +392,9 @@ func TestDeleteShipmentTimeWindow(t *testing.T) {
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
 			m := map[string]interface{}{}
-			err = json.Unmarshal(body, &m)
+			if err = json.Unmarshal(body, &m); err != nil {
+				t.Error(err)
+			}
 			assert.Equal(t, tc.resBody, m)
 		})
 	}

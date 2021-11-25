@@ -52,7 +52,9 @@ import (
 func (server *Server) CreateBreak(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
 	if r.Body != nil {
-		json.NewDecoder(r.Body).Decode(&userInput)
+		if err := json.NewDecoder(r.Body).Decode(&userInput); err != nil {
+			logrus.Error(err)
+		}
 	}
 
 	// Add the vehicle_id path variable
@@ -71,7 +73,9 @@ func (server *Server) CreateBreak(w http.ResponseWriter, r *http.Request) {
 		logrus.Error(err)
 	}
 	v_break := database.CreateBreakParams{}
-	json.Unmarshal(userInputString, &v_break)
+	if err = json.Unmarshal(userInputString, &v_break); err != nil {
+		logrus.Error(err)
+	}
 
 	// Validate the struct
 	if err := server.validate.Struct(v_break); err != nil {
@@ -154,7 +158,9 @@ func (server *Server) GetBreak(w http.ResponseWriter, r *http.Request) {
 func (server *Server) UpdateBreak(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
 	if r.Body != nil {
-		json.NewDecoder(r.Body).Decode(&userInput)
+		if err := json.NewDecoder(r.Body).Decode(&userInput); err != nil {
+			logrus.Error(err)
+		}
 	}
 
 	vars := mux.Vars(r)
@@ -175,7 +181,9 @@ func (server *Server) UpdateBreak(w http.ResponseWriter, r *http.Request) {
 		logrus.Error(err)
 	}
 	v_break := database.UpdateBreakParams{}
-	json.Unmarshal(userInputString, &v_break)
+	if err = json.Unmarshal(userInputString, &v_break); err != nil {
+		logrus.Error(err)
+	}
 
 	// Validate the struct
 	if err := server.validate.Struct(v_break); err != nil {

@@ -52,7 +52,9 @@ import (
 func (server *Server) CreateJobTimeWindow(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
 	if r.Body != nil {
-		json.NewDecoder(r.Body).Decode(&userInput)
+		if err := json.NewDecoder(r.Body).Decode(&userInput); err != nil {
+			logrus.Error(err)
+		}
 	}
 
 	// Add the job_id path variable
@@ -71,7 +73,9 @@ func (server *Server) CreateJobTimeWindow(w http.ResponseWriter, r *http.Request
 		logrus.Error(err)
 	}
 	job := database.CreateJobTimeWindowParams{}
-	json.Unmarshal(userInputString, &job)
+	if err = json.Unmarshal(userInputString, &job); err != nil {
+		logrus.Error(err)
+	}
 
 	logrus.Debugf("%v", userInput)
 	logrus.Debugf("%+v", job)
@@ -154,7 +158,9 @@ func (server *Server) DeleteJobTimeWindow(w http.ResponseWriter, r *http.Request
 		logrus.Error(err)
 	}
 	job_tw := database.CreateJobTimeWindowParams{}
-	json.Unmarshal(userInputString, &job_tw)
+	if err = json.Unmarshal(userInputString, &job_tw); err != nil {
+		logrus.Error(err)
+	}
 
 	// Validate the struct
 	if err := server.validate.Struct(job_tw); err != nil {

@@ -1,6 +1,8 @@
+#!/bin/bash
+
 # GRP-GNU-AGPL******************************************************************
 
-# File: Makefile
+# File: check_license.sh - script to check file license
 
 # Copyright (C) 2021  Team Georepublic <info@georepublic.de>
 
@@ -26,33 +28,18 @@
 
 # ******************************************************************GRP-GNU-AGPL
 
-migrateup:
-	migrate -path migrations -database postgres://$(POSTGRES_PASSWORD):$(POSTGRES_PASSWORD)@localhost:$(POSTGRES_PORT)/$(POSTGRES_DB) -verbose up
-.PHONY: migrateup
+EXCLUDE_LIST="internal/mock"
 
-migratedown:
-	migrate -path migrations -database postgres://$(POSTGRES_PASSWORD):$(POSTGRES_PASSWORD)@localhost:$(POSTGRES_PORT)/$(POSTGRES_DB) -verbose down
-.PHONY: migratedown
+mylicensecheck() {
+    licensecheck -r --copyright -l 30 --tail 0 -i "$EXCLUDE_LIST" docs e2e_test internal migrations scripts Makefile main.go
+}
 
-swagger:
-	swag init
-.PHONY: swagger
+missing=$(! { mylicensecheck;}  | grep -i "No copyright\|UNKNOWN" | grep -iv "GENERATED FILE")
 
-check-mod:
-	go mod tidy
-	git diff --exit-code go.mod
-.PHONY: check-mod
-
-lint:
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-	golangci-lint run
-.PHONY: lint
-
-test:
-	go install gotest.tools/gotestsum@latest
-	gotestsum --format=testname -- -count=1 -timeout=20m -coverprofile=coverage.out ./...
-.PHONY: test
-
-test-coverage:
-	go tool cover -func=./coverage.out
-.PHONY: test-coverage
+if [[ $missing ]]; then
+  echo " ****************************************************"
+  echo " *** Found source files without valid license headers"
+  echo " ****************************************************"
+  echo "$missing"
+  exit 1
+fi

@@ -63,10 +63,13 @@ func setup(db_url string, filename string) (*api.Server, *pgx.Conn) {
 	logrus.Error(db_url)
 	m, err := migrate.New("file://../migrations/", db_url)
 	if err != nil {
-		logrus.Printf("Unable to apply the migrations: %v\n", err)
+		logrus.Printf("Unable to create migrate instance: %v\n", err)
 		os.Exit(1)
 	}
-	m.Up()
+	if err := m.Up(); err != nil {
+		logrus.Printf("Unable to apply the up migrations: %v\n", err)
+		os.Exit(1)
+	}
 	applyTestData(db_url, filename)
 	return server, conn
 }

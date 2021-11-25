@@ -282,7 +282,9 @@ func TestCreateJob(t *testing.T) {
 				t.Skip("TODO")
 			}
 			m, b := tc.body, new(bytes.Buffer)
-			json.NewEncoder(b).Encode(m)
+			if err := json.NewEncoder(b).Encode(m); err != nil {
+				t.Error(err)
+			}
 			url := fmt.Sprintf("/projects/%d/jobs", tc.projectID)
 			request, err := http.NewRequest("POST", url, b)
 			request.Header.Set("Content-Type", "application/json")
@@ -300,7 +302,9 @@ func TestCreateJob(t *testing.T) {
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
 			m = map[string]interface{}{}
-			err = json.Unmarshal(body, &m)
+			if err = json.Unmarshal(body, &m); err != nil {
+				t.Error(err)
+			}
 			delete(m, "id")
 			delete(m, "created_at")
 			delete(m, "updated_at")
@@ -387,7 +391,9 @@ func TestListJobs(t *testing.T) {
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
 			m := []map[string]interface{}{}
-			err = json.Unmarshal(body, &m)
+			if err = json.Unmarshal(body, &m); err != nil {
+				t.Error(err)
+			}
 			assert.Equal(t, tc.resBody, m)
 		})
 	}
@@ -454,7 +460,9 @@ func TestGetJob(t *testing.T) {
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
 			m := map[string]interface{}{}
-			err = json.Unmarshal(body, &m)
+			if err = json.Unmarshal(body, &m); err != nil {
+				t.Error(err)
+			}
 			assert.Equal(t, tc.resBody, m)
 		})
 	}
@@ -871,7 +879,9 @@ func TestUpdateJob(t *testing.T) {
 				t.Skip("TODO")
 			}
 			m, b := tc.body, new(bytes.Buffer)
-			json.NewEncoder(b).Encode(m)
+			if err := json.NewEncoder(b).Encode(m); err != nil {
+				t.Error(err)
+			}
 			url := fmt.Sprintf("/jobs/%d", tc.jobID)
 			request, err := http.NewRequest("PATCH", url, b)
 			request.Header.Set("Content-Type", "application/json")
@@ -889,7 +899,9 @@ func TestUpdateJob(t *testing.T) {
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
 			m = map[string]interface{}{}
-			err = json.Unmarshal(body, &m)
+			if err = json.Unmarshal(body, &m); err != nil {
+				t.Error(err)
+			}
 			delete(m, "updated_at")
 			assert.Equal(t, tc.resBody, m)
 		})
@@ -944,7 +956,9 @@ func TestDeleteJob(t *testing.T) {
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
 			m := map[string]interface{}{}
-			err = json.Unmarshal(body, &m)
+			if err = json.Unmarshal(body, &m); err != nil {
+				t.Error(err)
+			}
 			assert.Equal(t, tc.resBody, m)
 		})
 	}

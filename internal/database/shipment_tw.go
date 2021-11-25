@@ -35,12 +35,6 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-const createShipmentTimeWindow = `-- name: CreateShipmentTimeWindow :one
-INSERT INTO shipments_time_windows (id, kind, tw_open, tw_close)
-VALUES ($1, $2, $3, $4)
-RETURNING id, kind, tw_open, tw_close, created_at, updated_at
-`
-
 type CreateShipmentTimeWindowParams struct {
 	ID      *int64  `json:"id,string" example:"1234567890123456789" validate:"required" swaggerignore:"true"`
 	Kind    *string `json:"kind" validate:"required"`
@@ -55,13 +49,6 @@ func (q *Queries) DBCreateShipmentTimeWindow(ctx context.Context, arg CreateShip
 	return scanShipmentTimeWindowRow(row)
 }
 
-const listShipmentTimeWindow = `-- name: ListShipmentTimeWindow :many
-SELECT id, kind, tw_open, tw_close, created_at, updated_at
-FROM shipments_time_windows
-WHERE id = $1
-ORDER BY created_at
-`
-
 func (q *Queries) DBListShipmentTimeWindows(ctx context.Context, id int64) ([]ShipmentTimeWindow, error) {
 	table_name := "shipments_time_windows"
 	additional_query := " WHERE id = $1 ORDER BY created_at"
@@ -73,11 +60,6 @@ func (q *Queries) DBListShipmentTimeWindows(ctx context.Context, id int64) ([]Sh
 	defer rows.Close()
 	return scanShipmentTimeWindowRows(rows)
 }
-
-const deleteShipmentTimeWindow = `-- name: DeleteShipmentTimeWindow :exec
-DELETE FROM shipments_time_windows
-WHERE id = $1 AND kind = $2 AND tw_open = $3 AND tw_close = $4
-`
 
 type DeleteShipmentTimeWindowParams struct {
 	ID      int64  `json:"id"`

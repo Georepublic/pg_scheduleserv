@@ -52,7 +52,9 @@ import (
 func (server *Server) CreateVehicle(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
 	if r.Body != nil {
-		json.NewDecoder(r.Body).Decode(&userInput)
+		if err := json.NewDecoder(r.Body).Decode(&userInput); err != nil {
+			logrus.Error(err)
+		}
 	}
 
 	// Add the project_id path variable
@@ -73,7 +75,9 @@ func (server *Server) CreateVehicle(w http.ResponseWriter, r *http.Request) {
 		logrus.Error(err)
 	}
 	vehicle := database.CreateVehicleParams{}
-	json.Unmarshal(userInputString, &vehicle)
+	if err = json.Unmarshal(userInputString, &vehicle); err != nil {
+		logrus.Error(err)
+	}
 
 	logrus.Debugf("%+v", vehicle)
 
@@ -158,7 +162,9 @@ func (server *Server) GetVehicle(w http.ResponseWriter, r *http.Request) {
 func (server *Server) UpdateVehicle(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
 	if r.Body != nil {
-		json.NewDecoder(r.Body).Decode(&userInput)
+		if err := json.NewDecoder(r.Body).Decode(&userInput); err != nil {
+			logrus.Error(err)
+		}
 	}
 
 	vars := mux.Vars(r)
@@ -179,7 +185,9 @@ func (server *Server) UpdateVehicle(w http.ResponseWriter, r *http.Request) {
 		logrus.Error(err)
 	}
 	vehicle := database.UpdateVehicleParams{}
-	json.Unmarshal(userInputString, &vehicle)
+	if err = json.Unmarshal(userInputString, &vehicle); err != nil {
+		logrus.Error(err)
+	}
 
 	// Validate the struct
 	if err := server.validate.Struct(vehicle); err != nil {

@@ -35,15 +35,6 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-const createJob = `-- name: CreateJob :one
-INSERT INTO jobs (
-  location_index, service, delivery, pickup, skills, priority, project_id, data
-) VALUES (
-  coord_to_id($1, $2), $3, $4, $5, $6, $7, $8, $9
-)
-RETURNING id, location_index, service, delivery, pickup, skills, priority, project_id, data, created_at, updated_at, deleted
-`
-
 type CreateJobParams struct {
 	Location  *util.LocationParams `json:"location" validate:"required"`
 	Service   *int64               `json:"service"`
@@ -61,15 +52,6 @@ func (q *Queries) DBCreateJob(ctx context.Context, arg CreateJobParams) (Job, er
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	return scanJobRow(row)
 }
-
-const getJob = `-- name: GetJob :one
-SELECT
-  id, location_index, service, delivery, pickup,
-  skills, priority, project_id, data, created_at, updated_at
-FROM jobs
-WHERE id = $1 AND deleted = FALSE
-LIMIT 1
-`
 
 type GetJobRow struct {
 	ID            int64       `json:"id"`
@@ -92,15 +74,6 @@ func (q *Queries) DBGetJob(ctx context.Context, id int64) (Job, error) {
 	row := q.db.QueryRow(ctx, sql, id)
 	return scanJobRow(row)
 }
-
-const listJobs = `-- name: ListJobs :many
-SELECT
-  id, location_index, service, delivery, pickup,
-  skills, priority, project_id, data, created_at, updated_at
-FROM jobs
-WHERE project_id = $1 AND deleted = FALSE
-ORDER BY created_at
-`
 
 type ListJobsRow struct {
 	ID            int64       `json:"id"`
@@ -128,15 +101,6 @@ func (q *Queries) DBListJobs(ctx context.Context, projectID int64) ([]Job, error
 	return scanJobRows(rows)
 }
 
-const updateJob = `-- name: UpdateJob :one
-UPDATE jobs
-SET
-  location_index = coord_to_id($2, $3), service = $4, delivery = $5,
-  pickup = $6, skills = $7, priority = $8, project_id = $9, data = $10
-WHERE id = $1 AND deleted = FALSE
-RETURNING id, location_index, service, delivery, pickup, skills, priority, project_id, data, created_at, updated_at, deleted
-`
-
 type UpdateJobParams struct {
 	Location  *util.LocationParams `json:"location"`
 	Service   *int64               `json:"service"`
@@ -154,11 +118,6 @@ func (q *Queries) DBUpdateJob(ctx context.Context, arg UpdateJobParams, job_id i
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	return scanJobRow(row)
 }
-
-const deleteJob = `-- name: DeleteJob :exec
-UPDATE jobs SET deleted = TRUE
-WHERE id = $1
-`
 
 func (q *Queries) DBDeleteJob(ctx context.Context, id int64) (Job, error) {
 	sql := "UPDATE jobs SET deleted = TRUE WHERE id = $1"

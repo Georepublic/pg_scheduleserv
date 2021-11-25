@@ -1,0 +1,75 @@
+name: 'Lint'
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - uses: reviewdog/action-setup@v1
+
+      - name: Install pcregrep
+        run: sudo apt-get -yqq install pcregrep
+
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.17.x'
+
+      - name: Cache Go modules
+        uses: actions/cache@v2
+        env:
+          cache-name: modules
+        with:
+          path: |
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ env.cache-name }}-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-${{ env.cache-name }}-
+            ${{ runner.os }}-go-
+
+      - name: Check go mod
+        shell: bash
+        run: |
+          set -eEu
+          set +o pipefail
+          make check-mod
+
+      - name: go-lint
+        shell: bash
+        run: |-
+          set -eEu
+          set +o pipefail
+          make lint
+
+  license-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install Requirements
+        run: |
+          sudo apt install -y licensecheck
+      - name: Run License Check
+        run: ./scripts/license/check_license.sh
+
+  shell-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install Requirements
+        run: |
+          sudo apt install -y shellcheck
+      - name: Run Shell Check
+        run: shellcheck $(find -type f -name *.sh)

@@ -115,7 +115,7 @@ func getDescription(schedule Schedule) string {
 	desc += fmt.Sprintf("Travel Time: %s\n", secondsToTime(schedule.TravelTime))
 	desc += fmt.Sprintf("Service Time: %s\n", secondsToTime(schedule.ServiceTime))
 	desc += fmt.Sprintf("Waiting Time: %s\n", secondsToTime(schedule.WaitingTime))
-	desc += fmt.Sprintf("Load: %d - %d\n", schedule.StartLoad, *&schedule.EndLoad)
+	desc += fmt.Sprintf("Load: %d - %d\n", schedule.StartLoad, schedule.EndLoad)
 	return desc
 }
 

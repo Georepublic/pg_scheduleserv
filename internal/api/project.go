@@ -51,7 +51,9 @@ import (
 func (server *Server) CreateProject(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
 	if r.Body != nil {
-		json.NewDecoder(r.Body).Decode(&userInput)
+		if err := json.NewDecoder(r.Body).Decode(&userInput); err != nil {
+			logrus.Error(err)
+		}
 	}
 
 	// Validate the input type
@@ -66,7 +68,9 @@ func (server *Server) CreateProject(w http.ResponseWriter, r *http.Request) {
 		logrus.Error(err)
 	}
 	project := database.CreateProjectParams{}
-	json.Unmarshal(userInputString, &project)
+	if err = json.Unmarshal(userInputString, &project); err != nil {
+		logrus.Error(err)
+	}
 
 	// Validate the struct
 	if err := server.validate.Struct(project); err != nil {
@@ -142,7 +146,9 @@ func (server *Server) GetProject(w http.ResponseWriter, r *http.Request) {
 func (server *Server) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
 	if r.Body != nil {
-		json.NewDecoder(r.Body).Decode(&userInput)
+		if err := json.NewDecoder(r.Body).Decode(&userInput); err != nil {
+			logrus.Error(err)
+		}
 	}
 
 	vars := mux.Vars(r)
@@ -163,7 +169,9 @@ func (server *Server) UpdateProject(w http.ResponseWriter, r *http.Request) {
 		logrus.Error(err)
 	}
 	project := database.UpdateProjectParams{}
-	json.Unmarshal(userInputString, &project)
+	if err = json.Unmarshal(userInputString, &project); err != nil {
+		logrus.Error(err)
+	}
 
 	// Validate the struct
 	if err := server.validate.Struct(project); err != nil {

@@ -38,7 +38,7 @@ import (
 func getErrorMsg(ve validator.ValidationErrors) []string {
 	var msg []string
 	for i := 0; i < len(ve); i++ {
-		err := ve[i].Error()
+		var err string
 		logrus.Info(ve[i].Value())
 		switch field := ve[i].Tag(); field {
 		case "required":

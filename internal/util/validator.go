@@ -78,7 +78,9 @@ func ValidateInput(jsonStruct map[string]interface{}, originalStruct interface{}
 			// LocationParams Struct
 			if _, locationTagsFound := locationTags[tag]; locationTagsFound {
 				location := LocationParams{}
-				mapstructure.Decode(typ, &location)
+				if err := mapstructure.Decode(typ, &location); err != nil {
+					return err
+				}
 				validate := validator.New()
 				if err := validate.Struct(location); err != nil {
 					return err

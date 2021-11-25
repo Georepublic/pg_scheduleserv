@@ -89,14 +89,14 @@ func (q *Queries) DBGetSchedule(ctx context.Context, projectID int64) ([]util.Sc
 	return scanScheduleRows(rows)
 }
 
-const updateSchedule = `-- name: UpdateSchedule :one
-UPDATE schedules
-SET
-  location_index = coord_to_id($2, $3), service = $4, delivery = $5,
-  pickup = $6, skills = $7, priority = $8, project_id = $9, data = $10
-WHERE id = $1 AND deleted = FALSE
-RETURNING id, location_index, service, delivery, pickup, skills, priority, project_id, data, created_at, updated_at, deleted
-`
+// const updateSchedule = `-- name: UpdateSchedule :one
+// UPDATE schedules
+// SET
+//   location_index = coord_to_id($2, $3), service = $4, delivery = $5,
+//   pickup = $6, skills = $7, priority = $8, project_id = $9, data = $10
+// WHERE id = $1 AND deleted = FALSE
+// RETURNING id, location_index, service, delivery, pickup, skills, priority, project_id, data, created_at, updated_at, deleted
+// `
 
 const deleteSchedule = `
 DELETE FROM schedules

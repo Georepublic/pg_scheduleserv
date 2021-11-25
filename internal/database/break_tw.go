@@ -36,12 +36,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-const createBreakTimeWindow = `-- name: CreateBreakTimeWindow :one
-INSERT INTO breaks_time_windows (id, tw_open, tw_close)
-VALUES ($1, $2, $3)
-RETURNING id, tw_open, tw_close, created_at, updated_at
-`
-
 type CreateBreakTimeWindowParams struct {
 	ID      *int64  `json:"id,string" example:"1234567890123456789" validate:"required" swaggerignore:"true"`
 	TwOpen  *string `json:"tw_open" validate:"required,datetime=2006-01-02 15:04:05"`
@@ -57,13 +51,6 @@ func (q *Queries) DBCreateBreakTimeWindow(ctx context.Context, arg CreateBreakTi
 	return scanBreakTimeWindowRow(row)
 }
 
-const listBreakTimeWindow = `-- name: ListBreakTimeWindow :many
-SELECT id, tw_open, tw_close, created_at, updated_at
-FROM breaks_time_windows
-WHERE id = $1
-ORDER BY created_at
-`
-
 func (q *Queries) DBListBreakTimeWindows(ctx context.Context, id int64) ([]BreakTimeWindow, error) {
 	table_name := "breaks_time_windows"
 	additional_query := " WHERE id = $1 ORDER BY created_at"
@@ -75,11 +62,6 @@ func (q *Queries) DBListBreakTimeWindows(ctx context.Context, id int64) ([]Break
 	defer rows.Close()
 	return scanBreakTimeWindowRows(rows)
 }
-
-const deleteBreakTimeWindow = `-- name: DeleteBreakTimeWindow :exec
-DELETE FROM breaks_time_windows
-WHERE id = $1 AND tw_open = $2 AND tw_close = $3
-`
 
 type DeleteBreakTimeWindowParams struct {
 	ID      int64  `json:"id"`

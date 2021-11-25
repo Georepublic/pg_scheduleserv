@@ -35,13 +35,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type ConversionTest struct {
-	name      string
-	latitude  float64
-	longitude float64
-	id        int64
-}
-
 func TestGetLocationIndex(t *testing.T) {
 	var cases = []struct {
 		name      string
