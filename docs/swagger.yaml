@@ -139,12 +139,16 @@ definitions:
   database.CreateShipmentParams:
     properties:
       amount:
+        example:
+        - 5
+        - 15
         items:
           type: integer
         type: array
       d_location:
         $ref: '#/definitions/util.LocationParams'
       d_service:
+        example: 120
         type: integer
       data:
         additionalProperties:
@@ -156,6 +160,7 @@ definitions:
       p_location:
         $ref: '#/definitions/util.LocationParams'
       p_service:
+        example: 120
         type: integer
       priority:
         example: 10
@@ -174,6 +179,7 @@ definitions:
   database.CreateShipmentTimeWindowParams:
     properties:
       kind:
+        example: p
         type: string
       tw_close:
         example: "2021-12-31 23:59:00"
@@ -189,6 +195,9 @@ definitions:
   database.CreateVehicleParams:
     properties:
       capacity:
+        example:
+        - 50
+        - 25
         items:
           type: integer
         type: array
@@ -209,12 +218,15 @@ definitions:
           type: integer
         type: array
       speed_factor:
+        example: 1
         type: number
       start_location:
         $ref: '#/definitions/util.LocationParams'
       tw_close:
+        example: "2021-12-31 23:59:00"
         type: string
       tw_open:
+        example: "2021-12-31 23:00:00"
         type: string
     required:
     - end_location
@@ -305,6 +317,7 @@ definitions:
         example: "1234567812345678"
         type: string
       name:
+        example: Sample Project
         type: string
       updated_at:
         example: "2021-12-01 13:00:00"
@@ -313,6 +326,9 @@ definitions:
   database.Shipment:
     properties:
       amount:
+        example:
+        - 5
+        - 15
         items:
           type: integer
         type: array
@@ -322,6 +338,7 @@ definitions:
       d_location:
         $ref: '#/definitions/util.LocationParams'
       d_service:
+        example: 120
         type: integer
       data:
         additionalProperties:
@@ -336,6 +353,7 @@ definitions:
       p_location:
         $ref: '#/definitions/util.LocationParams'
       p_service:
+        example: 120
         type: integer
       priority:
         example: 10
@@ -363,6 +381,7 @@ definitions:
         example: "1234567812345678"
         type: string
       kind:
+        example: p
         type: string
       tw_close:
         example: "2021-12-31 23:59:00"
@@ -377,12 +396,16 @@ definitions:
   database.UpdateShipmentParams:
     properties:
       amount:
+        example:
+        - 5
+        - 15
         items:
           type: integer
         type: array
       d_location:
         $ref: '#/definitions/util.LocationParams'
       d_service:
+        example: 120
         type: integer
       data:
         additionalProperties:
@@ -394,13 +417,11 @@ definitions:
       p_location:
         $ref: '#/definitions/util.LocationParams'
       p_service:
+        example: 120
         type: integer
       priority:
         example: 10
         type: integer
-      project_id:
-        example: "1234567812345678"
-        type: string
       skills:
         example:
         - 1
@@ -412,6 +433,9 @@ definitions:
   database.UpdateVehicleParams:
     properties:
       capacity:
+        example:
+        - 50
+        - 25
         items:
           type: integer
         type: array
@@ -424,9 +448,6 @@ definitions:
         type: object
       end_location:
         $ref: '#/definitions/util.LocationParams'
-      project_id:
-        example: "1234567812345678"
-        type: string
       skills:
         example:
         - 1
@@ -435,17 +456,23 @@ definitions:
           type: integer
         type: array
       speed_factor:
+        example: 1
         type: number
       start_location:
         $ref: '#/definitions/util.LocationParams'
       tw_close:
+        example: "2021-12-31 23:59:00"
         type: string
       tw_open:
+        example: "2021-12-31 23:00:00"
         type: string
     type: object
   database.Vehicle:
     properties:
       capacity:
+        example:
+        - 50
+        - 25
         items:
           type: integer
         type: array
@@ -475,6 +502,7 @@ definitions:
           type: integer
         type: array
       speed_factor:
+        example: 1
         type: number
       start_location:
         $ref: '#/definitions/util.LocationParams'
@@ -597,6 +625,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/util.MultiError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/util.NotFound'
       summary: Delete a break
       tags:
       - Break
@@ -621,6 +653,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/util.MultiError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/util.NotFound'
       summary: Fetch a break
       tags:
       - Break
@@ -659,6 +695,34 @@ paths:
       tags:
       - Break
   /breaks/{break_id}/time_windows:
+    delete:
+      consumes:
+      - application/json
+      description: Delete all break time windows for a break with break_id
+      parameters:
+      - description: Break ID
+        in: path
+        name: break_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/util.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.MultiError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/util.NotFound'
+      summary: Delete break time windows
+      tags:
+      - Break
     get:
       consumes:
       - application/json
@@ -675,7 +739,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.BreakTimeWindow'
+            items:
+              $ref: '#/definitions/database.BreakTimeWindow'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -713,41 +779,6 @@ paths:
       summary: Create a new break time window
       tags:
       - Break
-  /breaks/{break_id}/time_windows/{tw_open}/{tw_close}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete break time windows for a break with break_id
-      parameters:
-      - description: Break ID
-        in: path
-        name: break_id
-        required: true
-        type: integer
-      - description: Break opening Time Window
-        in: path
-        name: tw_open
-        required: true
-        type: string
-      - description: Break closing Time Window
-        in: path
-        name: tw_close
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/util.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.MultiError'
-      summary: Delete break time windows
-      tags:
-      - Break
   /jobs/{job_id}:
     delete:
       consumes:
@@ -770,6 +801,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/util.MultiError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/util.NotFound'
       summary: Delete a job
       tags:
       - Job
@@ -822,10 +857,42 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/util.MultiError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/util.NotFound'
       summary: Update a job
       tags:
       - Job
   /jobs/{job_id}/time_windows:
+    delete:
+      consumes:
+      - application/json
+      description: Delete all job time windows for a job with job_id
+      parameters:
+      - description: Job ID
+        in: path
+        name: job_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/util.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.MultiError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/util.NotFound'
+      summary: Delete job time windows
+      tags:
+      - Job
     get:
       consumes:
       - application/json
@@ -842,7 +909,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.JobTimeWindow'
+            items:
+              $ref: '#/definitions/database.JobTimeWindow'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -880,41 +949,6 @@ paths:
       summary: Create a new job time window
       tags:
       - Job
-  /jobs/{job_id}/time_windows/{tw_open}/{tw_close}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete job time windows for a job with job_id
-      parameters:
-      - description: Job ID
-        in: path
-        name: job_id
-        required: true
-        type: integer
-      - description: Job opening Time Window
-        in: path
-        name: tw_open
-        required: true
-        type: string
-      - description: Job closing Time Window
-        in: path
-        name: tw_close
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/util.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.MultiError'
-      summary: Delete job time windows
-      tags:
-      - Job
   /projects:
     get:
       consumes:
@@ -926,7 +960,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Project'
+            items:
+              $ref: '#/definitions/database.Project'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -981,6 +1017,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/util.MultiError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/util.NotFound'
       summary: Delete a project
       tags:
       - Project
@@ -1039,6 +1079,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/util.MultiError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/util.NotFound'
       summary: Update a project
       tags:
       - Project
@@ -1059,7 +1103,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Job'
+            items:
+              $ref: '#/definitions/database.Job'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -1119,6 +1165,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/util.MultiError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/util.NotFound'
       summary: Delete the schedule
       tags:
       - Schedule
@@ -1143,6 +1193,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/util.MultiError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/util.NotFound'
       summary: Get the schedule
       tags:
       - Schedule
@@ -1187,7 +1241,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Shipment'
+            items:
+              $ref: '#/definitions/database.Shipment'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -1242,7 +1298,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Vehicle'
+            items:
+              $ref: '#/definitions/database.Vehicle'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -1302,6 +1360,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/util.MultiError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/util.NotFound'
       summary: Delete a shipment
       tags:
       - Shipment
@@ -1360,10 +1422,42 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/util.MultiError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/util.NotFound'
       summary: Update a shipment
       tags:
       - Shipment
   /shipments/{shipment_id}/time_windows:
+    delete:
+      consumes:
+      - application/json
+      description: Delete all shipment time windows for a shipment with shipment_id
+      parameters:
+      - description: Shipment ID
+        in: path
+        name: shipment_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/util.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.MultiError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/util.NotFound'
+      summary: Delete shipment time windows
+      tags:
+      - Shipment
     get:
       consumes:
       - application/json
@@ -1380,7 +1474,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.ShipmentTimeWindow'
+            items:
+              $ref: '#/definitions/database.ShipmentTimeWindow'
+            type: array
         "400":
           description: Bad Request
           schema:
@@ -1418,41 +1514,6 @@ paths:
       summary: Create a new shipment time window
       tags:
       - Shipment
-  /shipments/{shipment_id}/time_windows/{tw_open}/{tw_close}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete shipment time windows for a shipment with shipment_id
-      parameters:
-      - description: Shipment ID
-        in: path
-        name: shipment_id
-        required: true
-        type: integer
-      - description: Shipment opening Time Window
-        in: path
-        name: tw_open
-        required: true
-        type: string
-      - description: Shipment closing Time Window
-        in: path
-        name: tw_close
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/util.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.MultiError'
-      summary: Delete shipment time windows
-      tags:
-      - Shipment
   /vehicles/{vehicle_id}:
     delete:
       consumes:
@@ -1475,6 +1536,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/util.MultiError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/util.NotFound'
       summary: Delete a vehicle
       tags:
       - Vehicle
@@ -1533,6 +1598,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/util.MultiError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/util.NotFound'
       summary: Update a vehicle
       tags:
       - Vehicle
@@ -1553,7 +1622,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Break'
+            items:
+              $ref: '#/definitions/database.Break'
+            type: array
         "400":
           description: Bad Request
           schema:

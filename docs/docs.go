@@ -65,6 +65,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/util.MultiError"
                         }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
+                        }
                     }
                 }
             },
@@ -100,6 +106,12 @@ var doc = `{
                         "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/util.MultiError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
                         }
                     }
                 }
@@ -182,7 +194,10 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.BreakTimeWindow"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/database.BreakTimeWindow"
+                            }
                         }
                     },
                     "400": {
@@ -237,11 +252,9 @@ var doc = `{
                         }
                     }
                 }
-            }
-        },
-        "/breaks/{break_id}/time_windows/{tw_open}/{tw_close}": {
+            },
             "delete": {
-                "description": "Delete break time windows for a break with break_id",
+                "description": "Delete all break time windows for a break with break_id",
                 "consumes": [
                     "application/json"
                 ],
@@ -259,20 +272,6 @@ var doc = `{
                         "name": "break_id",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Break opening Time Window",
-                        "name": "tw_open",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Break closing Time Window",
-                        "name": "tw_close",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -286,6 +285,12 @@ var doc = `{
                         "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/util.MultiError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
                         }
                     }
                 }
@@ -367,6 +372,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/util.MultiError"
                         }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
+                        }
                     }
                 }
             },
@@ -403,6 +414,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/util.MultiError"
                         }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
+                        }
                     }
                 }
             }
@@ -433,7 +450,10 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.JobTimeWindow"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/database.JobTimeWindow"
+                            }
                         }
                     },
                     "400": {
@@ -488,11 +508,9 @@ var doc = `{
                         }
                     }
                 }
-            }
-        },
-        "/jobs/{job_id}/time_windows/{tw_open}/{tw_close}": {
+            },
             "delete": {
-                "description": "Delete job time windows for a job with job_id",
+                "description": "Delete all job time windows for a job with job_id",
                 "consumes": [
                     "application/json"
                 ],
@@ -510,20 +528,6 @@ var doc = `{
                         "name": "job_id",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Job opening Time Window",
-                        "name": "tw_open",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Job closing Time Window",
-                        "name": "tw_close",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -537,6 +541,12 @@ var doc = `{
                         "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/util.MultiError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
                         }
                     }
                 }
@@ -559,7 +569,10 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Project"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/database.Project"
+                            }
                         }
                     },
                     "400": {
@@ -685,6 +698,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/util.MultiError"
                         }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
+                        }
                     }
                 }
             },
@@ -730,6 +749,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/util.MultiError"
                         }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
+                        }
                     }
                 }
             }
@@ -760,7 +785,10 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Job"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/database.Job"
+                            }
                         }
                     },
                     "400": {
@@ -851,6 +879,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/util.MultiError"
                         }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
+                        }
                     }
                 }
             },
@@ -923,6 +957,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/util.MultiError"
                         }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
+                        }
                     }
                 }
             }
@@ -953,7 +993,10 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Shipment"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/database.Shipment"
+                            }
                         }
                     },
                     "400": {
@@ -1036,7 +1079,10 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Vehicle"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/database.Vehicle"
+                            }
                         }
                     },
                     "400": {
@@ -1169,6 +1215,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/util.MultiError"
                         }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
+                        }
                     }
                 }
             },
@@ -1214,6 +1266,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/util.MultiError"
                         }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
+                        }
                     }
                 }
             }
@@ -1244,7 +1302,10 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.ShipmentTimeWindow"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/database.ShipmentTimeWindow"
+                            }
                         }
                     },
                     "400": {
@@ -1299,11 +1360,9 @@ var doc = `{
                         }
                     }
                 }
-            }
-        },
-        "/shipments/{shipment_id}/time_windows/{tw_open}/{tw_close}": {
+            },
             "delete": {
-                "description": "Delete shipment time windows for a shipment with shipment_id",
+                "description": "Delete all shipment time windows for a shipment with shipment_id",
                 "consumes": [
                     "application/json"
                 ],
@@ -1321,20 +1380,6 @@ var doc = `{
                         "name": "shipment_id",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Shipment opening Time Window",
-                        "name": "tw_open",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Shipment closing Time Window",
-                        "name": "tw_close",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -1348,6 +1393,12 @@ var doc = `{
                         "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/util.MultiError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
                         }
                     }
                 }
@@ -1429,6 +1480,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/util.MultiError"
                         }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
+                        }
                     }
                 }
             },
@@ -1474,6 +1531,12 @@ var doc = `{
                         "schema": {
                             "$ref": "#/definitions/util.MultiError"
                         }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
+                        }
                     }
                 }
             }
@@ -1504,7 +1567,10 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Break"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/database.Break"
+                            }
                         }
                     },
                     "400": {
@@ -1768,13 +1834,18 @@ var doc = `{
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
+                    },
+                    "example": [
+                        5,
+                        15
+                    ]
                 },
                 "d_location": {
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "d_service": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 120
                 },
                 "data": {
                     "type": "object",
@@ -1790,7 +1861,8 @@ var doc = `{
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "p_service": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 120
                 },
                 "priority": {
                     "type": "integer",
@@ -1817,7 +1889,8 @@ var doc = `{
             ],
             "properties": {
                 "kind": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "p"
                 },
                 "tw_close": {
                     "type": "string",
@@ -1840,7 +1913,11 @@ var doc = `{
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
+                    },
+                    "example": [
+                        50,
+                        25
+                    ]
                 },
                 "data": {
                     "type": "object",
@@ -1866,16 +1943,19 @@ var doc = `{
                     ]
                 },
                 "speed_factor": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1
                 },
                 "start_location": {
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "tw_close": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-31 23:59:00"
                 },
                 "tw_open": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-31 23:00:00"
                 }
             }
         },
@@ -1998,7 +2078,8 @@ var doc = `{
                     "example": "1234567812345678"
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Sample Project"
                 },
                 "updated_at": {
                     "type": "string",
@@ -2013,7 +2094,11 @@ var doc = `{
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
+                    },
+                    "example": [
+                        5,
+                        15
+                    ]
                 },
                 "created_at": {
                     "type": "string",
@@ -2023,7 +2108,8 @@ var doc = `{
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "d_service": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 120
                 },
                 "data": {
                     "type": "object",
@@ -2043,7 +2129,8 @@ var doc = `{
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "p_service": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 120
                 },
                 "priority": {
                     "type": "integer",
@@ -2081,7 +2168,8 @@ var doc = `{
                     "example": "1234567812345678"
                 },
                 "kind": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "p"
                 },
                 "tw_close": {
                     "type": "string",
@@ -2104,13 +2192,18 @@ var doc = `{
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
+                    },
+                    "example": [
+                        5,
+                        15
+                    ]
                 },
                 "d_location": {
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "d_service": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 120
                 },
                 "data": {
                     "type": "object",
@@ -2126,15 +2219,12 @@ var doc = `{
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "p_service": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 120
                 },
                 "priority": {
                     "type": "integer",
                     "example": 10
-                },
-                "project_id": {
-                    "type": "string",
-                    "example": "1234567812345678"
                 },
                 "skills": {
                     "type": "array",
@@ -2155,7 +2245,11 @@ var doc = `{
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
+                    },
+                    "example": [
+                        50,
+                        25
+                    ]
                 },
                 "data": {
                     "type": "object",
@@ -2170,10 +2264,6 @@ var doc = `{
                 "end_location": {
                     "$ref": "#/definitions/util.LocationParams"
                 },
-                "project_id": {
-                    "type": "string",
-                    "example": "1234567812345678"
-                },
                 "skills": {
                     "type": "array",
                     "items": {
@@ -2185,16 +2275,19 @@ var doc = `{
                     ]
                 },
                 "speed_factor": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1
                 },
                 "start_location": {
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "tw_close": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-31 23:59:00"
                 },
                 "tw_open": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-31 23:00:00"
                 }
             }
         },
@@ -2205,7 +2298,11 @@ var doc = `{
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
+                    },
+                    "example": [
+                        50,
+                        25
+                    ]
                 },
                 "created_at": {
                     "type": "string",
@@ -2243,7 +2340,8 @@ var doc = `{
                     ]
                 },
                 "speed_factor": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 1
                 },
                 "start_location": {
                     "$ref": "#/definitions/util.LocationParams"
