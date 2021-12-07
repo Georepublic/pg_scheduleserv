@@ -38,11 +38,11 @@ import (
 type CreateVehicleParams struct {
 	StartLocation *util.LocationParams `json:"start_location" validate:"required"`
 	EndLocation   *util.LocationParams `json:"end_location" validate:"required"`
-	Capacity      *[]int64             `json:"capacity"`
-	Skills        *[]int32             `json:"skills" example:"1,5"`
-	TwOpen        *string              `json:"tw_open" validate:"omitempty,datetime=2006-01-02 15:04:05"`
-	TwClose       *string              `json:"tw_close" validate:"omitempty,datetime=2006-01-02 15:04:05"`
-	SpeedFactor   *float64             `json:"speed_factor"`
+	Capacity      *[]int64             `json:"capacity" validate:"omitempty,dive,min=0" example:"50,25"`
+	Skills        *[]int32             `json:"skills" validate:"omitempty,dive,min=0" example:"1,5"`
+	TwOpen        *string              `json:"tw_open" validate:"omitempty,datetime=2006-01-02 15:04:05" example:"2021-12-31 23:00:00"`
+	TwClose       *string              `json:"tw_close" validate:"omitempty,datetime=2006-01-02 15:04:05" example:"2021-12-31 23:59:00"`
+	SpeedFactor   *float64             `json:"speed_factor" validate:"omitempty,gt=0" example:"1.0"`
 	ProjectID     *int64               `json:"project_id,string" validate:"required" swaggerignore:"true"`
 	Data          *interface{}         `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 }
@@ -50,12 +50,12 @@ type CreateVehicleParams struct {
 type UpdateVehicleParams struct {
 	StartLocation *util.LocationParams `json:"start_location"`
 	EndLocation   *util.LocationParams `json:"end_location"`
-	Capacity      *[]int64             `json:"capacity"`
-	Skills        *[]int32             `json:"skills" example:"1,5"`
-	TwOpen        *string              `json:"tw_open" validate:"omitempty,datetime=2006-01-02 15:04:05"`
-	TwClose       *string              `json:"tw_close" validate:"omitempty,datetime=2006-01-02 15:04:05"`
-	SpeedFactor   *float64             `json:"speed_factor"`
-	ProjectID     *int64               `json:"project_id,string" example:"1234567812345678"`
+	Capacity      *[]int64             `json:"capacity" validate:"omitempty,dive,min=0" example:"50,25"`
+	Skills        *[]int32             `json:"skills" validate:"omitempty,dive,min=0" example:"1,5"`
+	TwOpen        *string              `json:"tw_open" validate:"omitempty,datetime=2006-01-02 15:04:05" example:"2021-12-31 23:00:00"`
+	TwClose       *string              `json:"tw_close" validate:"omitempty,datetime=2006-01-02 15:04:05" example:"2021-12-31 23:59:00"`
+	SpeedFactor   *float64             `json:"speed_factor" validate:"omitempty,gt=0" example:"1.0"`
+	ProjectID     *int64               `json:"project_id,string" swaggerignore:"true"`
 	Data          *interface{}         `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 }
 
@@ -127,6 +127,7 @@ func scanVehicleRow(row pgx.Row) (Vehicle, error) {
 		Latitude:  &end_latitude,
 		Longitude: &end_longitude,
 	}
+	err = util.HandleDBError(err)
 	return i, err
 }
 

@@ -104,7 +104,7 @@ func (server *Server) CreateBreakTimeWindow(w http.ResponseWriter, r *http.Reque
 // @Accept application/json
 // @Produce application/json
 // @Param break_id path int true "Break ID"
-// @Success 200 {object} database.BreakTimeWindow
+// @Success 200 {object} []database.BreakTimeWindow
 // @Failure 400 {object} util.MultiError
 // @Router /breaks/{break_id}/time_windows [get]
 func (server *Server) ListBreakTimeWindows(w http.ResponseWriter, r *http.Request) {
@@ -126,16 +126,15 @@ func (server *Server) ListBreakTimeWindows(w http.ResponseWriter, r *http.Reques
 
 // DeleteBreakTimeWindows godoc
 // @Summary Delete break time windows
-// @Description Delete break time windows for a break with break_id
+// @Description Delete all break time windows for a break with break_id
 // @Tags Break
 // @Accept application/json
 // @Produce application/json
 // @Param break_id path int true "Break ID"
-// @Param tw_open path string true "Break opening Time Window"
-// @Param tw_close path string true "Break closing Time Window"
 // @Success 200 {object} util.Success
 // @Failure 400 {object} util.MultiError
-// @Router /breaks/{break_id}/time_windows/{tw_open}/{tw_close} [delete]
+// @Failure 404 {object} util.NotFound
+// @Router /breaks/{break_id}/time_windows [delete]
 func (server *Server) DeleteBreakTimeWindow(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	break_id, err := strconv.ParseInt(vars["break_id"], 10, 64)
@@ -143,36 +142,8 @@ func (server *Server) DeleteBreakTimeWindow(w http.ResponseWriter, r *http.Reque
 		panic(err)
 	}
 
-	userInput := map[string]interface{}{
-		"id":       break_id,
-		"tw_open":  vars["tw_open"],
-		"tw_close": vars["tw_close"],
-	}
-
-	// Validate the input type
-	if err := util.ValidateInput(userInput, database.CreateBreakTimeWindowParams{}); err != nil {
-		server.FormatJSON(w, http.StatusBadRequest, err)
-		return
-	}
-
-	// Decode map[string]interface{} to struct
-	userInputString, err := json.Marshal(userInput)
-	if err != nil {
-		logrus.Error(err)
-	}
-	break_tw := database.CreateBreakTimeWindowParams{}
-	if err = json.Unmarshal(userInputString, &break_tw); err != nil {
-		logrus.Error(err)
-	}
-
-	// Validate the struct
-	if err := server.validate.Struct(break_tw); err != nil {
-		server.FormatJSON(w, http.StatusBadRequest, err)
-		return
-	}
-
 	ctx := r.Context()
-	_, err = server.DBDeleteBreakTimeWindow(ctx, break_tw)
+	_, err = server.DBDeleteBreakTimeWindow(ctx, break_id)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return

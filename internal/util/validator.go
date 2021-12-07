@@ -31,6 +31,7 @@ package util
 import (
 	"fmt"
 	"reflect"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/hashicorp/go-multierror"
@@ -44,6 +45,19 @@ var locationTags = map[string]bool{
 	"d_location":     true,
 	"start_location": true,
 	"end_location":   true,
+}
+
+func NewValidator() *validator.Validate {
+	validate := validator.New()
+	// Get json tag name instead of actual struct field name
+	validate.RegisterTagNameFunc(func(field reflect.StructField) string {
+		name := strings.SplitN(field.Tag.Get("json"), ",", 2)[0]
+		if name == "-" {
+			return ""
+		}
+		return name
+	})
+	return validate
 }
 
 // Verify that the type of input user struct is same as the required type
@@ -79,9 +93,9 @@ func ValidateInput(jsonStruct map[string]interface{}, originalStruct interface{}
 			if _, locationTagsFound := locationTags[tag]; locationTagsFound {
 				location := LocationParams{}
 				if err := mapstructure.Decode(typ, &location); err != nil {
-					return err
+					return fmt.Errorf("Field 'latitude' and 'longitude' of type 'float64' is required")
 				}
-				validate := validator.New()
+				validate := NewValidator()
 				if err := validate.Struct(location); err != nil {
 					return err
 				}

@@ -72,6 +72,7 @@ func (server *Server) CreateSchedule(w http.ResponseWriter, r *http.Request) {
 // @Param project_id path int true "Project ID"
 // @Success 200 {object} util.Schedule
 // @Failure 400 {object} util.MultiError
+// @Failure 404 {object} util.NotFound
 // @Router /projects/{project_id}/schedule [get]
 func (server *Server) GetSchedule(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -99,6 +100,7 @@ func (server *Server) GetSchedule(w http.ResponseWriter, r *http.Request) {
 // @Param project_id path int true "Project ID"
 // @Success 200 {object} util.Success
 // @Failure 400 {object} util.MultiError
+// @Failure 404 {object} util.NotFound
 // @Router /projects/{project_id}/schedule [delete]
 func (server *Server) DeleteSchedule(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)

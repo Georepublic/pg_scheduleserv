@@ -73,7 +73,7 @@ type JobTimeWindow struct {
 
 type Project struct {
 	ID        int64       `json:"id,string" example:"1234567812345678"`
-	Name      string      `json:"name"`
+	Name      string      `json:"name" example:"Sample Project"`
 	Data      interface{} `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 	CreatedAt string      `json:"created_at" example:"2021-12-01 13:00:00"`
 	UpdatedAt string      `json:"updated_at" example:"2021-12-01 13:00:00"`
@@ -81,11 +81,11 @@ type Project struct {
 
 type Shipment struct {
 	ID        int64               `json:"id,string" example:"1234567812345678"`
-	PLocation util.LocationParams `json:"p_location"`
-	PService  int64               `json:"p_service"`
+	PLocation util.LocationParams `json:"p_location" `
+	PService  int64               `json:"p_service" example:"120"`
 	DLocation util.LocationParams `json:"d_location"`
-	DService  int64               `json:"d_service"`
-	Amount    []int64             `json:"amount"`
+	DService  int64               `json:"d_service" example:"120"`
+	Amount    []int64             `json:"amount" example:"5,15"`
 	Skills    []int32             `json:"skills" example:"1,5"`
 	Priority  int32               `json:"priority" example:"10"`
 	ProjectID int64               `json:"project_id,string" example:"1234567812345678"`
@@ -96,7 +96,7 @@ type Shipment struct {
 
 type ShipmentTimeWindow struct {
 	ID        int64  `json:"id,string" example:"1234567812345678"`
-	Kind      string `json:"kind"`
+	Kind      string `json:"kind" example:"p"`
 	TwOpen    string `json:"tw_open" example:"2021-12-31 23:00:00"`
 	TwClose   string `json:"tw_close" example:"2021-12-31 23:59:00"`
 	CreatedAt string `json:"created_at" example:"2021-12-01 13:00:00"`
@@ -107,11 +107,11 @@ type Vehicle struct {
 	ID            int64               `json:"id,string" example:"1234567812345678"`
 	StartLocation util.LocationParams `json:"start_location"`
 	EndLocation   util.LocationParams `json:"end_location"`
-	Capacity      []int64             `json:"capacity"`
+	Capacity      []int64             `json:"capacity" example:"50,25"`
 	Skills        []int32             `json:"skills" example:"1,5"`
 	TwOpen        string              `json:"tw_open" example:"2021-12-31 23:00:00"`
 	TwClose       string              `json:"tw_close" example:"2021-12-31 23:59:00"`
-	SpeedFactor   float64             `json:"speed_factor"`
+	SpeedFactor   float64             `json:"speed_factor" example:"1.0"`
 	ProjectID     int64               `json:"project_id,string" example:"1234567812345678"`
 	Data          interface{}         `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 	CreatedAt     string              `json:"created_at" example:"2021-12-01 13:00:00"`

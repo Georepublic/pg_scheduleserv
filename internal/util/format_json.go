@@ -101,7 +101,7 @@ const jsonSuccessResp = `{"success": true}`
 const jsonErrResp = `{"error": "%s"}`
 
 type MultiError struct {
-	Errors []string `json:"errors,omitempty" example:"Error message1,Error message2"`
+	Errors []string `json:"errors" example:"Error message1,Error message2"`
 }
 
 type NotFound struct {

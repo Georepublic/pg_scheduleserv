@@ -78,6 +78,8 @@ func (server *Server) CreateBreak(w http.ResponseWriter, r *http.Request) {
 		logrus.Error(err)
 	}
 
+	logrus.Infof("%+v", v_break)
+
 	// Validate the struct
 	if err := server.validate.Struct(v_break); err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
@@ -101,7 +103,7 @@ func (server *Server) CreateBreak(w http.ResponseWriter, r *http.Request) {
 // @Accept application/json
 // @Produce application/json
 // @Param vehicle_id path int true "Vehicle ID"
-// @Success 200 {object} database.Break
+// @Success 200 {object} []database.Break
 // @Failure 400 {object} util.MultiError
 // @Router /vehicles/{vehicle_id}/breaks [get]
 func (server *Server) ListBreaks(w http.ResponseWriter, r *http.Request) {
@@ -130,6 +132,7 @@ func (server *Server) ListBreaks(w http.ResponseWriter, r *http.Request) {
 // @Param break_id path int true "Break ID"
 // @Success 200 {object} database.Break
 // @Failure 400 {object} util.MultiError
+// @Failure 404 {object} util.NotFound
 // @Router /breaks/{break_id} [get]
 func (server *Server) GetBreak(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -215,6 +218,7 @@ func (server *Server) UpdateBreak(w http.ResponseWriter, r *http.Request) {
 // @Param break_id path int true "Break ID"
 // @Success 200 {object} util.Success
 // @Failure 400 {object} util.MultiError
+// @Failure 404 {object} util.NotFound
 // @Router /breaks/{break_id} [delete]
 func (server *Server) DeleteBreak(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)

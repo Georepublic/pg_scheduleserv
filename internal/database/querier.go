@@ -47,7 +47,7 @@ type Querier interface {
 	// Break Time Window
 	DBCreateBreakTimeWindow(ctx context.Context, arg CreateBreakTimeWindowParams) (BreakTimeWindow, error)
 	DBListBreakTimeWindows(ctx context.Context, id int64) ([]BreakTimeWindow, error)
-	DBDeleteBreakTimeWindow(ctx context.Context, arg CreateBreakTimeWindowParams) (BreakTimeWindow, error)
+	DBDeleteBreakTimeWindow(ctx context.Context, id int64) (BreakTimeWindow, error)
 
 	// Job
 	DBCreateJob(ctx context.Context, arg CreateJobParams) (Job, error)
@@ -59,7 +59,7 @@ type Querier interface {
 	// Job Time Window
 	DBCreateJobTimeWindow(ctx context.Context, arg CreateJobTimeWindowParams) (JobTimeWindow, error)
 	DBListJobTimeWindows(ctx context.Context, id int64) ([]JobTimeWindow, error)
-	DBDeleteJobTimeWindow(ctx context.Context, arg CreateJobTimeWindowParams) (JobTimeWindow, error)
+	DBDeleteJobTimeWindow(ctx context.Context, id int64) (JobTimeWindow, error)
 
 	// Project
 	DBCreateProject(ctx context.Context, arg CreateProjectParams) (Project, error)
@@ -83,7 +83,7 @@ type Querier interface {
 	// Shipment Time Window
 	DBCreateShipmentTimeWindow(ctx context.Context, arg CreateShipmentTimeWindowParams) (ShipmentTimeWindow, error)
 	DBListShipmentTimeWindows(ctx context.Context, id int64) ([]ShipmentTimeWindow, error)
-	DBDeleteShipmentTimeWindow(ctx context.Context, arg CreateShipmentTimeWindowParams) (ShipmentTimeWindow, error)
+	DBDeleteShipmentTimeWindow(ctx context.Context, id int64) (ShipmentTimeWindow, error)
 
 	// Vehicle
 	DBCreateVehicle(ctx context.Context, arg CreateVehicleParams) (Vehicle, error)

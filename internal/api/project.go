@@ -95,7 +95,7 @@ func (server *Server) CreateProject(w http.ResponseWriter, r *http.Request) {
 // @Tags Project
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {object} database.Project
+// @Success 200 {object} []database.Project
 // @Failure 400 {object} util.MultiError
 // @Router /projects [get]
 func (server *Server) ListProjects(w http.ResponseWriter, r *http.Request) {
@@ -147,6 +147,7 @@ func (server *Server) GetProject(w http.ResponseWriter, r *http.Request) {
 // @Param Project body database.CreateProjectParams true "Update project"
 // @Success 200 {object} database.Project
 // @Failure 400 {object} util.MultiError
+// @Failure 404 {object} util.NotFound
 // @Router /projects/{project_id} [patch]
 func (server *Server) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
@@ -203,6 +204,7 @@ func (server *Server) UpdateProject(w http.ResponseWriter, r *http.Request) {
 // @Param project_id path int true "Project ID"
 // @Success 200 {object} util.Success
 // @Failure 400 {object} util.MultiError
+// @Failure 404 {object} util.NotFound
 // @Router /projects/{project_id} [delete]
 func (server *Server) DeleteProject(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)

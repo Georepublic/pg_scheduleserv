@@ -104,7 +104,7 @@ func (server *Server) CreateShipmentTimeWindow(w http.ResponseWriter, r *http.Re
 // @Accept application/json
 // @Produce application/json
 // @Param shipment_id path int true "Shipment ID"
-// @Success 200 {object} database.ShipmentTimeWindow
+// @Success 200 {object} []database.ShipmentTimeWindow
 // @Failure 400 {object} util.MultiError
 // @Router /shipments/{shipment_id}/time_windows [get]
 func (server *Server) ListShipmentTimeWindows(w http.ResponseWriter, r *http.Request) {
@@ -126,16 +126,15 @@ func (server *Server) ListShipmentTimeWindows(w http.ResponseWriter, r *http.Req
 
 // DeleteShipmentTimeWindows godoc
 // @Summary Delete shipment time windows
-// @Description Delete shipment time windows for a shipment with shipment_id
+// @Description Delete all shipment time windows for a shipment with shipment_id
 // @Tags Shipment
 // @Accept application/json
 // @Produce application/json
 // @Param shipment_id path int true "Shipment ID"
-// @Param tw_open path string true "Shipment opening Time Window"
-// @Param tw_close path string true "Shipment closing Time Window"
 // @Success 200 {object} util.Success
 // @Failure 400 {object} util.MultiError
-// @Router /shipments/{shipment_id}/time_windows/{tw_open}/{tw_close} [delete]
+// @Failure 404 {object} util.NotFound
+// @Router /shipments/{shipment_id}/time_windows [delete]
 func (server *Server) DeleteShipmentTimeWindow(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	shipment_id, err := strconv.ParseInt(vars["shipment_id"], 10, 64)
@@ -143,36 +142,8 @@ func (server *Server) DeleteShipmentTimeWindow(w http.ResponseWriter, r *http.Re
 		panic(err)
 	}
 
-	userInput := map[string]interface{}{
-		"id":       shipment_id,
-		"tw_open":  vars["tw_open"],
-		"tw_close": vars["tw_close"],
-	}
-
-	// Validate the input type
-	if err := util.ValidateInput(userInput, database.CreateShipmentTimeWindowParams{}); err != nil {
-		server.FormatJSON(w, http.StatusBadRequest, err)
-		return
-	}
-
-	// Decode map[string]interface{} to struct
-	userInputString, err := json.Marshal(userInput)
-	if err != nil {
-		logrus.Error(err)
-	}
-	shipment_tw := database.CreateShipmentTimeWindowParams{}
-	if err = json.Unmarshal(userInputString, &shipment_tw); err != nil {
-		logrus.Error(err)
-	}
-
-	// Validate the struct
-	if err := server.validate.Struct(shipment_tw); err != nil {
-		server.FormatJSON(w, http.StatusBadRequest, err)
-		return
-	}
-
 	ctx := r.Context()
-	_, err = server.DBDeleteShipmentTimeWindow(ctx, shipment_tw)
+	_, err = server.DBDeleteShipmentTimeWindow(ctx, shipment_id)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return

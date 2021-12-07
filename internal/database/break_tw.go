@@ -63,10 +63,10 @@ func (q *Queries) DBListBreakTimeWindows(ctx context.Context, id int64) ([]Break
 	return scanBreakTimeWindowRows(rows)
 }
 
-func (q *Queries) DBDeleteBreakTimeWindow(ctx context.Context, arg CreateBreakTimeWindowParams) (BreakTimeWindow, error) {
-	sql := "DELETE FROM breaks_time_windows WHERE id = $1 AND tw_open = $2 AND tw_close = $3"
+func (q *Queries) DBDeleteBreakTimeWindow(ctx context.Context, id int64) (BreakTimeWindow, error) {
+	sql := "DELETE FROM breaks_time_windows WHERE id = $1"
 	return_sql := " RETURNING " + util.GetOutputFields(BreakTimeWindow{})
-	row := q.db.QueryRow(ctx, sql+return_sql, arg.ID, arg.TwOpen, arg.TwClose)
+	row := q.db.QueryRow(ctx, sql+return_sql, id)
 	return scanBreakTimeWindowRow(row)
 }
 
@@ -79,6 +79,7 @@ func scanBreakTimeWindowRow(row pgx.Row) (BreakTimeWindow, error) {
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
+	err = util.HandleDBError(err)
 	return i, err
 }
 

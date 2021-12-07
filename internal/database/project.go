@@ -95,6 +95,7 @@ func scanProjectRow(row pgx.Row) (Project, error) {
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
+	err = util.HandleDBError(err)
 	return i, err
 }
 

@@ -181,7 +181,8 @@ CREATE TABLE IF NOT EXISTS jobs (
   CHECK(0 <= ALL(delivery)),
   CHECK(0 <= ALL(pickup)),
   CHECK(0 <= ALL(skills)),
-  CHECK(priority >= 0 AND priority <= 100)
+  CHECK(priority >= 0 AND priority <= 100),
+  CHECK(array_length(delivery, 1) = array_length(pickup, 1))
 );
 -- JOBS TABLE end
 

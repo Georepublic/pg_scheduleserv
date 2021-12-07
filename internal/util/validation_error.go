@@ -30,6 +30,7 @@ package util
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/sirupsen/logrus"
@@ -45,6 +46,18 @@ func getErrorMsg(ve validator.ValidationErrors) []string {
 			err = fmt.Sprintf("Field '%s' of type '%s' is required", ve[i].Field(), ve[i].Type().Elem())
 		case "datetime":
 			err = fmt.Sprintf("Field '%s' must be of '%s' format", ve[i].Field(), ve[i].Param())
+		case "max":
+			err = fmt.Sprintf("Field '%s' must be less than or equal to %s", ve[i].Field(), ve[i].Param())
+		case "min":
+			if ve[i].Param() == "0" {
+				err = fmt.Sprintf("Field '%s' must be non-negative", ve[i].Field())
+			} else {
+				err = fmt.Sprintf("Field '%s' must be greater than or equal to %s", ve[i].Field(), ve[i].Param())
+			}
+		case "gt":
+			err = fmt.Sprintf("Field '%s' must be greater than %s", ve[i].Field(), ve[i].Param())
+		case "oneof":
+			err = fmt.Sprintf("Field '%s' must be one out of %s", ve[i].Field(), strings.Replace(ve[i].Param(), " ", ", ", -1))
 		default:
 			err = fmt.Sprintf("Validation of Field '%s' failed on '%s' tag", ve[i].Field(), field)
 		}

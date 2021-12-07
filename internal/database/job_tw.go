@@ -60,10 +60,10 @@ func (q *Queries) DBListJobTimeWindows(ctx context.Context, id int64) ([]JobTime
 	return scanJobTimeWindowRows(rows)
 }
 
-func (q *Queries) DBDeleteJobTimeWindow(ctx context.Context, arg CreateJobTimeWindowParams) (JobTimeWindow, error) {
-	sql := "DELETE FROM jobs_time_windows WHERE id = $1 AND tw_open = $2 AND tw_close = $3"
+func (q *Queries) DBDeleteJobTimeWindow(ctx context.Context, id int64) (JobTimeWindow, error) {
+	sql := "DELETE FROM jobs_time_windows WHERE id = $1"
 	return_sql := " RETURNING " + util.GetOutputFields(JobTimeWindow{})
-	row := q.db.QueryRow(ctx, sql+return_sql, arg.ID, arg.TwOpen, arg.TwClose)
+	row := q.db.QueryRow(ctx, sql+return_sql, id)
 	return scanJobTimeWindowRow(row)
 }
 
@@ -76,6 +76,7 @@ func scanJobTimeWindowRow(row pgx.Row) (JobTimeWindow, error) {
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
+	err = util.HandleDBError(err)
 	return i, err
 }
 

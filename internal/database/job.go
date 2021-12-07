@@ -37,23 +37,23 @@ import (
 
 type CreateJobParams struct {
 	Location  *util.LocationParams `json:"location" validate:"required"`
-	Service   *int64               `json:"service"  example:"120"`
-	Delivery  *[]int64             `json:"delivery" example:"10,20"`
-	Pickup    *[]int64             `json:"pickup"   example:"5,15"`
-	Skills    *[]int32             `json:"skills"   example:"1,5"`
-	Priority  *int32               `json:"priority" example:"10"`
+	Service   *int64               `json:"service"  validate:"omitempty,min=0" example:"120"`
+	Delivery  *[]int64             `json:"delivery" validate:"omitempty,dive,min=0" example:"10,20"`
+	Pickup    *[]int64             `json:"pickup"   validate:"omitempty,dive,min=0" example:"5,15"`
+	Skills    *[]int32             `json:"skills"   validate:"omitempty,dive,min=0" example:"1,5"`
+	Priority  *int32               `json:"priority" validate:"omitempty,min=0,max=100" example:"10"`
 	ProjectID *int64               `json:"project_id,string" validate:"required" swaggerignore:"true"`
 	Data      *interface{}         `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 }
 
 type UpdateJobParams struct {
 	Location  *util.LocationParams `json:"location"`
-	Service   *int64               `json:"service" example:"120"`
-	Delivery  *[]int64             `json:"delivery" example:"10,20"`
-	Pickup    *[]int64             `json:"pickup" example:"5,15"`
-	Skills    *[]int32             `json:"skills" example:"1,5"`
-	Priority  *int32               `json:"priority" example:"10"`
-	ProjectID *int64               `json:"project_id,string" example:"1234567812345678"`
+	Service   *int64               `json:"service"  validate:"omitempty,min=0" example:"120"`
+	Delivery  *[]int64             `json:"delivery" validate:"omitempty,dive,min=0" example:"10,20"`
+	Pickup    *[]int64             `json:"pickup"   validate:"omitempty,dive,min=0" example:"5,15"`
+	Skills    *[]int32             `json:"skills"   validate:"omitempty,dive,min=0" example:"1,5"`
+	Priority  *int32               `json:"priority" validate:"omitempty,min=0,max=100" example:"10"`
+	ProjectID *int64               `json:"project_id,string" swaggerignore:"true"`
 	Data      *interface{}         `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 }
 
@@ -119,6 +119,7 @@ func scanJobRow(row pgx.Row) (Job, error) {
 		Latitude:  &latitude,
 		Longitude: &longitude,
 	}
+	err = util.HandleDBError(err)
 	return i, err
 }
 
