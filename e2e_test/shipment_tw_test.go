@@ -122,10 +122,9 @@ func TestCreateShipmentTimeWindow(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"errors": []interface{}{
-					"Opening time must not be greater than closing time",
+					"Field 'tw_open' must be less than or equal to field 'tw_close'",
 				},
 			},
-			todo: true,
 		},
 		{
 			name:       "Invalid ShipmentID",
@@ -138,10 +137,9 @@ func TestCreateShipmentTimeWindow(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"errors": []interface{}{
-					"Shipment with the given shipment_id does not exist",
+					"Shipment with the given 'shipment_id' does not exist",
 				},
 			},
-			todo: true,
 		},
 		{
 			name:       "Invalid kind",
@@ -153,10 +151,10 @@ func TestCreateShipmentTimeWindow(t *testing.T) {
 				"tw_close": "2021-10-26 21:24:38",
 			},
 			resBody: map[string]interface{}{
-				"tw_open":  "2021-10-26 21:20:20",
-				"tw_close": "2021-10-26 21:24:38",
+				"errors": []interface{}{
+					"Field 'kind' must be one out of p, d",
+				},
 			},
-			todo: true,
 		},
 		{
 			name:       "All fields - Pickup",
@@ -186,6 +184,21 @@ func TestCreateShipmentTimeWindow(t *testing.T) {
 				"kind":     "d",
 				"tw_open":  "2021-10-26 21:20:20",
 				"tw_close": "2021-10-26 21:24:38",
+			},
+		},
+		{
+			name:       "Primary key violation",
+			statusCode: 400,
+			shipmentID: 3341766951177830852,
+			body: map[string]interface{}{
+				"kind":     "d",
+				"tw_open":  "2021-10-26 21:20:20",
+				"tw_close": "2021-10-26 21:24:38",
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{
+					"Shipments time window with given values already exist",
+				},
 			},
 		},
 	}
@@ -239,7 +252,6 @@ func TestListShipmentTimeWindows(t *testing.T) {
 		shipmentID int
 		resBody    []map[string]interface{}
 	}{
-		// TODO: Check this
 		{
 			name:       "Invalid ID",
 			statusCode: 200,
@@ -336,9 +348,6 @@ func TestDeleteShipmentTimeWindow(t *testing.T) {
 		name       string
 		statusCode int
 		shipmentID int
-		twOpen     string
-		twClose    string
-		kind       string
 		resBody    map[string]interface{}
 		todo       bool
 	}{
@@ -349,7 +358,6 @@ func TestDeleteShipmentTimeWindow(t *testing.T) {
 			resBody: map[string]interface{}{
 				"error": "Not Found",
 			},
-			todo: true,
 		},
 		{
 			name:       "Correct ID",
@@ -358,16 +366,14 @@ func TestDeleteShipmentTimeWindow(t *testing.T) {
 			resBody: map[string]interface{}{
 				"success": true,
 			},
-			todo: true,
 		},
 		{
 			name:       "Correct ID but no time window",
-			statusCode: 200,
+			statusCode: 404,
 			shipmentID: 3341766951177830852,
 			resBody: map[string]interface{}{
-				"success": true,
+				"error": "Not Found",
 			},
-			todo: true,
 		},
 	}
 
@@ -376,7 +382,7 @@ func TestDeleteShipmentTimeWindow(t *testing.T) {
 			if tc.todo == true {
 				t.Skip("TODO")
 			}
-			url := fmt.Sprintf("/shipments/%d/time_windows/%s/%s", tc.shipmentID, tc.twOpen, tc.twClose)
+			url := fmt.Sprintf("/shipments/%d/time_windows", tc.shipmentID)
 			request, err := http.NewRequest("DELETE", url, nil)
 			require.NoError(t, err)
 

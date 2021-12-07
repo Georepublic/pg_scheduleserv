@@ -88,14 +88,12 @@ func TestCreateJob(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"errors": []interface{}{
-					"Field 'latitude' of type 'float64' is required",
-					"Field 'longitude' of type 'float64' is required",
+					"Field 'latitude' and 'longitude' of type 'float64' is required",
 				},
 			},
-			todo: true,
 		},
 		{
-			name:       "Only Location - Wrong range of parameters",
+			name:       "Only Location - Wrong range of parameters - 1",
 			statusCode: 400,
 			projectID:  3909655254191459782,
 			body: map[string]interface{}{
@@ -106,11 +104,27 @@ func TestCreateJob(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"errors": []interface{}{
-					"Field 'latitude' must be between -90 and 90",
-					"Field 'longitude' must be between -180 and 180",
+					"Field 'latitude' must be less than or equal to 90",
+					"Field 'longitude' must be less than or equal to 180",
 				},
 			},
-			todo: true,
+		},
+		{
+			name:       "Only Location - Wrong range of parameters - 2",
+			statusCode: 400,
+			projectID:  3909655254191459782,
+			body: map[string]interface{}{
+				"location": map[string]interface{}{
+					"latitude":  -112.34567,
+					"longitude": -256.78,
+				},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{
+					"Field 'latitude' must be greater than or equal to -90",
+					"Field 'longitude' must be greater than or equal to -180",
+				},
+			},
 		},
 		{
 			name:       "Only Location",
@@ -159,9 +173,8 @@ func TestCreateJob(t *testing.T) {
 				"priority": -1,
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
+				"errors": []interface{}{"Field 'priority' must be non-negative"},
 			},
-			todo: true,
 		},
 		{
 			name:       "Priority Max Range incorrect",
@@ -175,9 +188,8 @@ func TestCreateJob(t *testing.T) {
 				"priority": 101,
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
+				"errors": []interface{}{"Field 'priority' must be less than or equal to 100"},
 			},
-			todo: true,
 		},
 		{
 			name:       "Negative skills",
@@ -191,9 +203,11 @@ func TestCreateJob(t *testing.T) {
 				"skills": []interface{}{-1, -2},
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'skills' must have non-negative values"},
+				"errors": []interface{}{
+					"Field 'skills[0]' must be non-negative",
+					"Field 'skills[1]' must be non-negative",
+				},
 			},
-			todo: true,
 		},
 		{
 			name:       "Negative pickup",
@@ -207,9 +221,11 @@ func TestCreateJob(t *testing.T) {
 				"pickup": []interface{}{-1, -2},
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'pickup' must have non-negative values"},
+				"errors": []interface{}{
+					"Field 'pickup[0]' must be non-negative",
+					"Field 'pickup[1]' must be non-negative",
+				},
 			},
-			todo: true,
 		},
 		{
 			name:       "Negative delivery",
@@ -220,12 +236,14 @@ func TestCreateJob(t *testing.T) {
 					"latitude":  12.34567,
 					"longitude": 56.78,
 				},
-				"pickup": []interface{}{-1, -2},
+				"delivery": []interface{}{-1, -2},
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'delivery' must have non-negative values"},
+				"errors": []interface{}{
+					"Field 'delivery[0]' must be non-negative",
+					"Field 'delivery[1]' must be non-negative",
+				},
 			},
-			todo: true,
 		},
 		{
 			name:       "Inconsistent pickup and delivery length",
@@ -242,7 +260,6 @@ func TestCreateJob(t *testing.T) {
 			resBody: map[string]interface{}{
 				"errors": []interface{}{"Field 'pickup' and 'delivery' must have same length"},
 			},
-			todo: true,
 		},
 		{
 			name:       "All fields",
@@ -325,7 +342,6 @@ func TestListJobs(t *testing.T) {
 		projectID  int
 		resBody    []map[string]interface{}
 	}{
-		// TODO: Check this
 		{
 			name:       "Invalid ID",
 			statusCode: 200,
@@ -535,14 +551,12 @@ func TestUpdateJob(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"errors": []interface{}{
-					"Field 'latitude' of type 'float64' is required",
-					"Field 'longitude' of type 'float64' is required",
+					"Field 'latitude' and 'longitude' of type 'float64' is required",
 				},
 			},
-			todo: true,
 		},
 		{
-			name:       "Only Location - Wrong range of parameters",
+			name:       "Only Location - Wrong range of parameters - 1",
 			statusCode: 400,
 			jobID:      6362411701075685873,
 			body: map[string]interface{}{
@@ -553,11 +567,27 @@ func TestUpdateJob(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"errors": []interface{}{
-					"Field 'latitude' must be between -90 and 90",
-					"Field 'longitude' must be between -180 and 180",
+					"Field 'latitude' must be less than or equal to 90",
+					"Field 'longitude' must be less than or equal to 180",
 				},
 			},
-			todo: true,
+		},
+		{
+			name:       "Only Location - Wrong range of parameters - 2",
+			statusCode: 400,
+			jobID:      6362411701075685873,
+			body: map[string]interface{}{
+				"location": map[string]interface{}{
+					"latitude":  -112.34567,
+					"longitude": -256.78,
+				},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{
+					"Field 'latitude' must be greater than or equal to -90",
+					"Field 'longitude' must be greater than or equal to -180",
+				},
+			},
 		},
 		{
 			name:       "Priority Min Range incorrect",
@@ -567,9 +597,8 @@ func TestUpdateJob(t *testing.T) {
 				"priority": -1,
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
+				"errors": []interface{}{"Field 'priority' must be non-negative"},
 			},
-			todo: true,
 		},
 		{
 			name:       "Priority Max Range incorrect",
@@ -579,9 +608,8 @@ func TestUpdateJob(t *testing.T) {
 				"priority": 101,
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
+				"errors": []interface{}{"Field 'priority' must be less than or equal to 100"},
 			},
-			todo: true,
 		},
 		{
 			name:       "Negative skills",
@@ -591,9 +619,11 @@ func TestUpdateJob(t *testing.T) {
 				"skills": []interface{}{-1, -2},
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'skills' must have non-negative values"},
+				"errors": []interface{}{
+					"Field 'skills[0]' must be non-negative",
+					"Field 'skills[1]' must be non-negative",
+				},
 			},
-			todo: true,
 		},
 		{
 			name:       "Negative pickup",
@@ -603,21 +633,25 @@ func TestUpdateJob(t *testing.T) {
 				"pickup": []interface{}{-1, -2},
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'pickup' must have non-negative values"},
+				"errors": []interface{}{
+					"Field 'pickup[0]' must be non-negative",
+					"Field 'pickup[1]' must be non-negative",
+				},
 			},
-			todo: true,
 		},
 		{
 			name:       "Negative delivery",
 			statusCode: 400,
 			jobID:      6362411701075685873,
 			body: map[string]interface{}{
-				"pickup": []interface{}{-1, -2},
+				"delivery": []interface{}{-1, -2},
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'delivery' must have non-negative values"},
+				"errors": []interface{}{
+					"Field 'delivery[0]' must be non-negative",
+					"Field 'delivery[1]' must be non-negative",
+				},
 			},
-			todo: true,
 		},
 		{
 			name:       "Inconsistent pickup and delivery length",
@@ -630,7 +664,6 @@ func TestUpdateJob(t *testing.T) {
 			resBody: map[string]interface{}{
 				"errors": []interface{}{"Field 'pickup' and 'delivery' must have same length"},
 			},
-			todo: true,
 		},
 		{
 			name:       "Only location",
@@ -812,8 +845,7 @@ func TestUpdateJob(t *testing.T) {
 			body: map[string]interface{}{
 				"project_id": "100",
 			},
-			resBody: map[string]interface{}{"errors": []interface{}{"Project with the given 'project_id' does not exist."}},
-			todo:    true,
+			resBody: map[string]interface{}{"errors": []interface{}{"Project with the given 'project_id' does not exist"}},
 		},
 		{
 			name:       "Valid projectID",

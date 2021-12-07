@@ -90,7 +90,6 @@ func TestCreateBreak(t *testing.T) {
 			resBody: map[string]interface{}{
 				"errors": []interface{}{"Field 'service' must be non-negative"},
 			},
-			todo: true,
 		},
 		{
 			name:       "Only data",
@@ -103,6 +102,17 @@ func TestCreateBreak(t *testing.T) {
 				"service":    float64(0),
 				"vehicle_id": "2550908592071787332",
 				"data":       map[string]interface{}{"key": "value"},
+			},
+		},
+		{
+			name:       "Invalid Vehicle ID",
+			statusCode: 400,
+			vehicleID:  123,
+			body:       map[string]interface{}{},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{
+					"Vehicle with the given 'vehicle_id' does not exist",
+				},
 			},
 		},
 		{
@@ -170,7 +180,6 @@ func TestListBreaks(t *testing.T) {
 		vehicleID  int
 		resBody    []map[string]interface{}
 	}{
-		// TODO: Check this
 		{
 			name:       "Invalid ID",
 			statusCode: 200,
@@ -356,7 +365,6 @@ func TestUpdateBreak(t *testing.T) {
 			resBody: map[string]interface{}{
 				"errors": []interface{}{"Field 'service' must be non-negative"},
 			},
-			todo: true,
 		},
 		{
 			name:       "Only data",

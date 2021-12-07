@@ -104,10 +104,9 @@ func TestCreateBreakTimeWindow(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"errors": []interface{}{
-					"Opening time must not be greater than closing time",
+					"Field 'tw_open' must be less than or equal to field 'tw_close'",
 				},
 			},
-			todo: true,
 		},
 		{
 			name:       "Invalid BreakID",
@@ -119,10 +118,9 @@ func TestCreateBreakTimeWindow(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"errors": []interface{}{
-					"Break with the given break_id does not exist",
+					"Break with the given 'break_id' does not exist",
 				},
 			},
-			todo: true,
 		},
 		{
 			name:       "All fields",
@@ -135,6 +133,20 @@ func TestCreateBreakTimeWindow(t *testing.T) {
 			resBody: map[string]interface{}{
 				"tw_open":  "2021-10-26 21:20:20",
 				"tw_close": "2021-10-26 21:24:38",
+			},
+		},
+		{
+			name:       "Primary key violation",
+			statusCode: 400,
+			breakID:    4668767710686035977,
+			body: map[string]interface{}{
+				"tw_open":  "2021-10-26 21:20:20",
+				"tw_close": "2021-10-26 21:24:38",
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{
+					"Breaks time window with given values already exist",
+				},
 			},
 		},
 	}
@@ -188,7 +200,6 @@ func TestListBreakTimeWindows(t *testing.T) {
 		breakID    int
 		resBody    []map[string]interface{}
 	}{
-		// TODO: Check this
 		{
 			name:       "Invalid ID",
 			statusCode: 200,
@@ -260,8 +271,6 @@ func TestDeleteBreakTimeWindow(t *testing.T) {
 		name       string
 		statusCode int
 		breakID    int
-		twOpen     string
-		twClose    string
 		resBody    map[string]interface{}
 		todo       bool
 	}{
@@ -272,7 +281,6 @@ func TestDeleteBreakTimeWindow(t *testing.T) {
 			resBody: map[string]interface{}{
 				"error": "Not Found",
 			},
-			todo: true,
 		},
 		{
 			name:       "Correct ID",
@@ -281,16 +289,14 @@ func TestDeleteBreakTimeWindow(t *testing.T) {
 			resBody: map[string]interface{}{
 				"success": true,
 			},
-			todo: true,
 		},
 		{
 			name:       "Correct ID but no time window",
-			statusCode: 200,
+			statusCode: 404,
 			breakID:    4668767710686035977,
 			resBody: map[string]interface{}{
-				"success": true,
+				"error": "Not Found",
 			},
-			todo: true,
 		},
 	}
 
@@ -299,7 +305,7 @@ func TestDeleteBreakTimeWindow(t *testing.T) {
 			if tc.todo == true {
 				t.Skip("TODO")
 			}
-			url := fmt.Sprintf("/breaks/%d/time_windows/%s/%s", tc.breakID, tc.twOpen, tc.twClose)
+			url := fmt.Sprintf("/breaks/%d/time_windows", tc.breakID)
 			request, err := http.NewRequest("DELETE", url, nil)
 			require.NoError(t, err)
 

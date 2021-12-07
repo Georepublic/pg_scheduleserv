@@ -99,16 +99,12 @@ func TestCreateVehicle(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"errors": []interface{}{
-					"Field 'latitude' of type 'float64' is required",
-					"Field 'longitude' of type 'float64' is required",
-					"Field 'latitude' of type 'float64' is required",
-					"Field 'longitude' of type 'float64' is required",
+					"Field 'latitude' and 'longitude' of type 'float64' is required",
 				},
 			},
-			todo: true,
 		},
 		{
-			name:       "Only Location - Wrong range of parameters",
+			name:       "Only Location - Wrong range of parameters - 1",
 			statusCode: 400,
 			projectID:  3909655254191459782,
 			body: map[string]interface{}{
@@ -123,13 +119,31 @@ func TestCreateVehicle(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"errors": []interface{}{
-					"Field 'latitude' must be between -90 and 90",
-					"Field 'longitude' must be between -180 and 180",
-					"Field 'latitude' must be between -90 and 90",
-					"Field 'longitude' must be between -180 and 180",
+					"Field 'latitude' must be less than or equal to 90",
+					"Field 'longitude' must be less than or equal to 180",
 				},
 			},
-			todo: true,
+		},
+		{
+			name:       "Only Location - Wrong range of parameters - 2",
+			statusCode: 400,
+			projectID:  3909655254191459782,
+			body: map[string]interface{}{
+				"start_location": map[string]interface{}{
+					"latitude":  -112.34567,
+					"longitude": -256.78,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  -112.34567,
+					"longitude": -256.78,
+				},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{
+					"Field 'latitude' must be greater than or equal to -90",
+					"Field 'longitude' must be greater than or equal to -180",
+				},
+			},
 		},
 		{
 			name:       "Only Location",
@@ -178,46 +192,6 @@ func TestCreateVehicle(t *testing.T) {
 			},
 		},
 		{
-			name:       "Priority Min Range incorrect",
-			statusCode: 400,
-			projectID:  3909655254191459782,
-			body: map[string]interface{}{
-				"start_location": map[string]interface{}{
-					"latitude":  12.34567,
-					"longitude": 56.78,
-				},
-				"end_location": map[string]interface{}{
-					"latitude":  -12.34567,
-					"longitude": -56.78,
-				},
-				"priority": -1,
-			},
-			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
-			},
-			todo: true,
-		},
-		{
-			name:       "Priority Max Range incorrect",
-			statusCode: 400,
-			projectID:  3909655254191459782,
-			body: map[string]interface{}{
-				"start_location": map[string]interface{}{
-					"latitude":  12.34567,
-					"longitude": 56.78,
-				},
-				"end_location": map[string]interface{}{
-					"latitude":  -12.34567,
-					"longitude": -56.78,
-				},
-				"priority": 101,
-			},
-			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
-			},
-			todo: true,
-		},
-		{
 			name:       "Negative skills",
 			statusCode: 400,
 			projectID:  3909655254191459782,
@@ -233,9 +207,11 @@ func TestCreateVehicle(t *testing.T) {
 				"skills": []interface{}{-1, -2},
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'skills' must have non-negative values"},
+				"errors": []interface{}{
+					"Field 'skills[0]' must be non-negative",
+					"Field 'skills[1]' must be non-negative",
+				},
 			},
-			todo: true,
 		},
 		{
 			name:       "Negative capacity",
@@ -253,9 +229,53 @@ func TestCreateVehicle(t *testing.T) {
 				"capacity": []interface{}{-1, -2},
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'capacity' must have non-negative values"},
+				"errors": []interface{}{
+					"Field 'capacity[0]' must be non-negative",
+					"Field 'capacity[1]' must be non-negative",
+				},
 			},
-			todo: true,
+		},
+		{
+			name:       "Zero speed factor",
+			statusCode: 400,
+			projectID:  3909655254191459782,
+			body: map[string]interface{}{
+				"start_location": map[string]interface{}{
+					"latitude":  12.34567,
+					"longitude": 56.78,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  -12.34567,
+					"longitude": -56.78,
+				},
+				"speed_factor": 0,
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{
+					"Field 'speed_factor' must be greater than 0",
+				},
+			},
+		},
+		{
+			name:       "Negative speed factor",
+			statusCode: 400,
+			projectID:  3909655254191459782,
+			body: map[string]interface{}{
+				"start_location": map[string]interface{}{
+					"latitude":  12.34567,
+					"longitude": 56.78,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  -12.34567,
+					"longitude": -56.78,
+				},
+				"speed_factor": -1.1,
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{
+					"Field 'speed_factor' must be greater than 0",
+				},
+			},
 		},
 		{
 			name:       "All fields",
@@ -346,7 +366,6 @@ func TestListVehicles(t *testing.T) {
 		projectID  int
 		resBody    []map[string]interface{}
 	}{
-		// TODO: Check this
 		{
 			name:       "Invalid ID",
 			statusCode: 200,
@@ -580,16 +599,12 @@ func TestUpdateVehicle(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"errors": []interface{}{
-					"Field 'latitude' of type 'float64' is required",
-					"Field 'longitude' of type 'float64' is required",
-					"Field 'latitude' of type 'float64' is required",
-					"Field 'longitude' of type 'float64' is required",
+					"Field 'latitude' and 'longitude' of type 'float64' is required",
 				},
 			},
-			todo: true,
 		},
 		{
-			name:       "Only Location - Wrong range of parameters",
+			name:       "Only Location - Wrong range of parameters - 1",
 			statusCode: 400,
 			vehicleID:  2550908592071787332,
 			body: map[string]interface{}{
@@ -604,37 +619,31 @@ func TestUpdateVehicle(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"errors": []interface{}{
-					"Field 'latitude' must be between -90 and 90",
-					"Field 'longitude' must be between -180 and 180",
-					"Field 'latitude' must be between -90 and 90",
-					"Field 'longitude' must be between -180 and 180",
+					"Field 'latitude' must be less than or equal to 90",
+					"Field 'longitude' must be less than or equal to 180",
 				},
 			},
-			todo: true,
 		},
 		{
-			name:       "Priority Min Range incorrect",
+			name:       "Only Location - Wrong range of parameters - 2",
 			statusCode: 400,
 			vehicleID:  2550908592071787332,
 			body: map[string]interface{}{
-				"priority": -1,
+				"start_location": map[string]interface{}{
+					"latitude":  -112.34567,
+					"longitude": -256.78,
+				},
+				"end_location": map[string]interface{}{
+					"latitude":  -112.34567,
+					"longitude": -256.78,
+				},
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
+				"errors": []interface{}{
+					"Field 'latitude' must be greater than or equal to -90",
+					"Field 'longitude' must be greater than or equal to -180",
+				},
 			},
-			todo: true,
-		},
-		{
-			name:       "Priority Max Range incorrect",
-			statusCode: 400,
-			vehicleID:  2550908592071787332,
-			body: map[string]interface{}{
-				"priority": 101,
-			},
-			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
-			},
-			todo: true,
 		},
 		{
 			name:       "Negative skills",
@@ -644,21 +653,51 @@ func TestUpdateVehicle(t *testing.T) {
 				"skills": []interface{}{-1, -2},
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'skills' must have non-negative values"},
+				"errors": []interface{}{
+					"Field 'skills[0]' must be non-negative",
+					"Field 'skills[1]' must be non-negative",
+				},
 			},
-			todo: true,
 		},
 		{
 			name:       "Negative capacity",
 			statusCode: 400,
 			vehicleID:  2550908592071787332,
 			body: map[string]interface{}{
-				"amount": []interface{}{-1, -2},
+				"capacity": []interface{}{-1, -2},
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'capacity' must have non-negative values"},
+				"errors": []interface{}{
+					"Field 'capacity[0]' must be non-negative",
+					"Field 'capacity[1]' must be non-negative",
+				},
 			},
-			todo: true,
+		},
+		{
+			name:       "Zero speed factor",
+			statusCode: 400,
+			vehicleID:  2550908592071787332,
+			body: map[string]interface{}{
+				"speed_factor": 0,
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{
+					"Field 'speed_factor' must be greater than 0",
+				},
+			},
+		},
+		{
+			name:       "Negative speed factor",
+			statusCode: 400,
+			vehicleID:  2550908592071787332,
+			body: map[string]interface{}{
+				"speed_factor": -1.1,
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{
+					"Field 'speed_factor' must be greater than 0",
+				},
+			},
 		},
 		{
 			name:       "Only location",
@@ -818,8 +857,7 @@ func TestUpdateVehicle(t *testing.T) {
 			body: map[string]interface{}{
 				"project_id": "100",
 			},
-			resBody: map[string]interface{}{"errors": []interface{}{"Project with the given 'project_id' does not exist."}},
-			todo:    true,
+			resBody: map[string]interface{}{"errors": []interface{}{"Project with the given 'project_id' does not exist"}},
 		},
 		{
 			name:       "Valid projectID",

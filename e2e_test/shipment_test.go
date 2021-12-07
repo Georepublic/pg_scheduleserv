@@ -99,16 +99,12 @@ func TestCreateShipment(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"errors": []interface{}{
-					"Field 'latitude' of type 'float64' is required",
-					"Field 'longitude' of type 'float64' is required",
-					"Field 'latitude' of type 'float64' is required",
-					"Field 'longitude' of type 'float64' is required",
+					"Field 'latitude' and 'longitude' of type 'float64' is required",
 				},
 			},
-			todo: true,
 		},
 		{
-			name:       "Only Location - Wrong range of parameters",
+			name:       "Only Location - Wrong range of parameters - 1",
 			statusCode: 400,
 			projectID:  3909655254191459782,
 			body: map[string]interface{}{
@@ -123,13 +119,31 @@ func TestCreateShipment(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"errors": []interface{}{
-					"Field 'latitude' must be between -90 and 90",
-					"Field 'longitude' must be between -180 and 180",
-					"Field 'latitude' must be between -90 and 90",
-					"Field 'longitude' must be between -180 and 180",
+					"Field 'latitude' must be less than or equal to 90",
+					"Field 'longitude' must be less than or equal to 180",
 				},
 			},
-			todo: true,
+		},
+		{
+			name:       "Only Location - Wrong range of parameters - 2",
+			statusCode: 400,
+			projectID:  3909655254191459782,
+			body: map[string]interface{}{
+				"p_location": map[string]interface{}{
+					"latitude":  -112.34567,
+					"longitude": -256.78,
+				},
+				"d_location": map[string]interface{}{
+					"latitude":  -112.34567,
+					"longitude": -256.78,
+				},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{
+					"Field 'latitude' must be greater than or equal to -90",
+					"Field 'longitude' must be greater than or equal to -180",
+				},
+			},
 		},
 		{
 			name:       "Only Location",
@@ -193,9 +207,8 @@ func TestCreateShipment(t *testing.T) {
 				"priority": -1,
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
+				"errors": []interface{}{"Field 'priority' must be non-negative"},
 			},
-			todo: true,
 		},
 		{
 			name:       "Priority Max Range incorrect",
@@ -213,9 +226,8 @@ func TestCreateShipment(t *testing.T) {
 				"priority": 101,
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
+				"errors": []interface{}{"Field 'priority' must be less than or equal to 100"},
 			},
-			todo: true,
 		},
 		{
 			name:       "Negative skills",
@@ -233,9 +245,11 @@ func TestCreateShipment(t *testing.T) {
 				"skills": []interface{}{-1, -2},
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'skills' must have non-negative values"},
+				"errors": []interface{}{
+					"Field 'skills[0]' must be non-negative",
+					"Field 'skills[1]' must be non-negative",
+				},
 			},
-			todo: true,
 		},
 		{
 			name:       "Negative amount",
@@ -253,9 +267,11 @@ func TestCreateShipment(t *testing.T) {
 				"amount": []interface{}{-1, -2},
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'amount' must have non-negative values"},
+				"errors": []interface{}{
+					"Field 'amount[0]' must be non-negative",
+					"Field 'amount[1]' must be non-negative",
+				},
 			},
-			todo: true,
 		},
 		{
 			name:       "All fields",
@@ -346,7 +362,6 @@ func TestListShipments(t *testing.T) {
 		projectID  int
 		resBody    []map[string]interface{}
 	}{
-		// TODO: Check this
 		{
 			name:       "Invalid ID",
 			statusCode: 200,
@@ -580,16 +595,33 @@ func TestUpdateShipment(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"errors": []interface{}{
-					"Field 'latitude' of type 'float64' is required",
-					"Field 'longitude' of type 'float64' is required",
-					"Field 'latitude' of type 'float64' is required",
-					"Field 'longitude' of type 'float64' is required",
+					"Field 'latitude' and 'longitude' of type 'float64' is required",
 				},
 			},
-			todo: true,
 		},
 		{
-			name:       "Only Location - Wrong range of parameters",
+			name:       "Only Location - Wrong range of parameters - 1",
+			statusCode: 400,
+			shipmentID: 7794682317520784480,
+			body: map[string]interface{}{
+				"p_location": map[string]interface{}{
+					"latitude":  -112.34567,
+					"longitude": -256.78,
+				},
+				"d_location": map[string]interface{}{
+					"latitude":  -112.34567,
+					"longitude": -256.78,
+				},
+			},
+			resBody: map[string]interface{}{
+				"errors": []interface{}{
+					"Field 'latitude' must be greater than or equal to -90",
+					"Field 'longitude' must be greater than or equal to -180",
+				},
+			},
+		},
+		{
+			name:       "Only Location - Wrong range of parameters - 2",
 			statusCode: 400,
 			shipmentID: 7794682317520784480,
 			body: map[string]interface{}{
@@ -604,13 +636,10 @@ func TestUpdateShipment(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"errors": []interface{}{
-					"Field 'latitude' must be between -90 and 90",
-					"Field 'longitude' must be between -180 and 180",
-					"Field 'latitude' must be between -90 and 90",
-					"Field 'longitude' must be between -180 and 180",
+					"Field 'latitude' must be less than or equal to 90",
+					"Field 'longitude' must be less than or equal to 180",
 				},
 			},
-			todo: true,
 		},
 		{
 			name:       "Priority Min Range incorrect",
@@ -620,9 +649,8 @@ func TestUpdateShipment(t *testing.T) {
 				"priority": -1,
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
+				"errors": []interface{}{"Field 'priority' must be non-negative"},
 			},
-			todo: true,
 		},
 		{
 			name:       "Priority Max Range incorrect",
@@ -632,9 +660,8 @@ func TestUpdateShipment(t *testing.T) {
 				"priority": 101,
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'priority' must be between 1 and 100"},
+				"errors": []interface{}{"Field 'priority' must be less than or equal to 100"},
 			},
-			todo: true,
 		},
 		{
 			name:       "Negative skills",
@@ -644,9 +671,11 @@ func TestUpdateShipment(t *testing.T) {
 				"skills": []interface{}{-1, -2},
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'skills' must have non-negative values"},
+				"errors": []interface{}{
+					"Field 'skills[0]' must be non-negative",
+					"Field 'skills[1]' must be non-negative",
+				},
 			},
-			todo: true,
 		},
 		{
 			name:       "Negative amount",
@@ -656,9 +685,11 @@ func TestUpdateShipment(t *testing.T) {
 				"amount": []interface{}{-1, -2},
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'amount' must have non-negative values"},
+				"errors": []interface{}{
+					"Field 'amount[0]' must be non-negative",
+					"Field 'amount[1]' must be non-negative",
+				},
 			},
-			todo: true,
 		},
 		{
 			name:       "Only location",
@@ -846,8 +877,7 @@ func TestUpdateShipment(t *testing.T) {
 			body: map[string]interface{}{
 				"project_id": "100",
 			},
-			resBody: map[string]interface{}{"errors": []interface{}{"Project with the given 'project_id' does not exist."}},
-			todo:    true,
+			resBody: map[string]interface{}{"errors": []interface{}{"Project with the given 'project_id' does not exist"}},
 		},
 		{
 			name:       "Valid projectID",
