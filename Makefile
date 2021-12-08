@@ -50,9 +50,13 @@ lint:
 
 test:
 	go install gotest.tools/gotestsum@latest
-	gotestsum --format=testname -- -count=1 -timeout=20m -coverprofile=coverage.out ./...
+	gotestsum --format=testname -- -count=1 -timeout=20m -coverpkg=./... -coverprofile=coverage.out ./...
 .PHONY: test
 
 test-coverage:
 	go tool cover -func=./coverage.out
 .PHONY: test-coverage
+
+html-coverage:
+	go tool cover -html=coverage.out -o coverage.html
+.PHONY: html-coverage
