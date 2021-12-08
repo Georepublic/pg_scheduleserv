@@ -282,7 +282,7 @@ func TestListShipmentTimeWindows(t *testing.T) {
 				{
 					"id":         "7794682317520784480",
 					"kind":       "p",
-					"tw_open":    "2020-10-10 00:00:00",
+					"tw_open":    "2020-10-10 00:00:10",
 					"tw_close":   "2020-10-12 00:00:00",
 					"created_at": "2021-10-26 20:45:31",
 					"updated_at": "2021-10-26 20:45:31",
