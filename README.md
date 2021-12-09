@@ -1,6 +1,14 @@
 # pg_scheduleserv
 
-_...This project is a Work in Progress..._
+[![Test](https://github.com/Georepublic/pg_scheduleserv/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/Georepublic/pg_scheduleserv/actions/workflows/test.yml)
+[![Lint](https://github.com/Georepublic/pg_scheduleserv/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/Georepublic/pg_scheduleserv/actions/workflows/lint.yml)
+[![codecov](https://img.shields.io/codecov/c/github/Georepublic/pg_scheduleserv/main?logo=codecov)](https://codecov.io/gh/Georepublic/pg_scheduleserv)
+[![License: AGPL v3](https://img.shields.io/github/license/Georepublic/pg_scheduleserv)](https://www.gnu.org/licenses/agpl-3.0)
+[![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/Georepublic/pg_scheduleserv)](https://go.dev/doc/go1.17)
+[![Go Report Card](https://goreportcard.com/badge/github.com/Georepublic/pg_scheduleserv)](https://goreportcard.com/report/github.com/Georepublic/pg_scheduleserv)
+<!-- [![GitHub Release](https://img.shields.io/github/release/Georepublic/pg_scheduleserv.svg)](https://github.com/Georepublic/pg_scheduleserv/releases) -->
+<!-- ![GitHub all releases](https://img.shields.io/github/downloads/Georepublic/pg_scheduleserv/total) -->
+<!-- ![GitHub Release Date](https://img.shields.io/github/release-date/Georepublic/pg_scheduleserv) -->
 
 A RESTful API Server for scheduling VRP tasks using [vrpRouting](https://github.com/pgRouting/vrprouting), written in [Go](https://golang.org/).
 
@@ -40,8 +48,8 @@ go build
 
 ### Usage
 
-The swagger documentation is available on http://localhost:9100 _(work in progress)_, which can also be used to test the API. Or any other API client can be independently used to interact with the API server.
+The swagger documentation is available on http://localhost:9100, which can also be used to test the API. Or any other API client can be independently used to interact with the API server.
 
 ## LICENSE
 
-* This project is licensed under the GNU Affero General Public License v3.0. View [LICENSE](./LICENSE) for more details.
+This project is licensed under the GNU Affero General Public License v3.0. View [LICENSE](./LICENSE) for more details.
