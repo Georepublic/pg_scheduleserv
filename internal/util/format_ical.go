@@ -39,22 +39,23 @@ import (
 )
 
 type Schedule struct {
-	ID          int64
-	Type        int
-	ProjectID   int64
-	VehicleID   int64
-	JobID       int64
-	ShipmentID  int64
-	BreakID     int64
-	Arrival     string
-	Departure   string
-	TravelTime  int64
-	ServiceTime int64
-	WaitingTime int64
-	StartLoad   []int64
-	EndLoad     []int64
-	CreatedAt   string
-	UpdatedAt   string
+	ID          int64   `json:"-" example:"1234567812345678"`
+	Type        string  `json:"type" example:"job"`
+	ProjectID   int64   `json:"project_id,string" example:"1234567812345678"`
+	VehicleID   int64   `json:"vehicle_id,string" example:"1234567812345678"`
+	JobID       int64   `json:"job_id,string" example:"1234567812345678"`
+	ShipmentID  int64   `json:"shipment_id,string" example:"1234567812345678"`
+	BreakID     int64   `json:"break_id,string" example:"1234567812345678"`
+	LocationID  int64   `json:"location_id,string" example:"1234567812345678"`
+	Arrival     string  `json:"arrival" example:"2021-12-01 13:00:00"`
+	Departure   string  `json:"departure" example:"2021-12-01 13:00:00"`
+	TravelTime  int64   `json:"travel_time" example:"1000"`
+	ServiceTime int64   `json:"service_time" example:"120"`
+	WaitingTime int64   `json:"waiting_time" example:"0"`
+	StartLoad   []int64 `json:"start_load" example:"0,0"`
+	EndLoad     []int64 `json:"end_load" example:"50,25"`
+	CreatedAt   string  `json:"created_at" example:"2021-12-01 13:00:00"`
+	UpdatedAt   string  `json:"updated_at" example:"2021-12-01 13:00:00"`
 }
 
 func parseTime(time_str string) time.Time {
@@ -74,42 +75,24 @@ func secondsToTime(totalSecs int64) string {
 	return fmt.Sprintf("%02d:%02d:%02d", hours, minutes, seconds)
 }
 
-func getTaskType(schedule Schedule) string {
-	switch schedule.Type {
-	case 1:
-		return "Start"
-	case 2:
-		return "Job"
-	case 3:
-		return "Pickup"
-	case 4:
-		return "Delivery"
-	case 5:
-		return "Break"
-	case 6:
-		return "End"
-	}
-	logrus.Error("Invalid task type")
-	return "None"
-}
-
 func getSummary(schedule Schedule) string {
-	return fmt.Sprintf("%s %d", getTaskType(schedule), schedule.VehicleID)
+	return fmt.Sprintf("%s %d", schedule.Type, schedule.VehicleID)
 }
 
 func getLocation(schedule Schedule) string {
-	return "TODO"
+	latitude, longitude := GetCoordinates(schedule.LocationID)
+	return fmt.Sprintf("(%.4f, %.4f)", latitude, longitude)
 }
 
 func getDescription(schedule Schedule) string {
 	desc := fmt.Sprintf("Project ID: %d\n", schedule.ProjectID)
 	desc += fmt.Sprintf("Vehicle ID: %d\n", schedule.VehicleID)
-	switch getTaskType(schedule) {
-	case "Job":
+	switch schedule.Type {
+	case "job":
 		desc += fmt.Sprintf("Job ID: %d\n", schedule.JobID)
-	case "Shipment":
+	case "shipment":
 		desc += fmt.Sprintf("Shipment ID: %d\n", schedule.ShipmentID)
-	case "Break":
+	case "break":
 		desc += fmt.Sprintf("Break ID: %d\n", schedule.BreakID)
 	}
 	desc += fmt.Sprintf("Travel Time: %s\n", secondsToTime(schedule.TravelTime))
@@ -136,7 +119,6 @@ func (r *Formatter) FormatICAL(w http.ResponseWriter, respCode int, schedule []S
 		event.SetSummary(getSummary(schedule[i]))
 		event.SetLocation(getLocation(schedule[i]))
 		event.SetDescription(getDescription(schedule[i]))
-		event.SetURL("https://github.com/Georepublic") // TODO
 		event.SetOrganizer("sender@domain", ics.WithCN("This Machine"))
 	}
 

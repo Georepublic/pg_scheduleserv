@@ -36,48 +36,46 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-const createSchedule = `
-INSERT INTO schedules
-  (type, project_id, vehicle_id, job_id, shipment_id, break_id,
-   arrival, travel_time, service_time, waiting_time, load)
-SELECT
-  step_type, $1::BIGINT, vehicle_id,
-  CASE WHEN step_type = 2 THEN task_id ELSE NULL END,
-  CASE WHEN step_type = 3 OR step_type = 4 THEN task_id ELSE NULL END,
-  CASE WHEN step_type = 5 THEN task_id ELSE NULL END,
-  arrival, travel_time, service_time, waiting_time, load
-FROM vrp_vroom(
-  'SELECT * FROM jobs WHERE project_id = ' || $1,
-  'SELECT * FROM jobs_time_windows',
-  'SELECT * FROM shipments WHERE project_id = ' || $1,
-  'SELECT * FROM shipments_time_windows',
-  'SELECT * FROM vehicles WHERE project_id = ' || $1,
-  'SELECT * FROM breaks',
-  'SELECT * FROM breaks_time_windows',
-  'SELECT * FROM matrix'
-);
-`
-
 func (q *Queries) DBCreateSchedule(ctx context.Context, projectID int64) error {
-	_, err := q.db.Exec(ctx, createSchedule, fmt.Sprintf("%d", projectID))
+	query := fmt.Sprintf("SELECT create_schedule(%d)", projectID)
+	_, err := q.db.Exec(ctx, query)
 	return err
 }
 
 const getSchedules = `
 SELECT
-  id, type, project_id, vehicle_id, job_id, shipment_id, break_id,
-  to_char(arrival, 'YYYY-MM-DD HH24:MI:SS') AS arrival,
-  to_char(lead(arrival, 1, arrival) OVER(PARTITION BY vehicle_id ORDER BY arrival), 'YYYY-MM-DD HH24:MI:SS') AS departure,
-  EXTRACT(epoch FROM travel_time),
-  EXTRACT(epoch FROM service_time),
-  EXTRACT(epoch FROM waiting_time),
-  lag(load, 1, load) OVER(PARTITION BY vehicle_id ORDER BY arrival) AS start_load,
-  load AS end_load,
-  to_char(created_at, 'YYYY-MM-DD HH24:MI:SS'),
-  to_char(updated_at, 'YYYY-MM-DD HH24:MI:SS')
-FROM schedules
-WHERE project_id = $1
-ORDER BY vehicle_id, arrival
+  A.id,
+  CASE
+    WHEN A.type = 1 THEN 'start'
+    WHEN A.type = 2 THEN 'job'
+    WHEN A.type = 3 THEN 'pickup'
+    WHEN A.type = 4 THEN 'delivery'
+    WHEN A.type = 5 THEN 'break'
+    WHEN A.type = 6 THEN 'end'
+  END AS type,
+  A.project_id, A.vehicle_id, A.job_id, A.shipment_id, A.break_id,
+  CASE
+    WHEN A.type = 1 THEN V.start_index
+    WHEN A.type = 2 THEN J.location_index
+    WHEN A.type = 3 THEN S.p_location_index
+    WHEN A.type = 4 THEN S.d_location_index
+    WHEN A.type = 6 THEN V.end_index
+  END AS location_id,
+  to_char(A.arrival, 'YYYY-MM-DD HH24:MI:SS') AS arrival,
+  to_char(lead(A.arrival, 1, A.arrival) OVER(PARTITION BY A.vehicle_id ORDER BY A.arrival), 'YYYY-MM-DD HH24:MI:SS') AS departure,
+  EXTRACT(epoch FROM A.travel_time),
+  EXTRACT(epoch FROM A.service_time),
+  EXTRACT(epoch FROM A.waiting_time),
+  lag(A.load, 1, A.load) OVER(PARTITION BY A.vehicle_id ORDER BY A.arrival) AS start_load,
+  A.load AS end_load,
+  to_char(A.created_at, 'YYYY-MM-DD HH24:MI:SS'),
+  to_char(A.updated_at, 'YYYY-MM-DD HH24:MI:SS')
+FROM schedules A
+LEFT JOIN jobs J ON job_id = J.id
+LEFT JOIN shipments S ON shipment_id = S.id
+LEFT JOIN vehicles V ON A.vehicle_id = V.id
+WHERE A.project_id = $1
+ORDER BY vehicle_id, arrival, A.type;
 `
 
 func (q *Queries) DBGetSchedule(ctx context.Context, projectID int64) ([]util.Schedule, error) {
@@ -89,19 +87,7 @@ func (q *Queries) DBGetSchedule(ctx context.Context, projectID int64) ([]util.Sc
 	return scanScheduleRows(rows)
 }
 
-// const updateSchedule = `-- name: UpdateSchedule :one
-// UPDATE schedules
-// SET
-//   location_index = coord_to_id($2, $3), service = $4, delivery = $5,
-//   pickup = $6, skills = $7, priority = $8, project_id = $9, data = $10
-// WHERE id = $1 AND deleted = FALSE
-// RETURNING id, location_index, service, delivery, pickup, skills, priority, project_id, data, created_at, updated_at, deleted
-// `
-
-const deleteSchedule = `
-DELETE FROM schedules
-WHERE project_id = $1
-`
+const deleteSchedule = `DELETE FROM schedules WHERE project_id = $1`
 
 func (q *Queries) DBDeleteSchedule(ctx context.Context, projectID int64) error {
 	_, err := q.db.Exec(ctx, deleteSchedule, projectID)
@@ -115,6 +101,7 @@ func scanScheduleRows(rows pgx.Rows) ([]util.Schedule, error) {
 		var jobID *int64
 		var shipmentID *int64
 		var breakID *int64
+		var locationID *int64
 		if err := rows.Scan(
 			&i.ID,
 			&i.Type,
@@ -123,6 +110,7 @@ func scanScheduleRows(rows pgx.Rows) ([]util.Schedule, error) {
 			&jobID,
 			&shipmentID,
 			&breakID,
+			&locationID,
 			&i.Arrival,
 			&i.Departure,
 			&i.TravelTime,
@@ -145,9 +133,14 @@ func scanScheduleRows(rows pgx.Rows) ([]util.Schedule, error) {
 		if breakID == nil {
 			breakID = new(int64)
 		}
+		if locationID == nil {
+			// The last location ID
+			locationID = &i.LocationID
+		}
 		i.JobID = *jobID
 		i.ShipmentID = *shipmentID
 		i.BreakID = *breakID
+		i.LocationID = *locationID
 
 		items = append(items, i)
 	}

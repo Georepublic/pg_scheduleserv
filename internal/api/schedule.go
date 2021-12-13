@@ -59,8 +59,14 @@ func (server *Server) CreateSchedule(w http.ResponseWriter, r *http.Request) {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
 	}
+	// Fetch the schedule
+	schedule, err := server.DBGetSchedule(ctx, projectID)
+	if err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
 
-	server.FormatJSON(w, http.StatusCreated, nil)
+	server.FormatJSON(w, http.StatusCreated, schedule)
 }
 
 // GetSchedule godoc

@@ -354,6 +354,32 @@ CREATE TABLE IF NOT EXISTS schedules (
 -- SCHEDULE TABLE end
 
 
+CREATE OR REPLACE FUNCTION create_schedule(BIGINT)
+RETURNS void
+AS $BODY$
+  DELETE FROM schedules WHERE project_id = $1;
+  INSERT INTO schedules
+    (type, project_id, vehicle_id, job_id, shipment_id, break_id,
+    arrival, travel_time, service_time, waiting_time, load)
+  SELECT
+    step_type, $1::BIGINT, vehicle_id,
+    CASE WHEN step_type = 2 THEN task_id ELSE NULL END,
+    CASE WHEN step_type = 3 OR step_type = 4 THEN task_id ELSE NULL END,
+    CASE WHEN step_type = 5 THEN task_id ELSE NULL END,
+    arrival, travel_time, service_time, waiting_time, load
+  FROM vrp_vroom(
+    'SELECT * FROM jobs WHERE project_id = ' || $1,
+    'SELECT * FROM jobs_time_windows ORDER BY id, tw_open',
+    'SELECT * FROM shipments WHERE project_id = ' || $1,
+    'SELECT * FROM shipments_time_windows ORDER BY id, tw_open',
+    'SELECT * FROM vehicles WHERE project_id = ' || $1,
+    'SELECT * FROM breaks',
+    'SELECT * FROM breaks_time_windows ORDER BY id, tw_open',
+    'SELECT * FROM matrix'
+  );
+$BODY$ LANGUAGE sql VOLATILE STRICT;
+
+
 
 -------------------------------------------------------------------------------
 -- TRIGGERS
