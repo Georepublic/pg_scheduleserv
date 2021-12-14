@@ -237,3 +237,39 @@ func (server *Server) DeleteShipment(w http.ResponseWriter, r *http.Request) {
 
 	server.FormatJSON(w, http.StatusOK, nil)
 }
+
+// GetShipmentSchedule godoc
+// @Summary Get the schedule for a shipment
+// @Description Get the schedule for a shipment using shipment_id
+// @Tags Shipment
+// @Accept application/json
+// @Produce text/calendar,application/json
+// @Param shipment_id path int true "Shipment ID"
+// @Success 200 {object} util.Schedule
+// @Failure 400 {object} util.MultiError
+// @Failure 404 {object} util.NotFound
+// @Router /shipments/{shipment_id}/schedule [get]
+func (server *Server) GetShipmentSchedule(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	shipmentID, err := strconv.ParseInt(vars["shipment_id"], 10, 64)
+	if err != nil {
+		panic(err)
+	}
+
+	ctx := r.Context()
+	schedule, err := server.DBGetScheduleShipment(ctx, shipmentID)
+	if err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	switch r.Header.Get("Accept") {
+	case "text/calendar":
+		server.FormatICAL(w, http.StatusOK, schedule)
+	case "application/json":
+		server.FormatJSON(w, http.StatusOK, schedule)
+	default:
+		server.FormatICAL(w, http.StatusOK, schedule)
+	}
+
+}

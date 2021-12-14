@@ -71,6 +71,7 @@ type Querier interface {
 	// Schedule
 	DBCreateSchedule(ctx context.Context, id int64) error
 	DBGetSchedule(ctx context.Context, id int64) ([]util.Schedule, error)
+	DBGetScheduleShipment(ctx context.Context, id int64) ([]util.Schedule, error)
 	DBGetScheduleVehicle(ctx context.Context, id int64) ([]util.Schedule, error)
 	DBDeleteSchedule(ctx context.Context, id int64) error
 
