@@ -62,24 +62,34 @@ SELECT
     WHEN A.type = 6 THEN V.end_index
   END AS location_id,
   to_char(A.arrival, 'YYYY-MM-DD HH24:MI:SS') AS arrival,
-  to_char(lead(A.arrival, 1, A.arrival) OVER(PARTITION BY A.vehicle_id ORDER BY A.arrival), 'YYYY-MM-DD HH24:MI:SS') AS departure,
+  to_char(lead(A.arrival, 1, A.arrival) OVER(PARTITION BY A.vehicle_id ORDER BY A.arrival, A.type), 'YYYY-MM-DD HH24:MI:SS') AS departure,
   EXTRACT(epoch FROM A.travel_time),
   EXTRACT(epoch FROM A.service_time),
   EXTRACT(epoch FROM A.waiting_time),
-  lag(A.load, 1, A.load) OVER(PARTITION BY A.vehicle_id ORDER BY A.arrival) AS start_load,
+  lag(A.load, 1, A.load) OVER(PARTITION BY A.vehicle_id ORDER BY A.arrival, A.type) AS start_load,
   A.load AS end_load,
   to_char(A.created_at, 'YYYY-MM-DD HH24:MI:SS'),
   to_char(A.updated_at, 'YYYY-MM-DD HH24:MI:SS')
 FROM schedules A
 LEFT JOIN jobs J ON job_id = J.id
 LEFT JOIN shipments S ON shipment_id = S.id
-LEFT JOIN vehicles V ON A.vehicle_id = V.id
-WHERE A.project_id = $1
-ORDER BY vehicle_id, arrival, A.type;
-`
+LEFT JOIN vehicles V ON A.vehicle_id = V.id`
 
 func (q *Queries) DBGetSchedule(ctx context.Context, projectID int64) ([]util.Schedule, error) {
-	rows, err := q.db.Query(ctx, getSchedules, projectID)
+	filter := " WHERE A.project_id = $1"
+	orderBy := " ORDER BY vehicle_id, arrival, A.type"
+	rows, err := q.db.Query(ctx, getSchedules+filter+orderBy, projectID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return scanScheduleRows(rows)
+}
+
+func (q *Queries) DBGetScheduleVehicle(ctx context.Context, vehicleID int64) ([]util.Schedule, error) {
+	filter := " WHERE A.vehicle_id = $1"
+	orderBy := " ORDER BY arrival, A.type"
+	rows, err := q.db.Query(ctx, getSchedules+filter+orderBy, vehicleID)
 	if err != nil {
 		return nil, err
 	}

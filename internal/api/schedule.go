@@ -74,7 +74,7 @@ func (server *Server) CreateSchedule(w http.ResponseWriter, r *http.Request) {
 // @Description Get the schedule for a project
 // @Tags Schedule
 // @Accept application/json
-// @Produce text/calendar, application/json
+// @Produce text/calendar,application/json
 // @Param project_id path int true "Project ID"
 // @Success 200 {object} util.Schedule
 // @Failure 400 {object} util.MultiError
@@ -99,6 +99,8 @@ func (server *Server) GetSchedule(w http.ResponseWriter, r *http.Request) {
 		server.FormatICAL(w, http.StatusOK, schedule)
 	case "application/json":
 		server.FormatJSON(w, http.StatusOK, schedule)
+	default:
+		server.FormatICAL(w, http.StatusOK, schedule)
 	}
 
 }

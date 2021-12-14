@@ -58,6 +58,11 @@ type Schedule struct {
 	UpdatedAt   string  `json:"updated_at" example:"2021-12-01 13:00:00"`
 }
 
+// Example for Schedule in ical format
+const ScheduleIcal = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//arran4//Golang ICS Library\r\nMETHOD:REQUEST\r\n
+BEGIN:VEVENT\r\nUID:1234567812345678\r\nCREATED:20211201T130000Z\r\nLAST-MODIFIED:20211201T130000Z\r\nDTSTART:20211201T130000Z\r\nDTEND:20211201T130000Z\r\nSUMMARY:Summary here\r\nLOCATION:(2.0365\\, 48.6113)\r\n
+DESCRIPTION:Description here\\n\r\nORGANIZER;CN=This Machine:sender@domain\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n`
+
 func parseTime(time_str string) time.Time {
 	layout := "2006-01-02 15:04:05"
 	t, err := time.Parse(layout, time_str)

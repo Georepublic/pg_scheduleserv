@@ -153,6 +153,42 @@ func (server *Server) GetVehicle(w http.ResponseWriter, r *http.Request) {
 	server.FormatJSON(w, http.StatusOK, created_vehicle)
 }
 
+// GetVehicleSchedule godoc
+// @Summary Get the schedule for a vehicle
+// @Description Get the schedule for a vehicle using vehicle_id
+// @Tags Vehicle
+// @Accept application/json
+// @Produce text/calendar,application/json
+// @Param vehicle_id path int true "Vehicle ID"
+// @Success 200 {object} util.Schedule
+// @Failure 400 {object} util.MultiError
+// @Failure 404 {object} util.NotFound
+// @Router /vehicles/{vehicle_id}/schedule [get]
+func (server *Server) GetVehicleSchedule(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	vehicleID, err := strconv.ParseInt(vars["vehicle_id"], 10, 64)
+	if err != nil {
+		panic(err)
+	}
+
+	ctx := r.Context()
+	schedule, err := server.DBGetScheduleVehicle(ctx, vehicleID)
+	if err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	switch r.Header.Get("Accept") {
+	case "text/calendar":
+		server.FormatICAL(w, http.StatusOK, schedule)
+	case "application/json":
+		server.FormatJSON(w, http.StatusOK, schedule)
+	default:
+		server.FormatICAL(w, http.StatusOK, schedule)
+	}
+
+}
+
 // UpdateVehicle godoc
 // @Summary Update a vehicle
 // @Description Update a vehicle with its vehicle_id
