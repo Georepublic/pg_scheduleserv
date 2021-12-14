@@ -547,40 +547,60 @@ definitions:
   util.Schedule:
     properties:
       arrival:
+        example: "2021-12-01 13:00:00"
         type: string
-      breakID:
-        type: integer
-      createdAt:
+      break_id:
+        example: "1234567812345678"
+        type: string
+      created_at:
+        example: "2021-12-01 13:00:00"
         type: string
       departure:
+        example: "2021-12-01 13:00:00"
         type: string
-      endLoad:
+      end_load:
+        example:
+        - 50
+        - 25
         items:
           type: integer
         type: array
-      id:
+      job_id:
+        example: "1234567812345678"
+        type: string
+      location_id:
+        example: "1234567812345678"
+        type: string
+      project_id:
+        example: "1234567812345678"
+        type: string
+      service_time:
+        example: 120
         type: integer
-      jobID:
-        type: integer
-      projectID:
-        type: integer
-      serviceTime:
-        type: integer
-      shipmentID:
-        type: integer
-      startLoad:
+      shipment_id:
+        example: "1234567812345678"
+        type: string
+      start_load:
+        example:
+        - 0
+        - 0
         items:
           type: integer
         type: array
-      travelTime:
+      travel_time:
+        example: 1000
         type: integer
       type:
-        type: integer
-      updatedAt:
+        example: job
         type: string
-      vehicleID:
-        type: integer
-      waitingTime:
+      updated_at:
+        example: "2021-12-01 13:00:00"
+        type: string
+      vehicle_id:
+        example: "1234567812345678"
+        type: string
+      waiting_time:
+        example: 0
         type: integer
     type: object
   util.Success:
@@ -1184,6 +1204,7 @@ paths:
         type: integer
       produces:
       - text/calendar
+      - application/json
       responses:
         "200":
           description: OK
@@ -1203,7 +1224,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Schedule the tasks present in a project
+      description: Schedule the tasks present in a project, deleting any previous
+        schedule
       parameters:
       - description: Project ID
         in: path
@@ -1427,6 +1449,36 @@ paths:
           schema:
             $ref: '#/definitions/util.NotFound'
       summary: Update a shipment
+      tags:
+      - Shipment
+  /shipments/{shipment_id}/schedule:
+    get:
+      consumes:
+      - application/json
+      description: Get the schedule for a shipment using shipment_id
+      parameters:
+      - description: Shipment ID
+        in: path
+        name: shipment_id
+        required: true
+        type: integer
+      produces:
+      - text/calendar
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/util.Schedule'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.MultiError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/util.NotFound'
+      summary: Get the schedule for a shipment
       tags:
       - Shipment
   /shipments/{shipment_id}/time_windows:
@@ -1662,6 +1714,36 @@ paths:
       summary: Create a new break
       tags:
       - Break
+  /vehicles/{vehicle_id}/schedule:
+    get:
+      consumes:
+      - application/json
+      description: Get the schedule for a vehicle using vehicle_id
+      parameters:
+      - description: Vehicle ID
+        in: path
+        name: vehicle_id
+        required: true
+        type: integer
+      produces:
+      - text/calendar
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/util.Schedule'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.MultiError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/util.NotFound'
+      summary: Get the schedule for a vehicle
+      tags:
+      - Vehicle
 schemes:
 - http
 - https

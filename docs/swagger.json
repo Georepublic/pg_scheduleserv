@@ -842,7 +842,8 @@
                     "application/json"
                 ],
                 "produces": [
-                    "text/calendar"
+                    "text/calendar",
+                    "application/json"
                 ],
                 "tags": [
                     "Schedule"
@@ -879,7 +880,7 @@
                 }
             },
             "post": {
-                "description": "Schedule the tasks present in a project",
+                "description": "Schedule the tasks present in a project, deleting any previous schedule",
                 "consumes": [
                     "application/json"
                 ],
@@ -1266,6 +1267,51 @@
                 }
             }
         },
+        "/shipments/{shipment_id}/schedule": {
+            "get": {
+                "description": "Get the schedule for a shipment using shipment_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "text/calendar",
+                    "application/json"
+                ],
+                "tags": [
+                    "Shipment"
+                ],
+                "summary": "Get the schedule for a shipment",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Shipment ID",
+                        "name": "shipment_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/util.Schedule"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
+                        }
+                    }
+                }
+            }
+        },
         "/shipments/{shipment_id}/time_windows": {
             "get": {
                 "description": "Get a list of shipment time windows for a shipment with shipment_id",
@@ -1612,6 +1658,51 @@
                         "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/util.MultiError"
+                        }
+                    }
+                }
+            }
+        },
+        "/vehicles/{vehicle_id}/schedule": {
+            "get": {
+                "description": "Get the schedule for a vehicle using vehicle_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "text/calendar",
+                    "application/json"
+                ],
+                "tags": [
+                    "Vehicle"
+                ],
+                "summary": "Get the schedule for a vehicle",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Vehicle ID",
+                        "name": "vehicle_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/util.Schedule"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
                         }
                     }
                 }
@@ -2395,58 +2486,80 @@
             "type": "object",
             "properties": {
                 "arrival": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
                 },
-                "breakID": {
-                    "type": "integer"
+                "break_id": {
+                    "type": "string",
+                    "example": "1234567812345678"
                 },
-                "createdAt": {
-                    "type": "string"
+                "created_at": {
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
                 },
                 "departure": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
                 },
-                "endLoad": {
+                "end_load": {
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
+                    },
+                    "example": [
+                        50,
+                        25
+                    ]
                 },
-                "id": {
-                    "type": "integer"
+                "job_id": {
+                    "type": "string",
+                    "example": "1234567812345678"
                 },
-                "jobID": {
-                    "type": "integer"
+                "location_id": {
+                    "type": "string",
+                    "example": "1234567812345678"
                 },
-                "projectID": {
-                    "type": "integer"
+                "project_id": {
+                    "type": "string",
+                    "example": "1234567812345678"
                 },
-                "serviceTime": {
-                    "type": "integer"
+                "service_time": {
+                    "type": "integer",
+                    "example": 120
                 },
-                "shipmentID": {
-                    "type": "integer"
+                "shipment_id": {
+                    "type": "string",
+                    "example": "1234567812345678"
                 },
-                "startLoad": {
+                "start_load": {
                     "type": "array",
                     "items": {
                         "type": "integer"
-                    }
+                    },
+                    "example": [
+                        0,
+                        0
+                    ]
                 },
-                "travelTime": {
-                    "type": "integer"
+                "travel_time": {
+                    "type": "integer",
+                    "example": 1000
                 },
                 "type": {
-                    "type": "integer"
+                    "type": "string",
+                    "example": "job"
                 },
-                "updatedAt": {
-                    "type": "string"
+                "updated_at": {
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
                 },
-                "vehicleID": {
-                    "type": "integer"
+                "vehicle_id": {
+                    "type": "string",
+                    "example": "1234567812345678"
                 },
-                "waitingTime": {
-                    "type": "integer"
+                "waiting_time": {
+                    "type": "integer",
+                    "example": 0
                 }
             }
         },
