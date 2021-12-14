@@ -37,7 +37,7 @@ import (
 
 // CreateSchedule godoc
 // @Summary Schedule the tasks
-// @Description Schedule the tasks present in a project
+// @Description Schedule the tasks present in a project, deleting any previous schedule
 // @Tags Schedule
 // @Accept application/json
 // @Produce application/json
