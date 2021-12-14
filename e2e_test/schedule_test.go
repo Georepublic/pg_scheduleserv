@@ -96,27 +96,11 @@ func TestCreateSchedule(t *testing.T) {
 					"break_id":     "0",
 					"location_id":  "1032234010232342",
 					"arrival":      "2020-01-01 10:10:00",
-					"departure":    "2020-01-03 09:16:16",
+					"departure":    "2020-01-07 10:05:31",
 					"travel_time":  float64(0),
 					"service_time": float64(1),
 					"waiting_time": float64(0),
 					"start_load":   []interface{}{float64(0), float64(0)},
-					"end_load":     []interface{}{float64(3), float64(5)},
-				},
-				{
-					"type":         "job",
-					"project_id":   "3909655254191459782",
-					"vehicle_id":   "7300272137290532980",
-					"job_id":       "3324729385723589729",
-					"shipment_id":  "0",
-					"break_id":     "0",
-					"location_id":  "1081230000120000",
-					"arrival":      "2020-01-03 09:16:16",
-					"departure":    "2020-01-07 10:05:31",
-					"travel_time":  float64(169575),
-					"service_time": float64(0),
-					"waiting_time": float64(0),
-					"start_load":   []interface{}{float64(3), float64(5)},
 					"end_load":     []interface{}{float64(3), float64(5)},
 				},
 				{
@@ -272,7 +256,158 @@ func TestCreateSchedule(t *testing.T) {
 	}
 }
 
-func TestGetSchedule(t *testing.T) {
+func TestGetScheduleJson(t *testing.T) {
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
+	defer conn.Close(context.Background())
+	mux := server.Router
+
+	testCases := []struct {
+		name       string
+		statusCode int
+		projectID  int
+		resBody    []map[string]interface{}
+	}{
+		{
+			name:       "Invalid ID",
+			statusCode: 200,
+			projectID:  123,
+			resBody:    []map[string]interface{}{},
+		},
+		{
+			name:       "Valid ID, no schedule",
+			statusCode: 200,
+			projectID:  2593982828701335033,
+			resBody:    []map[string]interface{}{},
+		},
+		{
+			name:       "Valid ID",
+			statusCode: 200,
+			projectID:  3909655254191459782,
+			resBody: []map[string]interface{}{
+				{
+					"type":         "start",
+					"project_id":   "3909655254191459782",
+					"vehicle_id":   "7300272137290532980",
+					"job_id":       "0",
+					"shipment_id":  "0",
+					"break_id":     "0",
+					"location_id":  "1032234010232342",
+					"arrival":      "2020-01-01 10:10:00",
+					"departure":    "2020-01-01 10:10:00",
+					"travel_time":  float64(0),
+					"service_time": float64(0),
+					"waiting_time": float64(0),
+					"start_load":   []interface{}{float64(0), float64(0)},
+					"end_load":     []interface{}{float64(0), float64(0)},
+					"created_at":   "2021-12-08 20:04:16",
+					"updated_at":   "2021-12-08 20:04:16",
+				},
+				{
+					"type":         "pickup",
+					"project_id":   "3909655254191459782",
+					"vehicle_id":   "7300272137290532980",
+					"job_id":       "0",
+					"shipment_id":  "3341766951177830852",
+					"break_id":     "0",
+					"location_id":  "1032234010232342",
+					"arrival":      "2020-01-01 10:10:00",
+					"departure":    "2020-01-07 10:05:31",
+					"travel_time":  float64(0),
+					"service_time": float64(1),
+					"waiting_time": float64(0),
+					"start_load":   []interface{}{float64(0), float64(0)},
+					"end_load":     []interface{}{float64(3), float64(5)},
+					"created_at":   "2021-12-08 20:04:16",
+					"updated_at":   "2021-12-08 20:04:16",
+				},
+				{
+					"type":         "delivery",
+					"project_id":   "3909655254191459782",
+					"vehicle_id":   "7300272137290532980",
+					"job_id":       "0",
+					"shipment_id":  "3341766951177830852",
+					"break_id":     "0",
+					"location_id":  "23345800023242",
+					"arrival":      "2020-01-07 10:05:31",
+					"departure":    "2020-01-07 10:05:34",
+					"travel_time":  float64(518130),
+					"service_time": float64(3),
+					"waiting_time": float64(0),
+					"start_load":   []interface{}{float64(3), float64(5)},
+					"end_load":     []interface{}{float64(0), float64(0)},
+					"created_at":   "2021-12-08 20:04:16",
+					"updated_at":   "2021-12-08 20:04:16",
+				},
+				{
+					"type":         "break",
+					"project_id":   "3909655254191459782",
+					"vehicle_id":   "7300272137290532980",
+					"job_id":       "0",
+					"shipment_id":  "0",
+					"break_id":     "2349284092384902582",
+					"location_id":  "23345800023242",
+					"arrival":      "2020-01-07 10:05:34",
+					"departure":    "2020-01-07 10:10:58",
+					"travel_time":  float64(518130),
+					"service_time": float64(324),
+					"waiting_time": float64(0),
+					"start_load":   []interface{}{float64(0), float64(0)},
+					"end_load":     []interface{}{float64(0), float64(0)},
+					"created_at":   "2021-12-08 20:04:16",
+					"updated_at":   "2021-12-08 20:04:16",
+				},
+				{
+					"type":         "end",
+					"project_id":   "3909655254191459782",
+					"vehicle_id":   "7300272137290532980",
+					"job_id":       "0",
+					"shipment_id":  "0",
+					"break_id":     "0",
+					"location_id":  "23345800023242",
+					"arrival":      "2020-01-07 10:10:58",
+					"departure":    "2020-01-07 10:10:58",
+					"travel_time":  float64(518130),
+					"service_time": float64(0),
+					"waiting_time": float64(0),
+					"start_load":   []interface{}{float64(0), float64(0)},
+					"end_load":     []interface{}{float64(0), float64(0)},
+					"created_at":   "2021-12-08 20:04:16",
+					"updated_at":   "2021-12-08 20:04:16",
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			url := fmt.Sprintf("/projects/%d/schedule", tc.projectID)
+			request, err := http.NewRequest("GET", url, nil)
+			// Set the Accept headers to return json
+			request.Header.Set("Accept", "application/json")
+			require.NoError(t, err)
+
+			recorder := httptest.NewRecorder()
+			mux.ServeHTTP(recorder, request)
+
+			resp := recorder.Result()
+			body, err := io.ReadAll(resp.Body)
+			if err != nil {
+				t.Error(err)
+			}
+
+			assert.Equal(t, tc.statusCode, resp.StatusCode)
+			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
+			m := []map[string]interface{}{}
+			if err = json.Unmarshal(body, &m); err != nil {
+				t.Error(err)
+			}
+			assert.Equal(t, tc.resBody, m)
+		})
+	}
+}
+
+func TestGetScheduleICal(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
 	defer conn.Close(context.Background())
