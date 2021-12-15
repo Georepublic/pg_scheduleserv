@@ -78,9 +78,6 @@ func (server *Server) CreateBreakTimeWindow(w http.ResponseWriter, r *http.Reque
 		logrus.Error(err)
 	}
 
-	logrus.Debugf("%v", userInput)
-	logrus.Debugf("%+v", v_break)
-
 	// Validate the struct
 	if err := server.validate.Struct(v_break); err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)

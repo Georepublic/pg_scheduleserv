@@ -78,9 +78,6 @@ func (server *Server) CreateJobTimeWindow(w http.ResponseWriter, r *http.Request
 		logrus.Error(err)
 	}
 
-	logrus.Debugf("%v", userInput)
-	logrus.Debugf("%+v", job)
-
 	// Validate the struct
 	if err := server.validate.Struct(job); err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)

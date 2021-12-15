@@ -62,8 +62,6 @@ func (server *Server) CreateVehicle(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userInput["project_id"] = vars["project_id"]
 
-	logrus.Debugf("%v", userInput)
-
 	// Validate the input type
 	if err := util.ValidateInput(userInput, database.CreateVehicleParams{}); err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
@@ -79,8 +77,6 @@ func (server *Server) CreateVehicle(w http.ResponseWriter, r *http.Request) {
 	if err = json.Unmarshal(userInputString, &vehicle); err != nil {
 		logrus.Error(err)
 	}
-
-	logrus.Debugf("%+v", vehicle)
 
 	// Validate the struct
 	if err := server.validate.Struct(vehicle); err != nil {

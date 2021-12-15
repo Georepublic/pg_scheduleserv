@@ -78,9 +78,6 @@ func (server *Server) CreateShipmentTimeWindow(w http.ResponseWriter, r *http.Re
 		logrus.Error(err)
 	}
 
-	logrus.Debugf("%v", userInput)
-	logrus.Debugf("%+v", shipment)
-
 	// Validate the struct
 	if err := server.validate.Struct(shipment); err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)

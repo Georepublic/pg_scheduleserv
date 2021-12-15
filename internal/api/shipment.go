@@ -78,9 +78,6 @@ func (server *Server) CreateShipment(w http.ResponseWriter, r *http.Request) {
 		logrus.Error(err)
 	}
 
-	logrus.Debugf("%v", userInput)
-	logrus.Debugf("%+v", shipment)
-
 	// Validate the struct
 	if err := server.validate.Struct(shipment); err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)

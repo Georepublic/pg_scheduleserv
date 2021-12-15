@@ -78,8 +78,6 @@ func (server *Server) CreateBreak(w http.ResponseWriter, r *http.Request) {
 		logrus.Error(err)
 	}
 
-	logrus.Infof("%+v", v_break)
-
 	// Validate the struct
 	if err := server.validate.Struct(v_break); err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)

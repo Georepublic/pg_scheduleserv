@@ -33,7 +33,6 @@ import (
 
 	"github.com/Georepublic/pg_scheduleserv/internal/util"
 	"github.com/jackc/pgx/v4"
-	"github.com/sirupsen/logrus"
 )
 
 type CreateBreakTimeWindowParams struct {
@@ -44,8 +43,6 @@ type CreateBreakTimeWindowParams struct {
 
 func (q *Queries) DBCreateBreakTimeWindow(ctx context.Context, arg CreateBreakTimeWindowParams) (BreakTimeWindow, error) {
 	sql, args := createResource("breaks_time_windows", arg)
-	logrus.Debug(sql)
-	logrus.Debug(args)
 	return_sql := " RETURNING " + util.GetOutputFields(BreakTimeWindow{})
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	return scanBreakTimeWindowRow(row)

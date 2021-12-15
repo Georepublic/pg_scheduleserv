@@ -84,7 +84,6 @@ func GetPartialSQL(resource interface{}) PartialSQL {
 			val = fieldVal
 		}
 
-		logrus.Debugf("Value: %v, Kind: %v", val, val.Kind())
 		switch val.Kind() {
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 			partialSQL.Args = append(partialSQL.Args, val.Int())
@@ -104,9 +103,6 @@ func GetPartialSQL(resource interface{}) PartialSQL {
 				partialSQL.Args = append(partialSQL.Args, GetLocationIndex(*typ.Latitude, *typ.Longitude))
 			}
 			if typ, ok := value.(string); ok {
-				logrus.Debug(value)
-				logrus.Debug(typ)
-				// logrus.Debug(GetTimeString(typ))
 				partialSQL.Args = append(partialSQL.Args, typ)
 			}
 		case reflect.Interface:
