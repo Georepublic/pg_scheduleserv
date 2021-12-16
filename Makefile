@@ -36,6 +36,7 @@ migratedown:
 
 swagger:
 	swag init
+	swagger generate markdown -f docs/swagger.json --output=docs/api.md
 .PHONY: swagger
 
 check-mod:
