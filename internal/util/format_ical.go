@@ -32,6 +32,7 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	ics "github.com/arran4/golang-ical"
@@ -39,23 +40,35 @@ import (
 )
 
 type Schedule struct {
-	ID          int64   `json:"-" example:"1234567812345678"`
-	Type        string  `json:"type" example:"job"`
-	ProjectID   int64   `json:"project_id,string" example:"1234567812345678"`
-	VehicleID   int64   `json:"vehicle_id,string" example:"1234567812345678"`
-	JobID       int64   `json:"job_id,string" example:"1234567812345678"`
-	ShipmentID  int64   `json:"shipment_id,string" example:"1234567812345678"`
-	BreakID     int64   `json:"break_id,string" example:"1234567812345678"`
-	LocationID  int64   `json:"location_id,string" example:"1234567812345678"`
-	Arrival     string  `json:"arrival" example:"2021-12-01 13:00:00"`
-	Departure   string  `json:"departure" example:"2021-12-01 13:00:00"`
-	TravelTime  int64   `json:"travel_time" example:"1000"`
-	ServiceTime int64   `json:"service_time" example:"120"`
-	WaitingTime int64   `json:"waiting_time" example:"0"`
-	StartLoad   []int64 `json:"start_load" example:"0,0"`
-	EndLoad     []int64 `json:"end_load" example:"50,25"`
-	CreatedAt   string  `json:"created_at" example:"2021-12-01 13:00:00"`
-	UpdatedAt   string  `json:"updated_at" example:"2021-12-01 13:00:00"`
+	ID          int64          `json:"-" example:"1234567812345678"`
+	Type        string         `json:"type" example:"job"`
+	ProjectID   int64          `json:"project_id,string" example:"1234567812345678"`
+	VehicleID   int64          `json:"vehicle_id,string" example:"1234567812345678"`
+	JobID       int64          `json:"job_id,string,omitempty" example:"1234567812345678"`
+	ShipmentID  int64          `json:"shipment_id,string,omitempty" example:"1234567812345678"`
+	BreakID     int64          `json:"break_id,string,omitempty" example:"1234567812345678"`
+	Location    LocationParams `json:"location"`
+	Arrival     string         `json:"arrival" example:"2021-12-01 13:00:00"`
+	Departure   string         `json:"departure" example:"2021-12-01 13:00:00"`
+	TravelTime  int64          `json:"travel_time" example:"1000"`
+	ServiceTime int64          `json:"service_time" example:"120"`
+	WaitingTime int64          `json:"waiting_time" example:"0"`
+	StartLoad   []int64        `json:"start_load" example:"0,0"`
+	EndLoad     []int64        `json:"end_load" example:"50,25"`
+	CreatedAt   string         `json:"created_at" example:"2021-12-01 13:00:00"`
+	UpdatedAt   string         `json:"updated_at" example:"2021-12-01 13:00:00"`
+}
+
+type ICal struct {
+	ID          string
+	CreatedTime time.Time
+	DtStampTime time.Time
+	ModifiedAt  time.Time
+	StartAt     time.Time
+	EndAt       time.Time
+	Summary     string
+	Location    string
+	Description string
 }
 
 // Example for Schedule in ical format
@@ -81,12 +94,11 @@ func secondsToTime(totalSecs int64) string {
 }
 
 func getSummary(schedule Schedule) string {
-	return fmt.Sprintf("%s %d", schedule.Type, schedule.VehicleID)
+	return fmt.Sprintf("%s - Vehicle %d", strings.Title(schedule.Type), schedule.VehicleID)
 }
 
 func getLocation(schedule Schedule) string {
-	latitude, longitude := GetCoordinates(schedule.LocationID)
-	return fmt.Sprintf("(%.4f, %.4f)", latitude, longitude)
+	return fmt.Sprintf("(%.4f, %.4f)", *schedule.Location.Latitude, *schedule.Location.Longitude)
 }
 
 func getDescription(schedule Schedule) string {
@@ -95,7 +107,9 @@ func getDescription(schedule Schedule) string {
 	switch schedule.Type {
 	case "job":
 		desc += fmt.Sprintf("Job ID: %d\n", schedule.JobID)
-	case "shipment":
+	case "pickup":
+		desc += fmt.Sprintf("Shipment ID: %d\n", schedule.ShipmentID)
+	case "delivery":
 		desc += fmt.Sprintf("Shipment ID: %d\n", schedule.ShipmentID)
 	case "break":
 		desc += fmt.Sprintf("Break ID: %d\n", schedule.BreakID)
@@ -107,34 +121,64 @@ func getDescription(schedule Schedule) string {
 	return desc
 }
 
-func (r *Formatter) FormatICAL(w http.ResponseWriter, respCode int, schedule []Schedule) {
-	// Set the content-type and response code in the header
-	w.Header().Set("Content-Type", "text/calendar")
-	w.WriteHeader(respCode)
-
+func SerializeICal(calendar []ICal) string {
 	cal := ics.NewCalendar()
 	cal.SetMethod(ics.MethodRequest)
-	for i := 0; i < len(schedule); i++ {
-		event := cal.AddEvent(fmt.Sprintf("%d", schedule[i].ID))
-		event.SetCreatedTime(parseTime(schedule[i].CreatedAt))
-		event.SetDtStampTime(time.Now())
-		event.SetModifiedAt(parseTime(schedule[i].UpdatedAt))
-		event.SetStartAt(parseTime(schedule[i].Arrival))
-		event.SetEndAt(parseTime(schedule[i].Departure))
-		event.SetSummary(getSummary(schedule[i]))
-		event.SetLocation(getLocation(schedule[i]))
-		event.SetDescription(getDescription(schedule[i]))
-		event.SetOrganizer("sender@domain", ics.WithCN("This Machine"))
+	for i := 0; i < len(calendar); i++ {
+		event := cal.AddEvent(calendar[i].ID)
+		event.SetCreatedTime(calendar[i].CreatedTime)
+		event.SetDtStampTime(calendar[i].DtStampTime)
+		event.SetModifiedAt(calendar[i].ModifiedAt)
+		event.SetStartAt(calendar[i].StartAt)
+		event.SetEndAt(calendar[i].EndAt)
+		event.SetSummary(calendar[i].Summary)
+		event.SetLocation(calendar[i].Location)
+		event.SetDescription(calendar[i].Description)
 	}
+	return cal.Serialize()
+}
+
+func (r *Formatter) FormatICAL(w http.ResponseWriter, respCode int, calendar []ICal, filename string) {
+	// Set the content-type, content-disposition, and response code in the header
+	w.Header().Set("Content-Type", "text/calendar")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
+	w.WriteHeader(respCode)
 
 	b := r.pool.Get().(*bytes.Buffer)
 	b.Reset()
 	defer r.pool.Put(b)
 
-	b = bytes.NewBufferString(cal.Serialize())
+	b = bytes.NewBufferString(SerializeICal(calendar))
 
 	_, err := b.WriteTo(w)
 	if err != nil {
 		logrus.Error(err)
 	}
+}
+
+func (r *Formatter) GetScheduleICal(schedule []Schedule) ([]ICal, string) {
+	var calendar []ICal
+
+	var projectID int64
+	if len(schedule) > 0 {
+		projectID = schedule[0].ProjectID
+	} else {
+		projectID = 0
+	}
+	filename := fmt.Sprintf("schedule-%d.ics", projectID)
+	for i := 0; i < len(schedule); i++ {
+		entry := ICal{
+			ID:          fmt.Sprintf("%d", schedule[i].ID),
+			CreatedTime: parseTime(schedule[i].CreatedAt),
+			DtStampTime: time.Now(),
+			ModifiedAt:  parseTime(schedule[i].UpdatedAt),
+			StartAt:     parseTime(schedule[i].Arrival),
+			EndAt:       parseTime(schedule[i].Departure),
+			Summary:     getSummary(schedule[i]),
+			Location:    getLocation(schedule[i]),
+			Description: getDescription(schedule[i]),
+		}
+		calendar = append(calendar, entry)
+	}
+	return calendar, filename
 }

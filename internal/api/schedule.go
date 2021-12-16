@@ -96,11 +96,13 @@ func (server *Server) GetSchedule(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Header.Get("Accept") {
 	case "text/calendar":
-		server.FormatICAL(w, http.StatusOK, schedule)
+		calendar, filename := server.GetScheduleICal(schedule)
+		server.FormatICAL(w, http.StatusOK, calendar, filename)
 	case "application/json":
 		server.FormatJSON(w, http.StatusOK, schedule)
 	default:
-		server.FormatICAL(w, http.StatusOK, schedule)
+		calendar, filename := server.GetScheduleICal(schedule)
+		server.FormatICAL(w, http.StatusOK, calendar, filename)
 	}
 
 }

@@ -235,6 +235,13 @@ func TestListProjects(t *testing.T) {
 					"updated_at": "2021-10-22 23:29:31",
 				},
 				{
+					"id":         "3909655254191459783",
+					"name":       "Sample Project2",
+					"data":       "random",
+					"created_at": "2021-10-22 23:29:31",
+					"updated_at": "2021-10-22 23:29:31",
+				},
+				{
 					"id":         "2593982828701335033",
 					"name":       "",
 					"data":       map[string]interface{}{"s": float64(1)},

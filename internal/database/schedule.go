@@ -62,7 +62,7 @@ SELECT
     WHEN A.type = 6 THEN V.end_index
   END AS location_id,
   to_char(A.arrival, 'YYYY-MM-DD HH24:MI:SS') AS arrival,
-  to_char(lead(A.arrival, 1, A.arrival) OVER(PARTITION BY A.vehicle_id ORDER BY A.arrival, A.type), 'YYYY-MM-DD HH24:MI:SS') AS departure,
+  to_char(A.arrival + A.service_time + A.waiting_time, 'YYYY-MM-DD HH24:MI:SS') AS departure,
   EXTRACT(epoch FROM A.travel_time),
   EXTRACT(epoch FROM A.service_time),
   EXTRACT(epoch FROM A.waiting_time),
@@ -118,6 +118,7 @@ func (q *Queries) DBDeleteSchedule(ctx context.Context, projectID int64) error {
 func scanScheduleRows(rows pgx.Rows) ([]util.Schedule, error) {
 	var i util.Schedule
 	items := []util.Schedule{}
+	var lastLocationID *int64
 	for rows.Next() {
 		var jobID *int64
 		var shipmentID *int64
@@ -155,15 +156,21 @@ func scanScheduleRows(rows pgx.Rows) ([]util.Schedule, error) {
 			breakID = new(int64)
 		}
 		if locationID == nil {
-			// The last location ID
-			locationID = &i.LocationID
+			// Useful for breaks
+			locationID = lastLocationID
 		}
 		i.JobID = *jobID
 		i.ShipmentID = *shipmentID
 		i.BreakID = *breakID
-		i.LocationID = *locationID
+
+		latitude, longitude := util.GetCoordinates(*locationID)
+		i.Location = util.LocationParams{
+			Latitude:  &latitude,
+			Longitude: &longitude,
+		}
 
 		items = append(items, i)
+		lastLocationID = locationID
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
