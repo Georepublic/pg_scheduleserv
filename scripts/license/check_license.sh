@@ -28,10 +28,10 @@
 
 # ******************************************************************GRP-GNU-AGPL
 
-EXCLUDE_LIST="internal/mock"
+EXCLUDE_LIST="internal/mock|docs"
 
 mylicensecheck() {
-    licensecheck -r --copyright -l 30 --tail 0 -i "$EXCLUDE_LIST" docs e2e_test internal migrations scripts Makefile main.go
+    licensecheck -r --copyright -l 30 --tail 0 -i "$EXCLUDE_LIST" e2e_test internal migrations scripts Makefile main.go
 }
 
 missing=$(! { mylicensecheck;}  | grep -i "No copyright\|UNKNOWN" | grep -iv "GENERATED FILE")
