@@ -5,6 +5,7 @@
 [![codecov](https://img.shields.io/codecov/c/github/Georepublic/pg_scheduleserv/main?logo=codecov)](https://codecov.io/gh/Georepublic/pg_scheduleserv)
 [![License: AGPL v3](https://img.shields.io/github/license/Georepublic/pg_scheduleserv)](https://www.gnu.org/licenses/agpl-3.0)
 [![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/Georepublic/pg_scheduleserv)](https://go.dev/doc/go1.17)
+[![Go Reference](https://pkg.go.dev/badge/github.com/Georepublic/pg_scheduleserv.svg)](https://pkg.go.dev/github.com/Georepublic/pg_scheduleserv)
 [![Go Report Card](https://goreportcard.com/badge/github.com/Georepublic/pg_scheduleserv)](https://goreportcard.com/report/github.com/Georepublic/pg_scheduleserv)
 [![GitHub Release](https://img.shields.io/github/release/Georepublic/pg_scheduleserv.svg)](https://github.com/Georepublic/pg_scheduleserv/releases)
 ![GitHub all releases](https://img.shields.io/github/downloads/Georepublic/pg_scheduleserv/total)
