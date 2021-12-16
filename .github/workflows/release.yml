@@ -72,9 +72,9 @@ jobs:
           draft: true
           prerelease: false
           files: |
-            pg_scheduleserv-${PG_SCHEDULESERV_VERSION}
-            ${{ github.event.repository.name }}-${PG_SCHEDULESERV_VERSION}.zip
-            ${{ github.event.repository.name }}-${PG_SCHEDULESERV_VERSION}.tar.gz
+            pg_scheduleserv-${{ env.PG_SCHEDULESERV_VERSION }}
+            ${{ github.event.repository.name }}-${{ env.PG_SCHEDULESERV_VERSION }}.zip
+            ${{ github.event.repository.name }}-${{ env.PG_SCHEDULESERV_VERSION }}.tar.gz
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
