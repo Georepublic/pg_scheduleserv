@@ -1,0 +1,80 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+
+    strategy:
+        fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.17.x'
+
+      - name: Get pg_scheduleserv version
+        run: |
+          PG_SCHEDULESERV_VERSION=$(grep -Po '(?<=// @version )[^;]+' main.go)
+          echo "PG_SCHEDULESERV_VERSION=${PG_SCHEDULESERV_VERSION}" >> $GITHUB_ENV
+
+      - name: Verify Tag Name
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/*/}
+          echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
+          echo ${TAG_NAME}
+          echo ${PG_SCHEDULESERV_VERSION}
+          if [ "${TAG_NAME}" != "v${PG_SCHEDULESERV_VERSION}" ]; then
+            echo "Tag name should be v${PG_SCHEDULESERV_VERSION}"
+            exit 1
+          fi
+
+      - name: Build
+        run: |
+          go build
+          mv pg_scheduleserv pg_scheduleserv-${PG_SCHEDULESERV_VERSION}
+
+      - name: Download Assets
+        run: |
+          wget -c https://github.com/${{ github.repository }}/archive/${TAG_NAME}.zip
+          wget -c https://github.com/${{ github.repository }}/archive/${TAG_NAME}.tar.gz
+          mv ${TAG_NAME}.zip ${{ github.event.repository.name }}-${PG_SCHEDULESERV_VERSION}.zip
+          mv ${TAG_NAME}.tar.gz ${{ github.event.repository.name }}-${PG_SCHEDULESERV_VERSION}.tar.gz
+
+      - name: Make Attachments
+        run: |
+          grep -Pzo "(?s)## pg_scheduleserv ${PG_SCHEDULESERV_VERSION//./\\.} Release Notes.*?(?=## pg_scheduleserv .\..\.. Release Notes)" NEWS.md | tr '\0' '\n' > release_body.txt
+          echo "**Attachments**" >> release_body.txt
+          echo "File | Contents" >> release_body.txt
+          echo "| --- | --- |" >> release_body.txt
+          echo "| \`pg_scheduleserv-${PG_SCHEDULESERV_VERSION}\` | Executable file" >> release_body.txt
+          echo "| \`pg_scheduleserv-${PG_SCHEDULESERV_VERSION}.tar.gz\` | tar.gz of the release" >> release_body.txt
+          echo "| \`pg_scheduleserv-${PG_SCHEDULESERV_VERSION}.zip\`| zip of the release" >> release_body.txt
+          cat release_body.txt
+
+      - name: Create Draft Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body_path: release_body.txt
+          name: ${{ env.TAG_NAME }}
+          draft: true
+          prerelease: false
+          files: |
+            pg_scheduleserv-${PG_SCHEDULESERV_VERSION}
+            ${{ github.event.repository.name }}-${PG_SCHEDULESERV_VERSION}.zip
+            ${{ github.event.repository.name }}-${PG_SCHEDULESERV_VERSION}.tar.gz
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
