@@ -424,6 +424,51 @@ var doc = `{
                 }
             }
         },
+        "/jobs/{job_id}/schedule": {
+            "get": {
+                "description": "Get the schedule for a job using job_id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "text/calendar",
+                    "application/json"
+                ],
+                "tags": [
+                    "Job"
+                ],
+                "summary": "Get the schedule for a job",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Job ID",
+                        "name": "job_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/util.Schedule"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/util.MultiError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/util.NotFound"
+                        }
+                    }
+                }
+            }
+        },
         "/jobs/{job_id}/time_windows": {
             "get": {
                 "description": "Get a list of job time windows for a job with job_id",
@@ -2525,9 +2570,8 @@ var doc = `{
                     "type": "string",
                     "example": "1234567812345678"
                 },
-                "location_id": {
-                    "type": "string",
-                    "example": "1234567812345678"
+                "location": {
+                    "$ref": "#/definitions/util.LocationParams"
                 },
                 "project_id": {
                     "type": "string",

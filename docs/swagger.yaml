@@ -568,9 +568,8 @@ definitions:
       job_id:
         example: "1234567812345678"
         type: string
-      location_id:
-        example: "1234567812345678"
-        type: string
+      location:
+        $ref: '#/definitions/util.LocationParams'
       project_id:
         example: "1234567812345678"
         type: string
@@ -882,6 +881,36 @@ paths:
           schema:
             $ref: '#/definitions/util.NotFound'
       summary: Update a job
+      tags:
+      - Job
+  /jobs/{job_id}/schedule:
+    get:
+      consumes:
+      - application/json
+      description: Get the schedule for a job using job_id
+      parameters:
+      - description: Job ID
+        in: path
+        name: job_id
+        required: true
+        type: integer
+      produces:
+      - text/calendar
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/util.Schedule'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/util.MultiError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/util.NotFound'
+      summary: Get the schedule for a job
       tags:
       - Job
   /jobs/{job_id}/time_windows:
