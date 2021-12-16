@@ -6,11 +6,14 @@
 [![License: AGPL v3](https://img.shields.io/github/license/Georepublic/pg_scheduleserv)](https://www.gnu.org/licenses/agpl-3.0)
 [![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/Georepublic/pg_scheduleserv)](https://go.dev/doc/go1.17)
 [![Go Report Card](https://goreportcard.com/badge/github.com/Georepublic/pg_scheduleserv)](https://goreportcard.com/report/github.com/Georepublic/pg_scheduleserv)
-<!-- [![GitHub Release](https://img.shields.io/github/release/Georepublic/pg_scheduleserv.svg)](https://github.com/Georepublic/pg_scheduleserv/releases) -->
-<!-- ![GitHub all releases](https://img.shields.io/github/downloads/Georepublic/pg_scheduleserv/total) -->
-<!-- ![GitHub Release Date](https://img.shields.io/github/release-date/Georepublic/pg_scheduleserv) -->
+[![GitHub Release](https://img.shields.io/github/release/Georepublic/pg_scheduleserv.svg)](https://github.com/Georepublic/pg_scheduleserv/releases)
+![GitHub all releases](https://img.shields.io/github/downloads/Georepublic/pg_scheduleserv/total)
+![GitHub Release Date](https://img.shields.io/github/release-date/Georepublic/pg_scheduleserv)
 
 A RESTful API Server for scheduling VRP tasks using [vrpRouting](https://github.com/pgRouting/vrprouting), written in [Go](https://golang.org/).
+
+API Documentation: [docs/api.md](./docs/api.md)  
+Release Notes: [NEWS.md](./NEWS.md)
 
 ## Getting Started
 
