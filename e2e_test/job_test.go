@@ -36,8 +36,11 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"testing"
+	"time"
 
+	"github.com/Georepublic/pg_scheduleserv/internal/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -992,6 +995,162 @@ func TestDeleteJob(t *testing.T) {
 				t.Error(err)
 			}
 			assert.Equal(t, tc.resBody, m)
+		})
+	}
+}
+
+func TestGetJobScheduleJson(t *testing.T) {
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
+	defer conn.Close(context.Background())
+	mux := server.Router
+
+	testCases := []struct {
+		name       string
+		statusCode int
+		jobID      int
+		resBody    []map[string]interface{}
+	}{
+		{
+			name:       "Invalid ID",
+			statusCode: 200,
+			jobID:      123,
+			resBody:    []map[string]interface{}{},
+		},
+		{
+			name:       "Valid ID, no schedule",
+			statusCode: 200,
+			jobID:      6362411701075685873,
+			resBody:    []map[string]interface{}{},
+		},
+		{
+			name:       "Valid ID",
+			statusCode: 200,
+			jobID:      3324729385723589730,
+			resBody: []map[string]interface{}{
+				{
+					"type":       "job",
+					"project_id": "3909655254191459783",
+					"vehicle_id": "7300272137290532981",
+					"job_id":     "3324729385723589730",
+					"location": map[string]interface{}{
+						"latitude":  23.3458,
+						"longitude": 2.3242,
+					},
+					"arrival":      "2020-01-03 18:12:26",
+					"departure":    "2020-01-03 18:17:26",
+					"travel_time":  float64(201746),
+					"service_time": float64(300),
+					"waiting_time": float64(0),
+					"start_load":   []interface{}{float64(0), float64(0)},
+					"end_load":     []interface{}{float64(0), float64(0)},
+					"created_at":   "2021-12-16 12:02:06",
+					"updated_at":   "2021-12-16 12:02:06",
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			url := fmt.Sprintf("/jobs/%d/schedule", tc.jobID)
+			request, err := http.NewRequest("GET", url, nil)
+			// Set the Accept headers to return json
+			request.Header.Set("Accept", "application/json")
+			require.NoError(t, err)
+
+			recorder := httptest.NewRecorder()
+			mux.ServeHTTP(recorder, request)
+
+			resp := recorder.Result()
+			body, err := io.ReadAll(resp.Body)
+			if err != nil {
+				t.Error(err)
+			}
+
+			assert.Equal(t, tc.statusCode, resp.StatusCode)
+			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
+			m := []map[string]interface{}{}
+			if err = json.Unmarshal(body, &m); err != nil {
+				t.Error(err)
+			}
+			assert.Equal(t, tc.resBody, m)
+		})
+	}
+}
+
+func TestGetJobScheduleICal(t *testing.T) {
+	test_db := NewTestDatabase(t)
+	server, conn := setup(test_db, "testdata.sql")
+	defer conn.Close(context.Background())
+	mux := server.Router
+
+	testCases := []struct {
+		name       string
+		statusCode int
+		jobID      int
+		resBody    []util.ICal
+		filename   string
+	}{
+		{
+			name:       "Invalid ID",
+			statusCode: 200,
+			jobID:      123,
+			resBody:    []util.ICal{},
+			filename:   "schedule-0.ics",
+		},
+		{
+			name:       "Valid ID, no schedule",
+			statusCode: 200,
+			jobID:      3329730179111013588,
+			resBody:    []util.ICal{},
+			filename:   "schedule-0.ics",
+		},
+		{
+			name:       "Valid ID",
+			statusCode: 200,
+			jobID:      3324729385723589730,
+			resBody: []util.ICal{
+				{
+					ID:          "3100078534960918737",
+					CreatedTime: time.Date(2021, time.Month(12), 16, 12, 2, 6, 0, time.UTC),
+					ModifiedAt:  time.Date(2021, time.Month(12), 16, 12, 2, 6, 0, time.UTC),
+					StartAt:     time.Date(2020, time.Month(1), 3, 18, 12, 26, 0, time.UTC),
+					EndAt:       time.Date(2020, time.Month(1), 3, 18, 17, 26, 0, time.UTC),
+					Summary:     "Job - Vehicle 7300272137290532981",
+					Location:    "(23.3458, 2.3242)",
+					Description: "Project ID: 3909655254191459783\nVehicle ID: 7300272137290532981\nJob ID: 3324729385723589730\nTravel Time: 56:02:26\nService Time: 00:05:00\nWaiting Time: 00:00:00\nLoad: [0 0] - [0 0]\n",
+				},
+			},
+			filename: "schedule-3909655254191459783.ics",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			url := fmt.Sprintf("/jobs/%d/schedule", tc.jobID)
+			request, err := http.NewRequest("GET", url, nil)
+			require.NoError(t, err)
+
+			recorder := httptest.NewRecorder()
+			mux.ServeHTTP(recorder, request)
+
+			resp := recorder.Result()
+			body, err := io.ReadAll(resp.Body)
+			require.NoError(t, err)
+
+			// Removing the current Date Time Stamp from the ical file
+			bodyStr := string(body)
+			regex := regexp.MustCompile("DTSTAMP.*?\n")
+			bodyStr = regex.ReplaceAllString(bodyStr, "")
+
+			assert.Equal(t, tc.statusCode, resp.StatusCode)
+			assert.Equal(t, "text/calendar", resp.Header.Get("Content-Type"))
+			assert.Equal(t, fmt.Sprintf("attachment; filename=%s", tc.filename), resp.Header.Get("Content-Disposition"))
+
+			expectedIcal := util.SerializeICal(tc.resBody)
+			expectedIcal = regex.ReplaceAllString(expectedIcal, "")
+			assert.Equal(t, expectedIcal, bodyStr)
 		})
 	}
 }

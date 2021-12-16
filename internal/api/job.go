@@ -233,3 +233,40 @@ func (server *Server) DeleteJob(w http.ResponseWriter, r *http.Request) {
 
 	server.FormatJSON(w, http.StatusOK, nil)
 }
+
+// GetJobSchedule godoc
+// @Summary Get the schedule for a job
+// @Description Get the schedule for a job using job_id
+// @Tags Job
+// @Accept application/json
+// @Produce text/calendar,application/json
+// @Param job_id path int true "Job ID"
+// @Success 200 {object} util.Schedule
+// @Failure 400 {object} util.MultiError
+// @Failure 404 {object} util.NotFound
+// @Router /jobs/{job_id}/schedule [get]
+func (server *Server) GetJobSchedule(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	jobID, err := strconv.ParseInt(vars["job_id"], 10, 64)
+	if err != nil {
+		panic(err)
+	}
+
+	ctx := r.Context()
+	schedule, err := server.DBGetScheduleJob(ctx, jobID)
+	if err != nil {
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
+	}
+
+	switch r.Header.Get("Accept") {
+	case "text/calendar":
+		calendar, filename := server.GetScheduleICal(schedule)
+		server.FormatICAL(w, http.StatusOK, calendar, filename)
+	case "application/json":
+		server.FormatJSON(w, http.StatusOK, schedule)
+	default:
+		calendar, filename := server.GetScheduleICal(schedule)
+		server.FormatICAL(w, http.StatusOK, calendar, filename)
+	}
+}

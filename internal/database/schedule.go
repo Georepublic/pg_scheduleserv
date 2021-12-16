@@ -86,6 +86,17 @@ func (q *Queries) DBGetSchedule(ctx context.Context, projectID int64) ([]util.Sc
 	return scanScheduleRows(rows)
 }
 
+func (q *Queries) DBGetScheduleJob(ctx context.Context, shipmentID int64) ([]util.Schedule, error) {
+	filter := " WHERE A.job_id = $1"
+	orderBy := " ORDER BY arrival, A.type"
+	rows, err := q.db.Query(ctx, getSchedules+filter+orderBy, shipmentID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	return scanScheduleRows(rows)
+}
+
 func (q *Queries) DBGetScheduleShipment(ctx context.Context, shipmentID int64) ([]util.Schedule, error) {
 	filter := " WHERE A.shipment_id = $1"
 	orderBy := " ORDER BY arrival, A.type"
