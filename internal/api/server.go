@@ -136,6 +136,13 @@ func serveSwagger(router *mux.Router) {
 		Path:    "/redoc",
 	}
 	redoc := middleware.Redoc(redocOpts, nil)
+
+	rapidocOpts := middleware.RapiDocOpts{
+		SpecURL: "./swagger.yaml",
+		Path:    "/rapidoc",
+	}
+	rapidoc := middleware.RapiDoc(rapidocOpts, nil)
+
 	swaggerOpts := middleware.SwaggerUIOpts{
 		SpecURL: "./swagger.yaml",
 		Path:    "/",
@@ -144,5 +151,6 @@ func serveSwagger(router *mux.Router) {
 
 	router.Handle("/swagger.yaml", http.FileServer(http.Dir("./docs/")))
 	router.Handle("/redoc", redoc)
+	router.Handle("/rapidoc", rapidoc)
 	router.Handle("/", swagger)
 }
