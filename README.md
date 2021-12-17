@@ -1,58 +1,83 @@
-# pg_scheduleserv
+<div align="center">
+  <img alt="pg_scheduleserv logo" src="./docs/images/logo.png" width="250px" />
 
-[![Test](https://github.com/Georepublic/pg_scheduleserv/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/Georepublic/pg_scheduleserv/actions/workflows/test.yml)
-[![Lint](https://github.com/Georepublic/pg_scheduleserv/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/Georepublic/pg_scheduleserv/actions/workflows/lint.yml)
-[![codecov](https://img.shields.io/codecov/c/github/Georepublic/pg_scheduleserv/main?logo=codecov)](https://codecov.io/gh/Georepublic/pg_scheduleserv)
-[![License: AGPL v3](https://img.shields.io/github/license/Georepublic/pg_scheduleserv)](https://www.gnu.org/licenses/agpl-3.0)
+  # pg_scheduleserv - VRP scheduler over the web
+
+  [![Go Reference](https://pkg.go.dev/badge/github.com/Georepublic/pg_scheduleserv.svg)](https://pkg.go.dev/github.com/Georepublic/pg_scheduleserv)
 [![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/Georepublic/pg_scheduleserv)](https://go.dev/doc/go1.17)
-[![Go Reference](https://pkg.go.dev/badge/github.com/Georepublic/pg_scheduleserv.svg)](https://pkg.go.dev/github.com/Georepublic/pg_scheduleserv)
 [![Go Report Card](https://goreportcard.com/badge/github.com/Georepublic/pg_scheduleserv)](https://goreportcard.com/report/github.com/Georepublic/pg_scheduleserv)
 [![GitHub Release](https://img.shields.io/github/release/Georepublic/pg_scheduleserv.svg)](https://github.com/Georepublic/pg_scheduleserv/releases)
 ![GitHub all releases](https://img.shields.io/github/downloads/Georepublic/pg_scheduleserv/total)
 ![GitHub Release Date](https://img.shields.io/github/release-date/Georepublic/pg_scheduleserv)
+[![License: AGPL v3](https://img.shields.io/github/license/Georepublic/pg_scheduleserv)](https://www.gnu.org/licenses/agpl-3.0)
+
+</div>
+
+## Introduction
 
 A RESTful API Server for scheduling VRP tasks using [vrpRouting](https://github.com/pgRouting/vrprouting), written in [Go](https://golang.org/).
 
 API Documentation: [docs/api.md](./docs/api.md)  
 Release Notes: [NEWS.md](./NEWS.md)
 
+## Status
+
+Service | Main | Develop
+--- | --- | ---
+Test | [![Test](https://github.com/Georepublic/pg_scheduleserv/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/Georepublic/pg_scheduleserv/actions/workflows/test.yml?query=branch%3Amain) | [![Test](https://github.com/Georepublic/pg_scheduleserv/actions/workflows/test.yml/badge.svg?branch=develop)](https://github.com/Georepublic/pg_scheduleserv/actions/workflows/test.yml?query=branch%3Adevelop)
+Lint | [![Lint](https://github.com/Georepublic/pg_scheduleserv/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/Georepublic/pg_scheduleserv/actions/workflows/lint.yml?query=branch%3Amain) | [![Lint](https://github.com/Georepublic/pg_scheduleserv/actions/workflows/lint.yml/badge.svg?branch=develop)](https://github.com/Georepublic/pg_scheduleserv/actions/workflows/lint.yml?query=branch%3Adevelop)
+Coverage | [![codecov](https://img.shields.io/codecov/c/github/Georepublic/pg_scheduleserv/main?logo=codecov)](https://app.codecov.io/gh/Georepublic/pg_scheduleserv/branch/main) | [![codecov](https://img.shields.io/codecov/c/github/Georepublic/pg_scheduleserv/develop?logo=codecov)](https://app.codecov.io/gh/Georepublic/pg_scheduleserv/branch/develop)
+
 ## Getting Started
 
 ### Requirements
 
-- [vrpRouting](https://github.com/pgRouting/vrprouting) >= 0.2.0
-  - [VROOM](https://github.com/VROOM-Project/vroom) >= 1.10.0 is required to build.
-  - [pgRouting](https://github.com/pgRouting/pgrouting)
-  - [PostGIS](https://postgis.net/)
-  - [PostgreSQL](https://www.postgresql.org/)
-  - C and C++ compilers with C++17 standard support
-  - The Boost Graph Library (BGL) >= 1.65
-  - CMake >= 3.12
-- [Go](https://golang.org/) == 1.17
+- Build Requirements:
+  - [Go](https://golang.org/) == 1.17
+
+- Usage Requirements:
+  - [vrpRouting](https://github.com/pgRouting/vrprouting) >= 0.2.0
+    - [VROOM](https://github.com/VROOM-Project/vroom) >= 1.10.0 is required to build vrpRouting.
+    - [pgRouting](https://github.com/pgRouting/pgrouting)
+    - [PostGIS](https://postgis.net/)
+    - [PostgreSQL](https://www.postgresql.org/)
+    - C and C++ compilers with C++17 standard support
+    - The Boost Graph Library (BGL) >= 1.65
+    - CMake >= 3.12
+
+### Download and run
+
+Builds of the latest code can be found in the [releases](https://github.com/Georepublic/pg_scheduleserv/releases).
+- Download the latest executable for Linux, say [pg_scheduleserv-0.1.0](https://github.com/Georepublic/pg_scheduleserv/releases/download/v0.1.0/pg_scheduleserv-0.1.0).
+- Change permissions to make it an executable: `chmod +x pg_scheduleserv-0.1.0`
+- Create `app.env`, and set the values to the environment variables:
+  - POSTGRES_USER=username
+  - POSTGRES_PASSWORD=password
+  - POSTGRES_HOST=localhost
+  - POSTGRES_PORT=5432
+  - POSTGRES_DB=scheduler
+  - SERVER_BIND_ADDRESS=:9100
+- Create the tables in the database with the help of the migrations file.
+- Run the executable to start the API server on http://localhost:9100
 
 ### Build from source
 
-`pg_scheduleserv` is developed using Go 1.17. It may work with earlier versions. To build this project:
+All the steps are similar as above, except that the executable will be built from source.
+
+`pg_scheduleserv` is developed using Go 1.17. To build this project from source:
 - Ensure that the Go compiler is installed
 - Download or clone this repository.
-- Copy `app.env.example` to `app.env`, and set the value of `DATABASE_URL`.
+- Copy `app.env.example` to `app.env`, and set the values to the environment variables.
 - Apply migrations from the `migrations/000001_init.up.sql` file to the database.
 - Run `go build` command inside the directory to create the executable named `pg_scheduleserv`
 - Run the executable to start the API server on http://localhost:9100
 
-```
-git clone https://github.com/Georepublic/pg_scheduleserv
-cd pg_scheduleserv
-cp app.env.example app.env
-vi app.env  # Set the variables
-psql -U username -d database -f migrations/000001_init.up.sql
-go build
-./pg_scheduleserv
-```
-
 ### Usage
 
-The swagger documentation is available on http://localhost:9100, which can also be used to test the API. Or any other API client can be independently used to interact with the API server.
+Any API client can be used to interact with the API server. The API can also be tested using the Swagger documentation. These documenations can be accessed after running the API server on the following URLs:
+- Swagger UI: http://localhost:9100
+- RapiDoc: http://localhost:9100/rapidoc
+- Redoc: http://localhost:9100/redoc
 
 ## LICENSE
 
