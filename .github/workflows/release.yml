@@ -43,7 +43,7 @@ jobs:
 
       - name: Build
         run: |
-          go build
+          go build -ldflags "-s -w"
           mv pg_scheduleserv pg_scheduleserv-${PG_SCHEDULESERV_VERSION}
 
       - name: Download Assets
