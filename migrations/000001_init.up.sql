@@ -30,7 +30,7 @@ BEGIN;
 
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS pgrouting;
-CREATE EXTENSION IF NOT EXISTS vrprouting WITH VERSION '0.2.0';
+CREATE EXTENSION IF NOT EXISTS vrprouting WITH VERSION '0.3.0';
 
 
 -------------------------------------------------------------------------------
