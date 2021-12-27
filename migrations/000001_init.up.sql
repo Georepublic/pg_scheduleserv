@@ -316,14 +316,14 @@ CREATE TABLE IF NOT EXISTS breaks_time_windows (
 CREATE TABLE IF NOT EXISTS matrix (
   start_id    BIGINT    NOT NULL REFERENCES locations(id),
   end_id      BIGINT    NOT NULL REFERENCES locations(id),
-  agg_cost    INTEGER   NOT NULL,
+  duration    INTEGER   NOT NULL,
 
   created_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
   updated_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
 
   PRIMARY KEY (start_id, end_id),
 
-  CHECK(agg_cost >= 0)
+  CHECK(duration >= 0)
 );
 -- MATRIX TABLE end
 
@@ -467,7 +467,7 @@ CREATE OR REPLACE FUNCTION tgr_project_locations_insert_func()
 RETURNS TRIGGER
 AS $trig$
 BEGIN
-  INSERT INTO matrix(start_id, end_id, agg_cost)
+  INSERT INTO matrix(start_id, end_id, duration)
   SELECT
     NEW.location_id,
     PL.location_id,
@@ -492,8 +492,8 @@ CREATE OR REPLACE FUNCTION tgr_matrix_insert_func()
 RETURNS TRIGGER
 AS $trig$
 BEGIN
-  INSERT INTO matrix(start_id, end_id, agg_cost)
-  SELECT NEW.end_id, NEW.start_id, NEW.agg_cost
+  INSERT INTO matrix(start_id, end_id, duration)
+  SELECT NEW.end_id, NEW.start_id, NEW.duration
   ON CONFLICT DO NOTHING;
 
   RETURN NEW;
