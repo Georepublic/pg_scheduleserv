@@ -134,15 +134,18 @@ CREATE TABLE IF NOT EXISTS locations (
 
 -- PROJECTS TABLE start
 CREATE TABLE IF NOT EXISTS projects (
-  id          BIGINT    DEFAULT random_bigint() PRIMARY KEY,
-  name        VARCHAR   NOT NULL,
+  id                BIGINT    DEFAULT random_bigint() PRIMARY KEY,
+  name              VARCHAR   NOT NULL,
+  exploration_level INTEGER   NOT NULL DEFAULT 5,
+  timeout           INTERVAL  NOT NULL DEFAULT '-00:00:01'::INTERVAL,
 
   data        JSONB     NOT NULL DEFAULT '{}'::JSONB,
   created_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
   updated_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
   deleted     BOOLEAN   NOT NULL DEFAULT FALSE,
 
-  CHECK(id >= 0)
+  CHECK(id >= 0),
+  CHECK(exploration_level >= 0 AND exploration_level <= 5)
 );
 -- PROJECTS TABLE end
 
@@ -380,7 +383,9 @@ AS $BODY$
     'SELECT * FROM vehicles WHERE project_id = ' || $1,
     'SELECT * FROM breaks',
     'SELECT * FROM breaks_time_windows ORDER BY id, tw_open',
-    'SELECT * FROM matrix'
+    'SELECT * FROM matrix',
+    exploration_level => (SELECT exploration_level FROM projects WHERE id = $1),
+    timeout => (SELECT timeout FROM projects WHERE id = $1)
   );
 $BODY$ LANGUAGE sql VOLATILE STRICT;
 
