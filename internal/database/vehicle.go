@@ -102,11 +102,11 @@ func (q *Queries) DBDeleteVehicle(ctx context.Context, id int64) (Vehicle, error
 
 func scanVehicleRow(row pgx.Row) (Vehicle, error) {
 	var i Vehicle
-	var start_index, end_index int64
+	var start_id, end_id int64
 	err := row.Scan(
 		&i.ID,
-		&start_index,
-		&end_index,
+		&start_id,
+		&end_id,
 		&i.Capacity,
 		&i.Skills,
 		&i.TwOpen,
@@ -117,8 +117,8 @@ func scanVehicleRow(row pgx.Row) (Vehicle, error) {
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
-	start_latitude, start_longitude := util.GetCoordinates(start_index)
-	end_latitude, end_longitude := util.GetCoordinates(end_index)
+	start_latitude, start_longitude := util.GetCoordinates(start_id)
+	end_latitude, end_longitude := util.GetCoordinates(end_id)
 	i.StartLocation = util.LocationParams{
 		Latitude:  &start_latitude,
 		Longitude: &start_longitude,
@@ -134,12 +134,12 @@ func scanVehicleRow(row pgx.Row) (Vehicle, error) {
 func scanVehicleRows(rows pgx.Rows) ([]Vehicle, error) {
 	var i Vehicle
 	items := []Vehicle{}
-	var start_index, end_index int64
+	var start_id, end_id int64
 	for rows.Next() {
 		if err := rows.Scan(
 			&i.ID,
-			&start_index,
-			&end_index,
+			&start_id,
+			&end_id,
 			&i.Capacity,
 			&i.Skills,
 			&i.TwOpen,
@@ -152,8 +152,8 @@ func scanVehicleRows(rows pgx.Rows) ([]Vehicle, error) {
 		); err != nil {
 			return nil, err
 		}
-		start_latitude, start_longitude := util.GetCoordinates(start_index)
-		end_latitude, end_longitude := util.GetCoordinates(end_index)
+		start_latitude, start_longitude := util.GetCoordinates(start_id)
+		end_latitude, end_longitude := util.GetCoordinates(end_id)
 		i.StartLocation = util.LocationParams{
 			Latitude:  &start_latitude,
 			Longitude: &start_longitude,

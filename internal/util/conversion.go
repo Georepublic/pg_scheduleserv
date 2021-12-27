@@ -36,7 +36,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func GetLocationIndex(latitude float64, longitude float64) int64 {
+func GetLocationId(latitude float64, longitude float64) int64 {
 	lat_prefix := '0'
 	lon_prefix := '0'
 	if latitude < 0 {

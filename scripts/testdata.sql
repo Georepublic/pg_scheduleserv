@@ -36,7 +36,7 @@ COPY public.projects (id, name, data, created_at, updated_at, deleted) FROM stdi
 \.
 
 
-COPY public.jobs (id, location_index, service, delivery, pickup, skills, priority, project_id, data, created_at, updated_at, deleted) FROM stdin;
+COPY public.jobs (id, location_id, service, delivery, pickup, skills, priority, project_id, data, created_at, updated_at, deleted) FROM stdin;
 6362411701075685873	32234010232342	00:02:25	{10,20}	{20,30}	{5,50,100}	11	2593982828701335033	{"key": "value"}	2021-10-24 20:31:25.968634	2021-10-24 20:31:25.968634	f
 2229737119501208952	1081230000120000	00:01:01	{5,6}	{7,8}	{}	0	2593982828701335033	{"data": ["value1", 2]}	2021-10-24 21:12:24.320746	2021-10-24 21:12:24.320746	f
 3324729385723589729	1081230000120000	00:00:00	{}	{}	{}	0	3909655254191459782	{"s": 1}	2021-10-24 21:12:24.320746	2021-10-24 21:12:24.320746	f
@@ -51,7 +51,7 @@ COPY public.jobs_time_windows (id, tw_open, tw_close, created_at, updated_at) FR
 \.
 
 
-COPY public.shipments (id, p_location_index, p_service, d_location_index, d_service, amount, skills, priority, project_id, data, created_at, updated_at, deleted) FROM stdin;
+COPY public.shipments (id, p_location_id, p_service, d_location_id, d_service, amount, skills, priority, project_id, data, created_at, updated_at, deleted) FROM stdin;
 7794682317520784480	32234010232342	00:02:25	23345800023242	00:01:00	{5,7}	{5,10}	3	2593982828701335033	{"key": "value"}	2021-10-26 00:00:03.080467	2021-10-26 00:00:03.080467	f
 3329730179111013588	1032234010232342	00:01:01	23345800023242	00:02:03	{6,8}	{1}	1	2593982828701335033	{"data": 1}	2021-10-26 00:04:56.045611	2021-10-26 00:04:56.045611	f
 3341766951177830852	1032234010232342	00:00:01	23345800023242	00:00:03	{3,5}	{1}	1	3909655254191459782	{"s": 1}	2021-10-26 00:05:16.67102	2021-10-26 00:05:16.67102	f
@@ -66,7 +66,7 @@ COPY public.shipments_time_windows (id, kind, tw_open, tw_close, created_at, upd
 \.
 
 
-COPY public.vehicles (id, start_index, end_index, capacity, skills, tw_open, tw_close, speed_factor, project_id, data, created_at, updated_at, deleted) FROM stdin;
+COPY public.vehicles (id, start_id, end_id, capacity, skills, tw_open, tw_close, speed_factor, project_id, data, created_at, updated_at, deleted) FROM stdin;
 2550908592071787332	32234010232342	23345800023242	{10,30}	{10}	2020-01-01 00:00:00	2020-01-10 07:14:07	1.5	3909655254191459782	{"key": "value"}	2021-10-26 10:46:41.193101	2021-10-26 10:46:41.193101	f
 7300272137290532980	1032234010232342	23345800023242	{30,50}	{1}	2020-01-01 10:10:00	2020-01-11 03:14:07	34.25	3909655254191459782	{"s": 1}	2021-10-26 10:47:54.437549	2021-10-26 10:47:54.437549	f
 7300272137290532981	1032234010232342	23345800023242	{30,50}	{1}	2020-01-01 10:10:00	2020-01-11 03:14:07	34.25	3909655254191459783	{"s": 1}	2021-10-26 10:47:54.437549	2021-10-26 10:47:54.437549	f

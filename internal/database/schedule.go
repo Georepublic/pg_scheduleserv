@@ -55,11 +55,11 @@ SELECT
   END AS type,
   A.project_id, A.vehicle_id, A.job_id, A.shipment_id, A.break_id,
   CASE
-    WHEN A.type = 1 THEN V.start_index
-    WHEN A.type = 2 THEN J.location_index
-    WHEN A.type = 3 THEN S.p_location_index
-    WHEN A.type = 4 THEN S.d_location_index
-    WHEN A.type = 6 THEN V.end_index
+    WHEN A.type = 1 THEN V.start_id
+    WHEN A.type = 2 THEN J.location_id
+    WHEN A.type = 3 THEN S.p_location_id
+    WHEN A.type = 4 THEN S.d_location_id
+    WHEN A.type = 6 THEN V.end_id
   END AS location_id,
   to_char(A.arrival, 'YYYY-MM-DD HH24:MI:SS') AS arrival,
   to_char(A.arrival + A.service_time + A.waiting_time, 'YYYY-MM-DD HH24:MI:SS') AS departure,

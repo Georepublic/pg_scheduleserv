@@ -162,7 +162,7 @@ CREATE TABLE IF NOT EXISTS project_locations (
 -- JOBS TABLE start
 CREATE TABLE IF NOT EXISTS jobs (
   id              BIGINT    DEFAULT random_bigint() PRIMARY KEY,
-  location_index  BIGINT    NOT NULL REFERENCES locations(id),
+  location_id     BIGINT    NOT NULL REFERENCES locations(id),
   service         INTERVAL  NOT NULL DEFAULT '00:00:00'::INTERVAL,
   delivery        BIGINT[]  NOT NULL DEFAULT ARRAY[]::BIGINT[],
   pickup          BIGINT[]  NOT NULL DEFAULT ARRAY[]::BIGINT[],
@@ -206,9 +206,9 @@ CREATE TABLE IF NOT EXISTS jobs_time_windows (
 -- SHIPMENTS TABLE start
 CREATE TABLE IF NOT EXISTS shipments (
   id                BIGINT    DEFAULT random_bigint() PRIMARY KEY,
-  p_location_index  BIGINT    NOT NULL REFERENCES locations(id),
+  p_location_id     BIGINT    NOT NULL REFERENCES locations(id),
   p_service         INTERVAL  NOT NULL DEFAULT '00:00:00'::INTERVAL,
-  d_location_index  BIGINT    NOT NULL REFERENCES locations(id),
+  d_location_id     BIGINT    NOT NULL REFERENCES locations(id),
   d_service         INTERVAL  NOT NULL DEFAULT '00:00:00'::INTERVAL,
   amount            BIGINT[]  NOT NULL DEFAULT ARRAY[]::BIGINT[],
   skills            INTEGER[] NOT NULL DEFAULT ARRAY[]::INTEGER[],
@@ -252,8 +252,8 @@ CREATE TABLE IF NOT EXISTS shipments_time_windows (
 -- VEHICLES TABLE start
 CREATE TABLE IF NOT EXISTS vehicles (
   id            BIGINT    DEFAULT random_bigint() PRIMARY KEY,
-  start_index   BIGINT    NOT NULL REFERENCES locations(id),
-  end_index     BIGINT    NOT NULL REFERENCES locations(id),
+  start_id      BIGINT    NOT NULL REFERENCES locations(id),
+  end_id        BIGINT    NOT NULL REFERENCES locations(id),
   capacity      BIGINT[]  NOT NULL DEFAULT ARRAY[]::BIGINT[],
   skills        INTEGER[] NOT NULL DEFAULT ARRAY[]::INTEGER[],
   tw_open       TIMESTAMP NOT NULL DEFAULT (to_timestamp(0) at time zone 'UTC'),
@@ -311,14 +311,14 @@ CREATE TABLE IF NOT EXISTS breaks_time_windows (
 
 -- MATRIX TABLE start
 CREATE TABLE IF NOT EXISTS matrix (
-  start_vid   BIGINT    NOT NULL REFERENCES locations(id),
-  end_vid     BIGINT    NOT NULL REFERENCES locations(id),
+  start_id    BIGINT    NOT NULL REFERENCES locations(id),
+  end_id      BIGINT    NOT NULL REFERENCES locations(id),
   agg_cost    INTEGER   NOT NULL,
 
   created_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
   updated_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
 
-  PRIMARY KEY (start_vid, end_vid),
+  PRIMARY KEY (start_id, end_id),
 
   CHECK(agg_cost >= 0)
 );
@@ -391,11 +391,11 @@ RETURNS TRIGGER
 AS $trig$
 BEGIN
   INSERT INTO locations (id)
-  SELECT NEW.location_index
+  SELECT NEW.location_id
   ON CONFLICT DO NOTHING;
 
   INSERT INTO project_locations (project_id, location_id)
-  SELECT NEW.project_id, NEW.location_index
+  SELECT NEW.project_id, NEW.location_id
   ON CONFLICT DO NOTHING;
 
   RETURN NEW;
@@ -413,15 +413,15 @@ RETURNS TRIGGER
 AS $trig$
 BEGIN
   INSERT INTO locations (id)
-  SELECT NEW.p_location_index
+  SELECT NEW.p_location_id
   UNION
-  SELECT NEW.d_location_index
+  SELECT NEW.d_location_id
   ON CONFLICT DO NOTHING;
 
   INSERT INTO project_locations (project_id, location_id)
-  SELECT NEW.project_id, NEW.p_location_index
+  SELECT NEW.project_id, NEW.p_location_id
   UNION
-  SELECT NEW.project_id, NEW.d_location_index
+  SELECT NEW.project_id, NEW.d_location_id
   ON CONFLICT DO NOTHING;
 
   RETURN NEW;
@@ -439,15 +439,15 @@ RETURNS TRIGGER
 AS $trig$
 BEGIN
   INSERT INTO locations (id)
-  SELECT NEW.start_index
+  SELECT NEW.start_id
   UNION
-  SELECT NEW.end_index
+  SELECT NEW.end_id
   ON CONFLICT DO NOTHING;
 
   INSERT INTO project_locations (project_id, location_id)
-  SELECT NEW.project_id, NEW.start_index
+  SELECT NEW.project_id, NEW.start_id
   UNION
-  SELECT NEW.project_id, NEW.end_index
+  SELECT NEW.project_id, NEW.end_id
   ON CONFLICT DO NOTHING;
 
   RETURN NEW;
@@ -464,7 +464,7 @@ CREATE OR REPLACE FUNCTION tgr_project_locations_insert_func()
 RETURNS TRIGGER
 AS $trig$
 BEGIN
-  INSERT INTO matrix(start_vid, end_vid, agg_cost)
+  INSERT INTO matrix(start_id, end_id, agg_cost)
   SELECT
     NEW.location_id,
     PL.location_id,
@@ -489,8 +489,8 @@ CREATE OR REPLACE FUNCTION tgr_matrix_insert_func()
 RETURNS TRIGGER
 AS $trig$
 BEGIN
-  INSERT INTO matrix(start_vid, end_vid, agg_cost)
-  SELECT NEW.end_vid, NEW.start_vid, NEW.agg_cost
+  INSERT INTO matrix(start_id, end_id, agg_cost)
+  SELECT NEW.end_id, NEW.start_id, NEW.agg_cost
   ON CONFLICT DO NOTHING;
 
   RETURN NEW;
