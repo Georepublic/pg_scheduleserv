@@ -100,7 +100,7 @@ func GetPartialSQL(resource interface{}) PartialSQL {
 		case reflect.Struct:
 			value := val.Interface()
 			if typ, ok := value.(LocationParams); ok {
-				partialSQL.Args = append(partialSQL.Args, GetLocationIndex(*typ.Latitude, *typ.Longitude))
+				partialSQL.Args = append(partialSQL.Args, GetLocationId(*typ.Latitude, *typ.Longitude))
 			}
 			if typ, ok := value.(string); ok {
 				partialSQL.Args = append(partialSQL.Args, typ)

@@ -100,10 +100,10 @@ func (q *Queries) DBDeleteJob(ctx context.Context, id int64) (Job, error) {
 
 func scanJobRow(row pgx.Row) (Job, error) {
 	var i Job
-	var location_index int64
+	var location_id int64
 	err := row.Scan(
 		&i.ID,
-		&location_index,
+		&location_id,
 		&i.Service,
 		&i.Delivery,
 		&i.Pickup,
@@ -114,7 +114,7 @@ func scanJobRow(row pgx.Row) (Job, error) {
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
-	latitude, longitude := util.GetCoordinates(location_index)
+	latitude, longitude := util.GetCoordinates(location_id)
 	i.Location = util.LocationParams{
 		Latitude:  &latitude,
 		Longitude: &longitude,
@@ -126,11 +126,11 @@ func scanJobRow(row pgx.Row) (Job, error) {
 func scanJobRows(rows pgx.Rows) ([]Job, error) {
 	var i Job
 	items := []Job{}
-	var location_index int64
+	var location_id int64
 	for rows.Next() {
 		if err := rows.Scan(
 			&i.ID,
-			&location_index,
+			&location_id,
 			&i.Service,
 			&i.Delivery,
 			&i.Pickup,
@@ -143,7 +143,7 @@ func scanJobRows(rows pgx.Rows) ([]Job, error) {
 		); err != nil {
 			return nil, err
 		}
-		latitude, longitude := util.GetCoordinates(location_index)
+		latitude, longitude := util.GetCoordinates(location_id)
 		i.Location = util.LocationParams{
 			Latitude:  &latitude,
 			Longitude: &longitude,

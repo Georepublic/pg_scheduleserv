@@ -102,12 +102,12 @@ func (q *Queries) DBDeleteShipment(ctx context.Context, id int64) (Shipment, err
 
 func scanShipmentRow(row pgx.Row) (Shipment, error) {
 	var i Shipment
-	var p_location_index, d_location_index int64
+	var p_location_id, d_location_id int64
 	err := row.Scan(
 		&i.ID,
-		&p_location_index,
+		&p_location_id,
 		&i.PService,
-		&d_location_index,
+		&d_location_id,
 		&i.DService,
 		&i.Amount,
 		&i.Skills,
@@ -117,8 +117,8 @@ func scanShipmentRow(row pgx.Row) (Shipment, error) {
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
-	p_latitude, p_longitude := util.GetCoordinates(p_location_index)
-	d_latitude, d_longitude := util.GetCoordinates(d_location_index)
+	p_latitude, p_longitude := util.GetCoordinates(p_location_id)
+	d_latitude, d_longitude := util.GetCoordinates(d_location_id)
 	i.PLocation = util.LocationParams{
 		Latitude:  &p_latitude,
 		Longitude: &p_longitude,
@@ -134,13 +134,13 @@ func scanShipmentRow(row pgx.Row) (Shipment, error) {
 func scanShipmentRows(rows pgx.Rows) ([]Shipment, error) {
 	items := []Shipment{}
 	var i Shipment
-	var p_location_index, d_location_index int64
+	var p_location_id, d_location_id int64
 	for rows.Next() {
 		if err := rows.Scan(
 			&i.ID,
-			&p_location_index,
+			&p_location_id,
 			&i.PService,
-			&d_location_index,
+			&d_location_id,
 			&i.DService,
 			&i.Amount,
 			&i.Skills,
@@ -152,8 +152,8 @@ func scanShipmentRows(rows pgx.Rows) ([]Shipment, error) {
 		); err != nil {
 			return nil, err
 		}
-		p_latitude, p_longitude := util.GetCoordinates(p_location_index)
-		d_latitude, d_longitude := util.GetCoordinates(d_location_index)
+		p_latitude, p_longitude := util.GetCoordinates(p_location_id)
+		d_latitude, d_longitude := util.GetCoordinates(d_location_id)
 		i.PLocation = util.LocationParams{
 			Latitude:  &p_latitude,
 			Longitude: &p_longitude,

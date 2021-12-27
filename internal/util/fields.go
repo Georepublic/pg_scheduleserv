@@ -42,9 +42,9 @@ var TimestampFields = map[string]bool{
 }
 
 var AliasFields = map[string]string{
-	"location":       "location_index",
-	"p_location":     "p_location_index",
-	"d_location":     "d_location_index",
-	"start_location": "start_index",
-	"end_location":   "end_index",
+	"location":       "location_id",
+	"p_location":     "p_location_id",
+	"d_location":     "d_location_id",
+	"start_location": "start_id",
+	"end_location":   "end_id",
 }
