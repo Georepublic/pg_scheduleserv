@@ -115,6 +115,7 @@ type Vehicle struct {
 	TwOpen        string              `json:"tw_open" example:"2021-12-31 23:00:00"`
 	TwClose       string              `json:"tw_close" example:"2021-12-31 23:59:00"`
 	SpeedFactor   float64             `json:"speed_factor" example:"1.0"`
+	MaxTasks      int32               `json:"max_tasks" example:"20"`
 	ProjectID     int64               `json:"project_id,string" example:"1234567812345678"`
 	Data          interface{}         `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 	CreatedAt     string              `json:"created_at" example:"2021-12-01 13:00:00"`
