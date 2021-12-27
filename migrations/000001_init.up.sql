@@ -262,6 +262,7 @@ CREATE TABLE IF NOT EXISTS vehicles (
   tw_open       TIMESTAMP NOT NULL DEFAULT (to_timestamp(0) at time zone 'UTC'),
   tw_close      TIMESTAMP NOT NULL DEFAULT (to_timestamp(2147483647) at time zone 'UTC'),
   speed_factor  FLOAT     NOT NULL DEFAULT 1.0,
+  max_tasks     INTEGER   NOT NULL DEFAULT 2147483647,
 
   project_id    BIGINT    NOT NULL REFERENCES projects(id),
 
@@ -274,7 +275,8 @@ CREATE TABLE IF NOT EXISTS vehicles (
   CHECK(0 <= ALL(capacity)),
   CHECK(0 <= ALL(skills)),
   CHECK(tw_open <= tw_close),
-  CHECK(speed_factor > 0.0)
+  CHECK(speed_factor > 0.0),
+  CHECK(max_tasks >= 0)
 );
 -- VEHICLES TABLE end
 
