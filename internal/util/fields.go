@@ -29,8 +29,11 @@ along with pg_scheduleserv.  If not, see <https://www.gnu.org/licenses/>.
 package util
 
 var IntervalFields = map[string]bool{
+	"setup":     true,
 	"service":   true,
+	"p_setup":   true,
 	"p_service": true,
+	"d_setup":   true,
 	"d_service": true,
 }
 

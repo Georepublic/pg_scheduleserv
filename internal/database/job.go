@@ -37,6 +37,7 @@ import (
 
 type CreateJobParams struct {
 	Location  *util.LocationParams `json:"location" validate:"required"`
+	Setup     *int64               `json:"setup"    validate:"omitempty,min=0" example:"0"`
 	Service   *int64               `json:"service"  validate:"omitempty,min=0" example:"120"`
 	Delivery  *[]int64             `json:"delivery" validate:"omitempty,dive,min=0" example:"10,20"`
 	Pickup    *[]int64             `json:"pickup"   validate:"omitempty,dive,min=0" example:"5,15"`
@@ -48,6 +49,7 @@ type CreateJobParams struct {
 
 type UpdateJobParams struct {
 	Location  *util.LocationParams `json:"location"`
+	Setup     *int64               `json:"setup"    validate:"omitempty,min=0" example:"0"`
 	Service   *int64               `json:"service"  validate:"omitempty,min=0" example:"120"`
 	Delivery  *[]int64             `json:"delivery" validate:"omitempty,dive,min=0" example:"10,20"`
 	Pickup    *[]int64             `json:"pickup"   validate:"omitempty,dive,min=0" example:"5,15"`
@@ -104,6 +106,7 @@ func scanJobRow(row pgx.Row) (Job, error) {
 	err := row.Scan(
 		&i.ID,
 		&location_id,
+		&i.Setup,
 		&i.Service,
 		&i.Delivery,
 		&i.Pickup,
@@ -131,6 +134,7 @@ func scanJobRows(rows pgx.Rows) ([]Job, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&location_id,
+			&i.Setup,
 			&i.Service,
 			&i.Delivery,
 			&i.Pickup,

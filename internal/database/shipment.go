@@ -37,8 +37,10 @@ import (
 
 type CreateShipmentParams struct {
 	PLocation *util.LocationParams `json:"p_location" validate:"required"`
+	PSetup    *int64               `json:"p_setup"    validate:"omitempty,min=0" example:"0"`
 	PService  *int64               `json:"p_service"  validate:"omitempty,min=0" example:"120"`
 	DLocation *util.LocationParams `json:"d_location" validate:"required"`
+	DSetup    *int64               `json:"d_setup"    validate:"omitempty,min=0" example:"0"`
 	DService  *int64               `json:"d_service"  validate:"omitempty,min=0" example:"120"`
 	Amount    *[]int64             `json:"amount"     validate:"omitempty,dive,min=0" example:"5,15"`
 	Skills    *[]int32             `json:"skills"     validate:"omitempty,dive,min=0" example:"1,5"`
@@ -49,8 +51,10 @@ type CreateShipmentParams struct {
 
 type UpdateShipmentParams struct {
 	PLocation *util.LocationParams `json:"p_location"`
+	PSetup    *int64               `json:"p_setup"    validate:"omitempty,min=0" example:"0"`
 	PService  *int64               `json:"p_service"  validate:"omitempty,min=0" example:"120"`
 	DLocation *util.LocationParams `json:"d_location"`
+	DSetup    *int64               `json:"d_setup"    validate:"omitempty,min=0" example:"0"`
 	DService  *int64               `json:"d_service"  validate:"omitempty,min=0" example:"120"`
 	Amount    *[]int64             `json:"amount"     validate:"omitempty,dive,min=0" example:"5,15"`
 	Skills    *[]int32             `json:"skills"     validate:"omitempty,dive,min=0" example:"1,5"`
@@ -106,8 +110,10 @@ func scanShipmentRow(row pgx.Row) (Shipment, error) {
 	err := row.Scan(
 		&i.ID,
 		&p_location_id,
+		&i.PSetup,
 		&i.PService,
 		&d_location_id,
+		&i.DSetup,
 		&i.DService,
 		&i.Amount,
 		&i.Skills,
@@ -139,8 +145,10 @@ func scanShipmentRows(rows pgx.Rows) ([]Shipment, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&p_location_id,
+			&i.PSetup,
 			&i.PService,
 			&d_location_id,
+			&i.DSetup,
 			&i.DService,
 			&i.Amount,
 			&i.Skills,
