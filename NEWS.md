@@ -1,6 +1,6 @@
 # pg_scheduleserv Release Notes
 
-## pg_scheduleserv 0.1.0 Release Notes
+## 0.1.0 Release Notes
 
 ### New Features
 
