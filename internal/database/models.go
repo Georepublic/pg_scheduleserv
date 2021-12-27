@@ -52,6 +52,7 @@ type BreakTimeWindow struct {
 type Job struct {
 	ID        int64               `json:"id,string" example:"1234567812345678"`
 	Location  util.LocationParams `json:"location"`
+	Setup     int64               `json:"setup" example:"0"`
 	Service   int64               `json:"service" example:"120"`
 	Delivery  []int64             `json:"delivery" example:"10,20"`
 	Pickup    []int64             `json:"pickup" example:"5,15"`
@@ -82,8 +83,10 @@ type Project struct {
 type Shipment struct {
 	ID        int64               `json:"id,string" example:"1234567812345678"`
 	PLocation util.LocationParams `json:"p_location" `
+	PSetup    int64               `json:"p_setup" example:"0"`
 	PService  int64               `json:"p_service" example:"120"`
 	DLocation util.LocationParams `json:"d_location"`
+	DSetup    int64               `json:"d_setup" example:"0"`
 	DService  int64               `json:"d_service" example:"120"`
 	Amount    []int64             `json:"amount" example:"5,15"`
 	Skills    []int32             `json:"skills" example:"1,5"`

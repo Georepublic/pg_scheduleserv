@@ -163,6 +163,7 @@ CREATE TABLE IF NOT EXISTS project_locations (
 CREATE TABLE IF NOT EXISTS jobs (
   id              BIGINT    DEFAULT random_bigint() PRIMARY KEY,
   location_id     BIGINT    NOT NULL REFERENCES locations(id),
+  setup           INTERVAL  NOT NULL DEFAULT '00:00:00'::INTERVAL,
   service         INTERVAL  NOT NULL DEFAULT '00:00:00'::INTERVAL,
   delivery        BIGINT[]  NOT NULL DEFAULT ARRAY[]::BIGINT[],
   pickup          BIGINT[]  NOT NULL DEFAULT ARRAY[]::BIGINT[],
@@ -207,8 +208,10 @@ CREATE TABLE IF NOT EXISTS jobs_time_windows (
 CREATE TABLE IF NOT EXISTS shipments (
   id                BIGINT    DEFAULT random_bigint() PRIMARY KEY,
   p_location_id     BIGINT    NOT NULL REFERENCES locations(id),
+  p_setup           INTERVAL  NOT NULL DEFAULT '00:00:00'::INTERVAL,
   p_service         INTERVAL  NOT NULL DEFAULT '00:00:00'::INTERVAL,
   d_location_id     BIGINT    NOT NULL REFERENCES locations(id),
+  d_setup           INTERVAL  NOT NULL DEFAULT '00:00:00'::INTERVAL,
   d_service         INTERVAL  NOT NULL DEFAULT '00:00:00'::INTERVAL,
   amount            BIGINT[]  NOT NULL DEFAULT ARRAY[]::BIGINT[],
   skills            INTEGER[] NOT NULL DEFAULT ARRAY[]::INTEGER[],
