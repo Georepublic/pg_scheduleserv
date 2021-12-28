@@ -26,12 +26,17 @@
 
 # ******************************************************************GRP-GNU-AGPL
 
+app.env:
+	cp app.env.example app.env
+
+include app.env
+
 migrateup:
-	migrate -path migrations -database postgres://$(POSTGRES_PASSWORD):$(POSTGRES_PASSWORD)@localhost:$(POSTGRES_PORT)/$(POSTGRES_DB) -verbose up
+	migrate -path migrations -database postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB) -verbose up
 .PHONY: migrateup
 
 migratedown:
-	migrate -path migrations -database postgres://$(POSTGRES_PASSWORD):$(POSTGRES_PASSWORD)@localhost:$(POSTGRES_PORT)/$(POSTGRES_DB) -verbose down
+	migrate -path migrations -database postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB) -verbose down
 .PHONY: migratedown
 
 swagger:
