@@ -29,17 +29,23 @@ along with pg_scheduleserv.  If not, see <https://www.gnu.org/licenses/>.
 package util
 
 var IntervalFields = map[string]bool{
-	"setup":     true,
-	"service":   true,
-	"p_setup":   true,
-	"p_service": true,
-	"d_setup":   true,
-	"d_service": true,
+	"setup":        true,
+	"service":      true,
+	"p_setup":      true,
+	"p_service":    true,
+	"d_setup":      true,
+	"d_service":    true,
+	"travel_time":  true,
+	"setup_time":   true,
+	"service_time": true,
+	"waiting_time": true,
 }
 
 var TimestampFields = map[string]bool{
 	"tw_open":    true,
 	"tw_close":   true,
+	"arrival":    true,
+	"departure":  true,
 	"created_at": true,
 	"updated_at": true,
 }

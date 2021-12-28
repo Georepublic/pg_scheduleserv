@@ -40,21 +40,20 @@ import (
 )
 
 type Schedule struct {
-	ID          int64          `json:"-" example:"1234567812345678"`
 	Type        string         `json:"type" example:"job"`
 	ProjectID   int64          `json:"project_id,string" example:"1234567812345678"`
 	VehicleID   int64          `json:"vehicle_id,string" example:"1234567812345678"`
-	JobID       int64          `json:"job_id,string,omitempty" example:"1234567812345678"`
-	ShipmentID  int64          `json:"shipment_id,string,omitempty" example:"1234567812345678"`
-	BreakID     int64          `json:"break_id,string,omitempty" example:"1234567812345678"`
+	TaskID      int64          `json:"task_id,string" example:"1234567812345678"`
 	Location    LocationParams `json:"location"`
 	Arrival     string         `json:"arrival" example:"2021-12-01 13:00:00"`
 	Departure   string         `json:"departure" example:"2021-12-01 13:00:00"`
 	TravelTime  int64          `json:"travel_time" example:"1000"`
+	SetupTime   int64          `json:"setup_time" example:"0"`
 	ServiceTime int64          `json:"service_time" example:"120"`
 	WaitingTime int64          `json:"waiting_time" example:"0"`
-	StartLoad   []int64        `json:"start_load" example:"0,0"`
-	EndLoad     []int64        `json:"end_load" example:"50,25"`
+	Load        []int64        `json:"load" example:"0,0"`
+	VehicleData interface{}    `json:"vehicle_data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
+	TaskData    interface{}    `json:"task_data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 	CreatedAt   string         `json:"created_at" example:"2021-12-01 13:00:00"`
 	UpdatedAt   string         `json:"updated_at" example:"2021-12-01 13:00:00"`
 }
@@ -104,20 +103,11 @@ func getLocation(schedule Schedule) string {
 func getDescription(schedule Schedule) string {
 	desc := fmt.Sprintf("Project ID: %d\n", schedule.ProjectID)
 	desc += fmt.Sprintf("Vehicle ID: %d\n", schedule.VehicleID)
-	switch schedule.Type {
-	case "job":
-		desc += fmt.Sprintf("Job ID: %d\n", schedule.JobID)
-	case "pickup":
-		desc += fmt.Sprintf("Shipment ID: %d\n", schedule.ShipmentID)
-	case "delivery":
-		desc += fmt.Sprintf("Shipment ID: %d\n", schedule.ShipmentID)
-	case "break":
-		desc += fmt.Sprintf("Break ID: %d\n", schedule.BreakID)
-	}
+	desc += fmt.Sprintf("Task ID: %d\n", schedule.TaskID)
 	desc += fmt.Sprintf("Travel Time: %s\n", secondsToTime(schedule.TravelTime))
 	desc += fmt.Sprintf("Service Time: %s\n", secondsToTime(schedule.ServiceTime))
 	desc += fmt.Sprintf("Waiting Time: %s\n", secondsToTime(schedule.WaitingTime))
-	desc += fmt.Sprintf("Load: %d - %d\n", schedule.StartLoad, schedule.EndLoad)
+	desc += fmt.Sprintf("Load: %d\n", schedule.Load)
 	return desc
 }
 
@@ -167,8 +157,11 @@ func (r *Formatter) GetScheduleICal(schedule []Schedule) ([]ICal, string) {
 	}
 	filename := fmt.Sprintf("schedule-%d.ics", projectID)
 	for i := 0; i < len(schedule); i++ {
+		if schedule[i].VehicleID == -1 || schedule[i].TaskID == 0 {
+			continue
+		}
 		entry := ICal{
-			ID:          fmt.Sprintf("%d", schedule[i].ID),
+			ID:          fmt.Sprintf("%s%d@scheduleserv", schedule[i].Type, schedule[i].TaskID),
 			CreatedTime: parseTime(schedule[i].CreatedAt),
 			DtStampTime: time.Now(),
 			ModifiedAt:  parseTime(schedule[i].UpdatedAt),
