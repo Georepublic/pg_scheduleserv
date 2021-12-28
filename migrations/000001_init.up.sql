@@ -321,67 +321,84 @@ CREATE TABLE IF NOT EXISTS breaks_time_windows (
 CREATE TABLE IF NOT EXISTS matrix (
   start_id    BIGINT    NOT NULL REFERENCES locations(id),
   end_id      BIGINT    NOT NULL REFERENCES locations(id),
-  duration    INTEGER   NOT NULL,
+  duration    INTERVAL  NOT NULL,
 
   created_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
   updated_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
 
   PRIMARY KEY (start_id, end_id),
 
-  CHECK(duration >= 0)
+  CHECK(duration >= '00:00:00'::INTERVAL)
 );
 -- MATRIX TABLE end
 
 
+DO $$ BEGIN
+  CREATE TYPE step_type AS ENUM ('summary', 'start', 'job', 'pickup', 'delivery', 'break', 'end');
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
+
+
 -- SCHEDULES TABLE start
 CREATE TABLE IF NOT EXISTS schedules (
-  id            BIGINT      DEFAULT random_bigint() PRIMARY KEY,
-  type          INTEGER     NOT NULL,
+  type          STEP_TYPE   NOT NULL,
   project_id    BIGINT      NOT NULL REFERENCES projects(id),
-  vehicle_id    BIGINT      NOT NULL REFERENCES vehicles(id),
-  job_id        BIGINT      REFERENCES jobs(id) DEFAULT NULL,
-  shipment_id   BIGINT      REFERENCES shipments(id) DEFAULT NULL,
-  break_id      BIGINT      REFERENCES breaks(id) DEFAULT NULL,
+
+  vehicle_id    BIGINT      NOT NULL,
+  task_id       BIGINT      NOT NULL,
+  location_id   BIGINT      NOT NULL,
 
   arrival       TIMESTAMP   NOT NULL,
+  departure     TIMESTAMP   NOT NULL,
   travel_time   INTERVAL    NOT NULL,
+  setup_time    INTERVAL    NOT NULL,
   service_time  INTERVAL    NOT NULL,
   waiting_time  INTERVAL    NOT NULL,
   load          BIGINT[]    NOT NULL,
 
+  vehicle_data  JSONB       NOT NULL,
+  task_data     JSONB       NOT NULL,
+
   created_at    TIMESTAMP   NOT NULL DEFAULT current_timestamp,
   updated_at    TIMESTAMP   NOT NULL DEFAULT current_timestamp,
 
-  CHECK(id >= 0),
-  CHECK(type >= 1 AND type <= 6),
+  PRIMARY KEY (task_id, type, vehicle_id, project_id),
   CHECK(travel_time >= '00:00:00'::INTERVAL),
+  CHECK(setup_time >= '00:00:00'::INTERVAL),
   CHECK(service_time >= '00:00:00'::INTERVAL),
   CHECK(waiting_time >= '00:00:00'::INTERVAL),
   CHECK(0 <= ALL(load))
 );
 -- SCHEDULE TABLE end
 
-
+-- Create schedule for a project
 CREATE OR REPLACE FUNCTION create_schedule(BIGINT)
 RETURNS void
 AS $BODY$
   DELETE FROM schedules WHERE project_id = $1;
   INSERT INTO schedules
-    (type, project_id, vehicle_id, job_id, shipment_id, break_id,
-    arrival, travel_time, service_time, waiting_time, load)
+    (type, project_id, vehicle_id, location_id, task_id, vehicle_data, task_data,
+    arrival, travel_time, setup_time, service_time, waiting_time, departure, load)
   SELECT
-    step_type, $1::BIGINT, vehicle_id,
-    CASE WHEN step_type = 2 THEN task_id ELSE NULL END,
-    CASE WHEN step_type = 3 OR step_type = 4 THEN task_id ELSE NULL END,
-    CASE WHEN step_type = 5 THEN task_id ELSE NULL END,
-    arrival, travel_time, service_time, waiting_time, load
+    CASE
+      WHEN step_type = 0 THEN 'summary'::STEP_TYPE
+      WHEN step_type = 1 THEN 'start'::STEP_TYPE
+      WHEN step_type = 2 THEN 'job'::STEP_TYPE
+      WHEN step_type = 3 THEN 'pickup'::STEP_TYPE
+      WHEN step_type = 4 THEN 'delivery'::STEP_TYPE
+      WHEN step_type = 5 THEN 'break'::STEP_TYPE
+      WHEN step_type = 6 THEN 'end'::STEP_TYPE
+    END,
+    $1::BIGINT, vehicle_id, location_id, task_id, vehicle_data, task_data,
+    arrival, travel_time, setup_time, service_time, waiting_time, departure, load
   FROM vrp_vroom(
-    'SELECT * FROM jobs WHERE project_id = ' || $1,
+    'SELECT * FROM jobs WHERE deleted = FALSE AND project_id = ' || $1,
     'SELECT * FROM jobs_time_windows ORDER BY id, tw_open',
-    'SELECT * FROM shipments WHERE project_id = ' || $1,
+    'SELECT * FROM shipments WHERE deleted = FALSE AND project_id = ' || $1,
     'SELECT * FROM shipments_time_windows ORDER BY id, tw_open',
-    'SELECT * FROM vehicles WHERE project_id = ' || $1,
-    'SELECT * FROM breaks',
+    'SELECT * FROM vehicles WHERE deleted = FALSE AND project_id = ' || $1,
+    'SELECT * FROM breaks WHERE deleted = FALSE',
     'SELECT * FROM breaks_time_windows ORDER BY id, tw_open',
     'SELECT * FROM matrix',
     exploration_level => (SELECT exploration_level FROM projects WHERE id = $1),
@@ -478,10 +495,10 @@ BEGIN
   SELECT
     NEW.location_id,
     PL.location_id,
-    ROUND(ST_distance(
+    make_interval(secs => ROUND(ST_distance(
       id_to_geom(NEW.location_id)::geography,
       id_to_geom(PL.location_id)::geography)
-    )
+    ))
     FROM project_locations AS PL
   ON CONFLICT DO NOTHING;
 
