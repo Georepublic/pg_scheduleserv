@@ -1787,8 +1787,8 @@ var doc = `{
                     "example": "1234567812345678"
                 },
                 "service": {
-                    "type": "integer",
-                    "example": 120
+                    "type": "string",
+                    "example": "00:02:00"
                 },
                 "updated_at": {
                     "type": "string",
@@ -1839,8 +1839,8 @@ var doc = `{
                     }
                 },
                 "service": {
-                    "type": "integer",
-                    "example": 120
+                    "type": "string",
+                    "example": "00:02:00"
                 }
             }
         },
@@ -1905,8 +1905,12 @@ var doc = `{
                     "example": 10
                 },
                 "service": {
-                    "type": "integer",
-                    "example": 120
+                    "type": "string",
+                    "example": "00:02:00"
+                },
+                "setup": {
+                    "type": "string",
+                    "example": "00:00:00"
                 },
                 "skills": {
                     "type": "array",
@@ -1980,8 +1984,12 @@ var doc = `{
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "d_service": {
-                    "type": "integer",
-                    "example": 120
+                    "type": "string",
+                    "example": "00:02:00"
+                },
+                "d_setup": {
+                    "type": "string",
+                    "example": "00:00:00"
                 },
                 "data": {
                     "type": "object",
@@ -1997,8 +2005,12 @@ var doc = `{
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "p_service": {
-                    "type": "integer",
-                    "example": 120
+                    "type": "string",
+                    "example": "00:02:00"
+                },
+                "p_setup": {
+                    "type": "string",
+                    "example": "00:00:00"
                 },
                 "priority": {
                     "type": "integer",
@@ -2067,6 +2079,10 @@ var doc = `{
                 },
                 "end_location": {
                     "$ref": "#/definitions/util.LocationParams"
+                },
+                "max_tasks": {
+                    "type": "integer",
+                    "example": 20
                 },
                 "skills": {
                     "type": "array",
@@ -2148,8 +2164,12 @@ var doc = `{
                     "example": "1234567812345678"
                 },
                 "service": {
-                    "type": "integer",
-                    "example": 120
+                    "type": "string",
+                    "example": "00:02:00"
+                },
+                "setup": {
+                    "type": "string",
+                    "example": "00:00:00"
                 },
                 "skills": {
                     "type": "array",
@@ -2244,8 +2264,12 @@ var doc = `{
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "d_service": {
-                    "type": "integer",
-                    "example": 120
+                    "type": "string",
+                    "example": "00:02:00"
+                },
+                "d_setup": {
+                    "type": "string",
+                    "example": "00:00:00"
                 },
                 "data": {
                     "type": "object",
@@ -2265,8 +2289,12 @@ var doc = `{
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "p_service": {
-                    "type": "integer",
-                    "example": 120
+                    "type": "string",
+                    "example": "00:02:00"
+                },
+                "p_setup": {
+                    "type": "string",
+                    "example": "00:00:00"
                 },
                 "priority": {
                     "type": "integer",
@@ -2338,8 +2366,12 @@ var doc = `{
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "d_service": {
-                    "type": "integer",
-                    "example": 120
+                    "type": "string",
+                    "example": "00:02:00"
+                },
+                "d_setup": {
+                    "type": "string",
+                    "example": "00:00:00"
                 },
                 "data": {
                     "type": "object",
@@ -2355,8 +2387,12 @@ var doc = `{
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "p_service": {
-                    "type": "integer",
-                    "example": 120
+                    "type": "string",
+                    "example": "00:02:00"
+                },
+                "p_setup": {
+                    "type": "string",
+                    "example": "00:00:00"
                 },
                 "priority": {
                     "type": "integer",
@@ -2399,6 +2435,10 @@ var doc = `{
                 },
                 "end_location": {
                     "$ref": "#/definitions/util.LocationParams"
+                },
+                "max_tasks": {
+                    "type": "integer",
+                    "example": 20
                 },
                 "skills": {
                     "type": "array",
@@ -2460,6 +2500,10 @@ var doc = `{
                 "id": {
                     "type": "string",
                     "example": "1234567812345678"
+                },
+                "max_tasks": {
+                    "type": "integer",
+                    "example": 20
                 },
                 "project_id": {
                     "type": "string",
@@ -2544,10 +2588,6 @@ var doc = `{
                     "type": "string",
                     "example": "2021-12-01 13:00:00"
                 },
-                "break_id": {
-                    "type": "string",
-                    "example": "1234567812345678"
-                },
                 "created_at": {
                     "type": "string",
                     "example": "2021-12-01 13:00:00"
@@ -2556,36 +2596,7 @@ var doc = `{
                     "type": "string",
                     "example": "2021-12-01 13:00:00"
                 },
-                "end_load": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    },
-                    "example": [
-                        50,
-                        25
-                    ]
-                },
-                "job_id": {
-                    "type": "string",
-                    "example": "1234567812345678"
-                },
-                "location": {
-                    "$ref": "#/definitions/util.LocationParams"
-                },
-                "project_id": {
-                    "type": "string",
-                    "example": "1234567812345678"
-                },
-                "service_time": {
-                    "type": "integer",
-                    "example": 120
-                },
-                "shipment_id": {
-                    "type": "string",
-                    "example": "1234567812345678"
-                },
-                "start_load": {
+                "load": {
                     "type": "array",
                     "items": {
                         "type": "integer"
@@ -2595,9 +2606,38 @@ var doc = `{
                         0
                     ]
                 },
+                "location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "project_id": {
+                    "type": "string",
+                    "example": "1234567812345678"
+                },
+                "service_time": {
+                    "type": "string",
+                    "example": "00:02:00"
+                },
+                "setup_time": {
+                    "type": "string",
+                    "example": "00:00:00"
+                },
+                "task_data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
+                },
+                "task_id": {
+                    "type": "string",
+                    "example": "1234567812345678"
+                },
                 "travel_time": {
-                    "type": "integer",
-                    "example": 1000
+                    "type": "string",
+                    "example": "00:16:40"
                 },
                 "type": {
                     "type": "string",
@@ -2607,13 +2647,23 @@ var doc = `{
                     "type": "string",
                     "example": "2021-12-01 13:00:00"
                 },
+                "vehicle_data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
+                },
                 "vehicle_id": {
                     "type": "string",
                     "example": "1234567812345678"
                 },
                 "waiting_time": {
-                    "type": "integer",
-                    "example": 0
+                    "type": "string",
+                    "example": "00:00:00"
                 }
             }
         },

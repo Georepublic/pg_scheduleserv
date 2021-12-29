@@ -16,8 +16,8 @@ definitions:
         example: "1234567812345678"
         type: string
       service:
-        example: 120
-        type: integer
+        example: "00:02:00"
+        type: string
       updated_at:
         example: "2021-12-01 13:00:00"
         type: string
@@ -53,8 +53,8 @@ definitions:
           key2: value2
         type: object
       service:
-        example: 120
-        type: integer
+        example: "00:02:00"
+        type: string
     type: object
   database.CreateBreakTimeWindowParams:
     properties:
@@ -97,8 +97,11 @@ definitions:
         example: 10
         type: integer
       service:
-        example: 120
-        type: integer
+        example: "00:02:00"
+        type: string
+      setup:
+        example: "00:00:00"
+        type: string
       skills:
         example:
         - 1
@@ -148,8 +151,11 @@ definitions:
       d_location:
         $ref: '#/definitions/util.LocationParams'
       d_service:
-        example: 120
-        type: integer
+        example: "00:02:00"
+        type: string
+      d_setup:
+        example: "00:00:00"
+        type: string
       data:
         additionalProperties:
           type: string
@@ -160,8 +166,11 @@ definitions:
       p_location:
         $ref: '#/definitions/util.LocationParams'
       p_service:
-        example: 120
-        type: integer
+        example: "00:02:00"
+        type: string
+      p_setup:
+        example: "00:00:00"
+        type: string
       priority:
         example: 10
         type: integer
@@ -210,6 +219,9 @@ definitions:
         type: object
       end_location:
         $ref: '#/definitions/util.LocationParams'
+      max_tasks:
+        example: 20
+        type: integer
       skills:
         example:
         - 1
@@ -270,8 +282,11 @@ definitions:
         example: "1234567812345678"
         type: string
       service:
-        example: 120
-        type: integer
+        example: "00:02:00"
+        type: string
+      setup:
+        example: "00:00:00"
+        type: string
       skills:
         example:
         - 1
@@ -338,8 +353,11 @@ definitions:
       d_location:
         $ref: '#/definitions/util.LocationParams'
       d_service:
-        example: 120
-        type: integer
+        example: "00:02:00"
+        type: string
+      d_setup:
+        example: "00:00:00"
+        type: string
       data:
         additionalProperties:
           type: string
@@ -353,8 +371,11 @@ definitions:
       p_location:
         $ref: '#/definitions/util.LocationParams'
       p_service:
-        example: 120
-        type: integer
+        example: "00:02:00"
+        type: string
+      p_setup:
+        example: "00:00:00"
+        type: string
       priority:
         example: 10
         type: integer
@@ -405,8 +426,11 @@ definitions:
       d_location:
         $ref: '#/definitions/util.LocationParams'
       d_service:
-        example: 120
-        type: integer
+        example: "00:02:00"
+        type: string
+      d_setup:
+        example: "00:00:00"
+        type: string
       data:
         additionalProperties:
           type: string
@@ -417,8 +441,11 @@ definitions:
       p_location:
         $ref: '#/definitions/util.LocationParams'
       p_service:
-        example: 120
-        type: integer
+        example: "00:02:00"
+        type: string
+      p_setup:
+        example: "00:00:00"
+        type: string
       priority:
         example: 10
         type: integer
@@ -448,6 +475,9 @@ definitions:
         type: object
       end_location:
         $ref: '#/definitions/util.LocationParams'
+      max_tasks:
+        example: 20
+        type: integer
       skills:
         example:
         - 1
@@ -491,6 +521,9 @@ definitions:
       id:
         example: "1234567812345678"
         type: string
+      max_tasks:
+        example: 20
+        type: integer
       project_id:
         example: "1234567812345678"
         type: string
@@ -549,58 +582,62 @@ definitions:
       arrival:
         example: "2021-12-01 13:00:00"
         type: string
-      break_id:
-        example: "1234567812345678"
-        type: string
       created_at:
         example: "2021-12-01 13:00:00"
         type: string
       departure:
         example: "2021-12-01 13:00:00"
         type: string
-      end_load:
+      load:
         example:
-        - 50
-        - 25
+        - 0
+        - 0
         items:
           type: integer
         type: array
-      job_id:
-        example: "1234567812345678"
-        type: string
       location:
         $ref: '#/definitions/util.LocationParams'
       project_id:
         example: "1234567812345678"
         type: string
       service_time:
-        example: 120
-        type: integer
-      shipment_id:
+        example: "00:02:00"
+        type: string
+      setup_time:
+        example: "00:00:00"
+        type: string
+      task_data:
+        additionalProperties:
+          type: string
+        example:
+          key1: value1
+          key2: value2
+        type: object
+      task_id:
         example: "1234567812345678"
         type: string
-      start_load:
-        example:
-        - 0
-        - 0
-        items:
-          type: integer
-        type: array
       travel_time:
-        example: 1000
-        type: integer
+        example: "00:16:40"
+        type: string
       type:
         example: job
         type: string
       updated_at:
         example: "2021-12-01 13:00:00"
         type: string
+      vehicle_data:
+        additionalProperties:
+          type: string
+        example:
+          key1: value1
+          key2: value2
+        type: object
       vehicle_id:
         example: "1234567812345678"
         type: string
       waiting_time:
-        example: 0
-        type: integer
+        example: "00:00:00"
+        type: string
     type: object
   util.Success:
     properties:

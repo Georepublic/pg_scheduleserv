@@ -2257,7 +2257,7 @@ Status: Bad Request
 | created_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
 | data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | id | string| `string` |  | |  | `1234567812345678` |
-| service | integer| `int64` |  | |  | `120` |
+| service | string| `string` |  | |  | `00:02:00` |
 | updated_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
 | vehicle_id | string| `string` |  | |  | `1234567812345678` |
 
@@ -2294,7 +2294,7 @@ Status: Bad Request
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
 | data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
-| service | integer| `int64` |  | |  | `120` |
+| service | string| `string` |  | |  | `00:02:00` |
 
 
 
@@ -2330,7 +2330,8 @@ Status: Bad Request
 | location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` | ✓ | |  |  |
 | pickup | []integer| `[]int64` |  | |  | `[5,15]` |
 | priority | integer| `int64` |  | |  | `10` |
-| service | integer| `int64` |  | |  | `120` |
+| service | string| `string` |  | |  | `00:02:00` |
+| setup | string| `string` |  | |  | `00:00:00` |
 | skills | []integer| `[]int64` |  | |  | `[1,5]` |
 
 
@@ -2380,10 +2381,12 @@ Status: Bad Request
 |------|------|---------|:--------:| ------- |-------------|---------|
 | amount | []integer| `[]int64` |  | |  | `[5,15]` |
 | d_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` | ✓ | |  |  |
-| d_service | integer| `int64` |  | |  | `120` |
+| d_service | string| `string` |  | |  | `00:02:00` |
+| d_setup | string| `string` |  | |  | `00:00:00` |
 | data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | p_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` | ✓ | |  |  |
-| p_service | integer| `int64` |  | |  | `120` |
+| p_service | string| `string` |  | |  | `00:02:00` |
+| p_setup | string| `string` |  | |  | `00:00:00` |
 | priority | integer| `int64` |  | |  | `10` |
 | skills | []integer| `[]int64` |  | |  | `[1,5]` |
 
@@ -2420,6 +2423,7 @@ Status: Bad Request
 | capacity | []integer| `[]int64` |  | |  | `[50,25]` |
 | data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | end_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` | ✓ | |  |  |
+| max_tasks | integer| `int64` |  | |  | `20` |
 | skills | []integer| `[]int64` |  | |  | `[1,5]` |
 | speed_factor | number| `float64` |  | |  | `1` |
 | start_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` | ✓ | |  |  |
@@ -2447,7 +2451,8 @@ Status: Bad Request
 | pickup | []integer| `[]int64` |  | |  | `[5,15]` |
 | priority | integer| `int64` |  | |  | `10` |
 | project_id | string| `string` |  | |  | `1234567812345678` |
-| service | integer| `int64` |  | |  | `120` |
+| service | string| `string` |  | |  | `00:02:00` |
+| setup | string| `string` |  | |  | `00:00:00` |
 | skills | []integer| `[]int64` |  | |  | `[1,5]` |
 | updated_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
 
@@ -2505,11 +2510,13 @@ Status: Bad Request
 | amount | []integer| `[]int64` |  | |  | `[5,15]` |
 | created_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
 | d_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
-| d_service | integer| `int64` |  | |  | `120` |
+| d_service | string| `string` |  | |  | `00:02:00` |
+| d_setup | string| `string` |  | |  | `00:00:00` |
 | data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | id | string| `string` |  | |  | `1234567812345678` |
 | p_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
-| p_service | integer| `int64` |  | |  | `120` |
+| p_service | string| `string` |  | |  | `00:02:00` |
+| p_setup | string| `string` |  | |  | `00:00:00` |
 | priority | integer| `int64` |  | |  | `10` |
 | project_id | string| `string` |  | |  | `1234567812345678` |
 | skills | []integer| `[]int64` |  | |  | `[1,5]` |
@@ -2550,10 +2557,12 @@ Status: Bad Request
 |------|------|---------|:--------:| ------- |-------------|---------|
 | amount | []integer| `[]int64` |  | |  | `[5,15]` |
 | d_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
-| d_service | integer| `int64` |  | |  | `120` |
+| d_service | string| `string` |  | |  | `00:02:00` |
+| d_setup | string| `string` |  | |  | `00:00:00` |
 | data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | p_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
-| p_service | integer| `int64` |  | |  | `120` |
+| p_service | string| `string` |  | |  | `00:02:00` |
+| p_setup | string| `string` |  | |  | `00:00:00` |
 | priority | integer| `int64` |  | |  | `10` |
 | skills | []integer| `[]int64` |  | |  | `[1,5]` |
 
@@ -2573,6 +2582,7 @@ Status: Bad Request
 | capacity | []integer| `[]int64` |  | |  | `[50,25]` |
 | data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | end_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
+| max_tasks | integer| `int64` |  | |  | `20` |
 | skills | []integer| `[]int64` |  | |  | `[1,5]` |
 | speed_factor | number| `float64` |  | |  | `1` |
 | start_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
@@ -2597,6 +2607,7 @@ Status: Bad Request
 | data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | end_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
 | id | string| `string` |  | |  | `1234567812345678` |
+| max_tasks | integer| `int64` |  | |  | `20` |
 | project_id | string| `string` |  | |  | `1234567812345678` |
 | skills | []integer| `[]int64` |  | |  | `[1,5]` |
 | speed_factor | number| `float64` |  | |  | `1` |
@@ -2665,21 +2676,21 @@ Status: Bad Request
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
 | arrival | string| `string` |  | |  | `2021-12-01 13:00:00` |
-| break_id | string| `string` |  | |  | `1234567812345678` |
 | created_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
 | departure | string| `string` |  | |  | `2021-12-01 13:00:00` |
-| end_load | []integer| `[]int64` |  | |  | `[50,25]` |
-| job_id | string| `string` |  | |  | `1234567812345678` |
+| load | []integer| `[]int64` |  | |  | `[0,0]` |
 | location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
 | project_id | string| `string` |  | |  | `1234567812345678` |
-| service_time | integer| `int64` |  | |  | `120` |
-| shipment_id | string| `string` |  | |  | `1234567812345678` |
-| start_load | []integer| `[]int64` |  | |  | `[0,0]` |
-| travel_time | integer| `int64` |  | |  | `1000` |
+| service_time | string| `string` |  | |  | `00:02:00` |
+| setup_time | string| `string` |  | |  | `00:00:00` |
+| task_data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
+| task_id | string| `string` |  | |  | `1234567812345678` |
+| travel_time | string| `string` |  | |  | `00:16:40` |
 | type | string| `string` |  | |  | `job` |
 | updated_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
+| vehicle_data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | vehicle_id | string| `string` |  | |  | `1234567812345678` |
-| waiting_time | integer| `int64` |  | |  | `0` |
+| waiting_time | string| `string` |  | |  | `00:00:00` |
 
 
 
