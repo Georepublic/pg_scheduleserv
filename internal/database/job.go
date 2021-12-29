@@ -37,8 +37,8 @@ import (
 
 type CreateJobParams struct {
 	Location  *util.LocationParams `json:"location" validate:"required"`
-	Setup     *int64               `json:"setup"    validate:"omitempty,min=0" example:"0"`
-	Service   *int64               `json:"service"  validate:"omitempty,min=0" example:"120"`
+	Setup     *string              `json:"setup"    validate:"omitempty" example:"00:00:00"`
+	Service   *string              `json:"service"  validate:"omitempty" example:"00:02:00"`
 	Delivery  *[]int64             `json:"delivery" validate:"omitempty,dive,min=0" example:"10,20"`
 	Pickup    *[]int64             `json:"pickup"   validate:"omitempty,dive,min=0" example:"5,15"`
 	Skills    *[]int32             `json:"skills"   validate:"omitempty,dive,min=0" example:"1,5"`
@@ -49,8 +49,8 @@ type CreateJobParams struct {
 
 type UpdateJobParams struct {
 	Location  *util.LocationParams `json:"location"`
-	Setup     *int64               `json:"setup"    validate:"omitempty,min=0" example:"0"`
-	Service   *int64               `json:"service"  validate:"omitempty,min=0" example:"120"`
+	Setup     *string              `json:"setup"    validate:"omitempty" example:"00:00:00"`
+	Service   *string              `json:"service"  validate:"omitempty" example:"00:02:00"`
 	Delivery  *[]int64             `json:"delivery" validate:"omitempty,dive,min=0" example:"10,20"`
 	Pickup    *[]int64             `json:"pickup"   validate:"omitempty,dive,min=0" example:"5,15"`
 	Skills    *[]int32             `json:"skills"   validate:"omitempty,dive,min=0" example:"1,5"`

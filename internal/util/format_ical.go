@@ -47,10 +47,10 @@ type Schedule struct {
 	Location    LocationParams `json:"location"`
 	Arrival     string         `json:"arrival" example:"2021-12-01 13:00:00"`
 	Departure   string         `json:"departure" example:"2021-12-01 13:00:00"`
-	TravelTime  int64          `json:"travel_time" example:"1000"`
-	SetupTime   int64          `json:"setup_time" example:"0"`
-	ServiceTime int64          `json:"service_time" example:"120"`
-	WaitingTime int64          `json:"waiting_time" example:"0"`
+	TravelTime  string         `json:"travel_time" example:"00:16:40"`
+	SetupTime   string         `json:"setup_time" example:"00:00:00"`
+	ServiceTime string         `json:"service_time" example:"00:02:00"`
+	WaitingTime string         `json:"waiting_time" example:"00:00:00"`
 	Load        []int64        `json:"load" example:"0,0"`
 	VehicleData interface{}    `json:"vehicle_data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 	TaskData    interface{}    `json:"task_data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
@@ -85,13 +85,6 @@ func parseTime(time_str string) time.Time {
 	return t
 }
 
-func secondsToTime(totalSecs int64) string {
-	hours := totalSecs / 3600
-	minutes := (totalSecs % 3600) / 60
-	seconds := totalSecs % 60
-	return fmt.Sprintf("%02d:%02d:%02d", hours, minutes, seconds)
-}
-
 func getSummary(schedule Schedule) string {
 	return fmt.Sprintf("%s - Vehicle %d", strings.Title(schedule.Type), schedule.VehicleID)
 }
@@ -104,9 +97,9 @@ func getDescription(schedule Schedule) string {
 	desc := fmt.Sprintf("Project ID: %d\n", schedule.ProjectID)
 	desc += fmt.Sprintf("Vehicle ID: %d\n", schedule.VehicleID)
 	desc += fmt.Sprintf("Task ID: %d\n", schedule.TaskID)
-	desc += fmt.Sprintf("Travel Time: %s\n", secondsToTime(schedule.TravelTime))
-	desc += fmt.Sprintf("Service Time: %s\n", secondsToTime(schedule.ServiceTime))
-	desc += fmt.Sprintf("Waiting Time: %s\n", secondsToTime(schedule.WaitingTime))
+	desc += fmt.Sprintf("Travel Time: %s\n", schedule.TravelTime)
+	desc += fmt.Sprintf("Service Time: %s\n", schedule.ServiceTime)
+	desc += fmt.Sprintf("Waiting Time: %s\n", schedule.WaitingTime)
 	desc += fmt.Sprintf("Load: %d\n", schedule.Load)
 	return desc
 }

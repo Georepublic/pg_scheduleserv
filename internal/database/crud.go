@@ -47,7 +47,7 @@ func createResource(resource string, resourceStruct interface{}) (sql string, ar
 
 		// Convert any interval field to its type
 		if _, intervalFieldFound := util.IntervalFields[field]; intervalFieldFound {
-			val = val + "* '1 sec'::INTERVAL"
+			val = val + "::INTERVAL"
 		}
 
 		if i == 0 {
@@ -74,7 +74,7 @@ func updateResource(resource string, resourceStruct interface{}, id int64) (sql 
 
 		// Convert any interval field to its type
 		if _, intervalFieldFound := util.IntervalFields[field]; intervalFieldFound {
-			val = val + "* '1 sec'::INTERVAL"
+			val = val + "::INTERVAL"
 		}
 
 		if i == 0 {

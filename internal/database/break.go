@@ -37,13 +37,13 @@ import (
 
 type CreateBreakParams struct {
 	VehicleID *int64       `json:"vehicle_id,string" example:"1234567812345678" validate:"required" swaggerignore:"true"`
-	Service   *int64       `json:"service" validate:"omitempty,min=0" example:"120"`
+	Service   *string      `json:"service" validate:"omitempty" example:"00:02:00"`
 	Data      *interface{} `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 }
 
 type UpdateBreakParams struct {
 	VehicleID *int64       `json:"vehicle_id,string" example:"1234567812345678" swaggerignore:"true"`
-	Service   *int64       `json:"service" validate:"omitempty,min=0" example:"120"`
+	Service   *string      `json:"service" validate:"omitempty" example:"00:02:00"`
 	Data      *interface{} `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 }
 

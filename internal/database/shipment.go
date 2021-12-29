@@ -37,11 +37,11 @@ import (
 
 type CreateShipmentParams struct {
 	PLocation *util.LocationParams `json:"p_location" validate:"required"`
-	PSetup    *int64               `json:"p_setup"    validate:"omitempty,min=0" example:"0"`
-	PService  *int64               `json:"p_service"  validate:"omitempty,min=0" example:"120"`
+	PSetup    *string              `json:"p_setup"    validate:"omitempty" example:"00:00:00"`
+	PService  *string              `json:"p_service"  validate:"omitempty" example:"00:02:00"`
 	DLocation *util.LocationParams `json:"d_location" validate:"required"`
-	DSetup    *int64               `json:"d_setup"    validate:"omitempty,min=0" example:"0"`
-	DService  *int64               `json:"d_service"  validate:"omitempty,min=0" example:"120"`
+	DSetup    *string              `json:"d_setup"    validate:"omitempty" example:"00:00:00"`
+	DService  *string              `json:"d_service"  validate:"omitempty" example:"00:02:00"`
 	Amount    *[]int64             `json:"amount"     validate:"omitempty,dive,min=0" example:"5,15"`
 	Skills    *[]int32             `json:"skills"     validate:"omitempty,dive,min=0" example:"1,5"`
 	Priority  *int32               `json:"priority"   validate:"omitempty,min=0,max=100" example:"10"`
@@ -51,11 +51,11 @@ type CreateShipmentParams struct {
 
 type UpdateShipmentParams struct {
 	PLocation *util.LocationParams `json:"p_location"`
-	PSetup    *int64               `json:"p_setup"    validate:"omitempty,min=0" example:"0"`
-	PService  *int64               `json:"p_service"  validate:"omitempty,min=0" example:"120"`
+	PSetup    *string              `json:"p_setup"    validate:"omitempty" example:"00:00:00"`
+	PService  *string              `json:"p_service"  validate:"omitempty" example:"00:02:00"`
 	DLocation *util.LocationParams `json:"d_location"`
-	DSetup    *int64               `json:"d_setup"    validate:"omitempty,min=0" example:"0"`
-	DService  *int64               `json:"d_service"  validate:"omitempty,min=0" example:"120"`
+	DSetup    *string              `json:"d_setup"    validate:"omitempty" example:"00:00:00"`
+	DService  *string              `json:"d_service"  validate:"omitempty" example:"00:02:00"`
 	Amount    *[]int64             `json:"amount"     validate:"omitempty,dive,min=0" example:"5,15"`
 	Skills    *[]int32             `json:"skills"     validate:"omitempty,dive,min=0" example:"1,5"`
 	Priority  *int32               `json:"priority"   validate:"omitempty,min=0,max=100" example:"10"`
