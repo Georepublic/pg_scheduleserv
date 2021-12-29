@@ -47,8 +47,8 @@ import (
 // @Produce application/json
 // @Param job_id path int true "Job ID"
 // @Param JobTimeWindow body database.CreateJobTimeWindowParams true "Create job time window"
-// @Success 200 {object} database.JobTimeWindow
-// @Failure 400 {object} util.MultiError
+// @Success 200 {object} util.SuccessResponse{data=database.JobTimeWindow}
+// @Failure 400 {object} util.ErrorResponse
 // @Router /jobs/{job_id}/time_windows [post]
 func (server *Server) CreateJobTimeWindow(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
@@ -101,8 +101,8 @@ func (server *Server) CreateJobTimeWindow(w http.ResponseWriter, r *http.Request
 // @Accept application/json
 // @Produce application/json
 // @Param job_id path int true "Job ID"
-// @Success 200 {object} []database.JobTimeWindow
-// @Failure 400 {object} util.MultiError
+// @Success 200 {object} util.SuccessResponse{data=[]database.JobTimeWindow}
+// @Failure 400 {object} util.ErrorResponse
 // @Router /jobs/{job_id}/time_windows [get]
 func (server *Server) ListJobTimeWindows(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -129,7 +129,7 @@ func (server *Server) ListJobTimeWindows(w http.ResponseWriter, r *http.Request)
 // @Produce application/json
 // @Param job_id path int true "Job ID"
 // @Success 200 {object} util.Success
-// @Failure 400 {object} util.MultiError
+// @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
 // @Router /jobs/{job_id}/time_windows [delete]
 func (server *Server) DeleteJobTimeWindow(w http.ResponseWriter, r *http.Request) {
