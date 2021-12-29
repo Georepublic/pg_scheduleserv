@@ -46,8 +46,8 @@ import (
 // @Accept application/json
 // @Produce application/json
 // @Param Project body database.CreateProjectParams true "Create project"
-// @Success 200 {object} database.Project
-// @Failure 400 {object} util.MultiError
+// @Success 200 {object} util.SuccessResponse{data=database.Project}
+// @Failure 400 {object} util.ErrorResponse
 // @Router /projects [post]
 func (server *Server) CreateProject(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
@@ -95,8 +95,8 @@ func (server *Server) CreateProject(w http.ResponseWriter, r *http.Request) {
 // @Tags Project
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {object} []database.Project
-// @Failure 400 {object} util.MultiError
+// @Success 200 {object} util.SuccessResponse{data=[]database.Project}
+// @Failure 400 {object} util.ErrorResponse
 // @Router /projects [get]
 func (server *Server) ListProjects(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -116,8 +116,8 @@ func (server *Server) ListProjects(w http.ResponseWriter, r *http.Request) {
 // @Accept application/json
 // @Produce application/json
 // @Param project_id path int true "Project ID"
-// @Success 200 {object} database.Project
-// @Failure 400 {object} util.MultiError
+// @Success 200 {object} util.SuccessResponse{data=database.Project}
+// @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
 // @Router /projects/{project_id} [get]
 func (server *Server) GetProject(w http.ResponseWriter, r *http.Request) {
@@ -145,8 +145,8 @@ func (server *Server) GetProject(w http.ResponseWriter, r *http.Request) {
 // @Produce application/json
 // @Param project_id path int true "Project ID"
 // @Param Project body database.CreateProjectParams true "Update project"
-// @Success 200 {object} database.Project
-// @Failure 400 {object} util.MultiError
+// @Success 200 {object} util.SuccessResponse{data=database.Project}
+// @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
 // @Router /projects/{project_id} [patch]
 func (server *Server) UpdateProject(w http.ResponseWriter, r *http.Request) {
@@ -203,7 +203,7 @@ func (server *Server) UpdateProject(w http.ResponseWriter, r *http.Request) {
 // @Produce application/json
 // @Param project_id path int true "Project ID"
 // @Success 200 {object} util.Success
-// @Failure 400 {object} util.MultiError
+// @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
 // @Router /projects/{project_id} [delete]
 func (server *Server) DeleteProject(w http.ResponseWriter, r *http.Request) {

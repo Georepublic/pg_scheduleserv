@@ -40,11 +40,38 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (r *Formatter) FormatJSON(w http.ResponseWriter, respCode int, data interface{}) {
+func getFinalData(respCode int, data interface{}) (int, interface{}) {
 	if data == pgx.ErrNoRows {
 		respCode = http.StatusNotFound
 		data = nil
+		return respCode, data
 	}
+
+	// Convert validation errors to []string
+	if typ, ok := data.(validator.ValidationErrors); ok {
+		data = getErrorMsg(typ)
+	}
+
+	// Handle multi errors and convert them to []string
+	if typ, ok := data.(*multierror.Error); ok {
+		errs := typ.WrappedErrors()
+		msgs := make([]string, 0, len(errs))
+		for _, err := range errs {
+			msgs = append(msgs, err.Error())
+		}
+		data = msgs
+	}
+
+	// Handle single error
+	if typ, ok := data.(error); ok {
+		data = []string{typ.Error()}
+	}
+
+	return respCode, data
+}
+
+func (r *Formatter) FormatJSON(w http.ResponseWriter, respCode int, data interface{}) {
+	respCode, data = getFinalData(respCode, data)
 
 	// Set the content-type and response code in the header
 	w.Header().Set("Content-Type", "application/json")
@@ -52,41 +79,35 @@ func (r *Formatter) FormatJSON(w http.ResponseWriter, respCode int, data interfa
 
 	if data == nil {
 		if respCode >= 200 && respCode < 300 {
-			fmt.Fprint(w, jsonSuccessResp)
-			return
+			fmt.Fprintf(w, jsonSuccessResp, http.StatusText(respCode), respCode)
+		} else {
+			fmt.Fprintf(w, jsonErrResp, http.StatusText(respCode), respCode)
 		}
-		fmt.Fprintf(w, jsonErrResp, http.StatusText(respCode))
 		return
-	}
-
-	// Convert validation errors to multi errors
-	if typ, ok := data.(validator.ValidationErrors); ok {
-		data = &MultiError{Errors: getErrorMsg(typ)}
-	}
-
-	// Handle multi errors
-	if typ, ok := data.(*multierror.Error); ok {
-
-		errs := typ.WrappedErrors()
-		msgs := make([]string, 0, len(errs))
-		for _, err := range errs {
-			msgs = append(msgs, err.Error())
-		}
-		data = &MultiError{Errors: msgs}
-	}
-
-	// Handle single error
-	if typ, ok := data.(error); ok {
-		data = &MultiError{Errors: []string{typ.Error()}}
 	}
 
 	b := r.pool.Get().(*bytes.Buffer)
 	b.Reset()
 	defer r.pool.Put(b)
 
+	if respCode >= 200 && respCode < 300 {
+		data = SuccessResponse{
+			Data:    data,
+			Message: http.StatusText(respCode),
+			Code:    fmt.Sprintf("%d", respCode),
+		}
+	} else {
+		data = ErrorResponse{
+			Errors:  data,
+			Message: http.StatusText(respCode),
+			Code:    fmt.Sprintf("%d", respCode),
+		}
+	}
+
 	if err := json.NewEncoder(b).Encode(data); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, jsonErrResp, http.StatusText(http.StatusInternalServerError))
+		respCode = http.StatusInternalServerError
+		w.WriteHeader(respCode)
+		fmt.Fprintf(w, jsonErrResp, http.StatusText(respCode), respCode)
 		return
 	}
 
@@ -96,18 +117,28 @@ func (r *Formatter) FormatJSON(w http.ResponseWriter, respCode int, data interfa
 	}
 }
 
-const jsonSuccessResp = `{"success": true}`
+const jsonSuccessResp = `{"message": "%s", "code": "%d"}`
 
-const jsonErrResp = `{"error": "%s"}`
-
-type MultiError struct {
-	Errors []string `json:"errors" example:"Error message1,Error message2"`
-}
+const jsonErrResp = `{"error": "%s", "code": "%d"}`
 
 type NotFound struct {
 	Error string `json:"error" example:"Not Found"`
+	Code  string `json:"code" example:"404"`
 }
 
 type Success struct {
-	Success string `json:"success" example:"true"`
+	Message string `json:"message" example:"OK"`
+	Code    string `json:"code" example:"200"`
+}
+
+type ErrorResponse struct {
+	Errors  interface{} `json:"errors" swaggertype:"array,string" example:"Error message1,Error message2"`
+	Message string      `json:"message" example:"Bad Request"`
+	Code    string      `json:"code" example:"400"`
+}
+
+type SuccessResponse struct {
+	Data    interface{} `json:"data"`
+	Message string      `json:"message" example:"OK"`
+	Code    string      `json:"code" example:"200"`
 }

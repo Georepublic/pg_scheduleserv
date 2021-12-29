@@ -47,8 +47,8 @@ import (
 // @Produce application/json
 // @Param break_id path int true "Break ID"
 // @Param BreakTimeWindow body database.CreateBreakTimeWindowParams true "Create break time window"
-// @Success 200 {object} database.BreakTimeWindow
-// @Failure 400 {object} util.MultiError
+// @Success 200 {object} util.SuccessResponse{data=database.BreakTimeWindow}
+// @Failure 400 {object} util.ErrorResponse
 // @Router /breaks/{break_id}/time_windows [post]
 func (server *Server) CreateBreakTimeWindow(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
@@ -101,8 +101,8 @@ func (server *Server) CreateBreakTimeWindow(w http.ResponseWriter, r *http.Reque
 // @Accept application/json
 // @Produce application/json
 // @Param break_id path int true "Break ID"
-// @Success 200 {object} []database.BreakTimeWindow
-// @Failure 400 {object} util.MultiError
+// @Success 200 {object} util.SuccessResponse{data=[]database.BreakTimeWindow}
+// @Failure 400 {object} util.ErrorResponse
 // @Router /breaks/{break_id}/time_windows [get]
 func (server *Server) ListBreakTimeWindows(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -129,7 +129,7 @@ func (server *Server) ListBreakTimeWindows(w http.ResponseWriter, r *http.Reques
 // @Produce application/json
 // @Param break_id path int true "Break ID"
 // @Success 200 {object} util.Success
-// @Failure 400 {object} util.MultiError
+// @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
 // @Router /breaks/{break_id}/time_windows [delete]
 func (server *Server) DeleteBreakTimeWindow(w http.ResponseWriter, r *http.Request) {

@@ -47,8 +47,8 @@ import (
 // @Produce application/json
 // @Param shipment_id path int true "Shipment ID"
 // @Param ShipmentTimeWindow body database.CreateShipmentTimeWindowParams true "Create shipment time window"
-// @Success 200 {object} database.ShipmentTimeWindow
-// @Failure 400 {object} util.MultiError
+// @Success 200 {object} util.SuccessResponse{data=database.ShipmentTimeWindow}
+// @Failure 400 {object} util.ErrorResponse
 // @Router /shipments/{shipment_id}/time_windows [post]
 func (server *Server) CreateShipmentTimeWindow(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
@@ -101,8 +101,8 @@ func (server *Server) CreateShipmentTimeWindow(w http.ResponseWriter, r *http.Re
 // @Accept application/json
 // @Produce application/json
 // @Param shipment_id path int true "Shipment ID"
-// @Success 200 {object} []database.ShipmentTimeWindow
-// @Failure 400 {object} util.MultiError
+// @Success 200 {object} util.SuccessResponse{data=[]database.ShipmentTimeWindow}
+// @Failure 400 {object} util.ErrorResponse
 // @Router /shipments/{shipment_id}/time_windows [get]
 func (server *Server) ListShipmentTimeWindows(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -129,7 +129,7 @@ func (server *Server) ListShipmentTimeWindows(w http.ResponseWriter, r *http.Req
 // @Produce application/json
 // @Param shipment_id path int true "Shipment ID"
 // @Success 200 {object} util.Success
-// @Failure 400 {object} util.MultiError
+// @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
 // @Router /shipments/{shipment_id}/time_windows [delete]
 func (server *Server) DeleteShipmentTimeWindow(w http.ResponseWriter, r *http.Request) {
