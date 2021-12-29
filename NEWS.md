@@ -1,5 +1,15 @@
 # pg_scheduleserv Release Notes
 
+## 0.2.0 Release Notes
+
+### New Features
+
+* #26: Update to `vrprouting v0.3.0` and `vroom v1.11.0`.
+
+### Fixes
+
+* Change all fields with INTERVAL to HH:MM:SS format.
+
 ## 0.1.0 Release Notes
 
 ### New Features
