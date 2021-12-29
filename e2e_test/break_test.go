@@ -62,7 +62,7 @@ func TestCreateBreak(t *testing.T) {
 			vehicleID:  2550908592071787332,
 			body:       map[string]interface{}{},
 			resBody: map[string]interface{}{
-				"service":    float64(0),
+				"service":    "00:00:00",
 				"vehicle_id": "2550908592071787332",
 				"data":       map[string]interface{}{},
 			},
@@ -72,10 +72,10 @@ func TestCreateBreak(t *testing.T) {
 			statusCode: 201,
 			vehicleID:  2550908592071787332,
 			body: map[string]interface{}{
-				"service": 100,
+				"service": "00:01:40",
 			},
 			resBody: map[string]interface{}{
-				"service":    float64(100),
+				"service":    "00:01:40",
 				"vehicle_id": "2550908592071787332",
 				"data":       map[string]interface{}{},
 			},
@@ -85,10 +85,10 @@ func TestCreateBreak(t *testing.T) {
 			statusCode: 400,
 			vehicleID:  2550908592071787332,
 			body: map[string]interface{}{
-				"service": -100,
+				"service": "-00:01:40",
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'service' must be non-negative"},
+				"errors": []interface{}{"Field 'service' must be non-negative with the format 'HH:MM:SS'"},
 			},
 		},
 		{
@@ -99,7 +99,7 @@ func TestCreateBreak(t *testing.T) {
 				"data": map[string]interface{}{"key": "value"},
 			},
 			resBody: map[string]interface{}{
-				"service":    float64(0),
+				"service":    "00:00:00",
 				"vehicle_id": "2550908592071787332",
 				"data":       map[string]interface{}{"key": "value"},
 			},
@@ -120,11 +120,11 @@ func TestCreateBreak(t *testing.T) {
 			statusCode: 201,
 			vehicleID:  2550908592071787332,
 			body: map[string]interface{}{
-				"service": 215,
+				"service": "00:03:35",
 				"data":    map[string]interface{}{"key": "value"},
 			},
 			resBody: map[string]interface{}{
-				"service":    float64(215),
+				"service":    "00:03:35",
 				"vehicle_id": "2550908592071787332",
 				"data":       map[string]interface{}{"key": "value"},
 			},
@@ -193,7 +193,7 @@ func TestListBreaks(t *testing.T) {
 			resBody: []map[string]interface{}{
 				{
 					"id":         "4668767710686035977",
-					"service":    float64(1),
+					"service":    "00:00:01",
 					"vehicle_id": "2550908592071787332",
 					"data":       map[string]interface{}{"key": "value"},
 					"created_at": "2021-10-26 21:24:38",
@@ -201,7 +201,7 @@ func TestListBreaks(t *testing.T) {
 				},
 				{
 					"id":         "3990300682121424906",
-					"service":    float64(324),
+					"service":    "00:05:24",
 					"vehicle_id": "2550908592071787332",
 					"data":       map[string]interface{}{"s": float64(1)},
 					"created_at": "2021-10-26 21:24:52",
@@ -269,7 +269,7 @@ func TestGetBreak(t *testing.T) {
 			breakID:    4668767710686035977,
 			resBody: map[string]interface{}{
 				"id":         "4668767710686035977",
-				"service":    float64(1),
+				"service":    "00:00:01",
 				"vehicle_id": "2550908592071787332",
 				"data":       map[string]interface{}{"key": "value"},
 				"created_at": "2021-10-26 21:24:38",
@@ -325,7 +325,7 @@ func TestUpdateBreak(t *testing.T) {
 			body:       map[string]interface{}{},
 			resBody: map[string]interface{}{
 				"id":         "4668767710686035977",
-				"service":    float64(1),
+				"service":    "00:00:01",
 				"vehicle_id": "2550908592071787332",
 				"data":       map[string]interface{}{"key": "value"},
 				"created_at": "2021-10-26 21:24:38",
@@ -345,11 +345,11 @@ func TestUpdateBreak(t *testing.T) {
 			statusCode: 200,
 			breakID:    4668767710686035977,
 			body: map[string]interface{}{
-				"service": 100,
+				"service": "00:01:40",
 			},
 			resBody: map[string]interface{}{
 				"id":         "4668767710686035977",
-				"service":    float64(100),
+				"service":    "00:01:40",
 				"vehicle_id": "2550908592071787332",
 				"data":       map[string]interface{}{"key": "value"},
 				"created_at": "2021-10-26 21:24:38",
@@ -360,10 +360,10 @@ func TestUpdateBreak(t *testing.T) {
 			statusCode: 400,
 			breakID:    4668767710686035977,
 			body: map[string]interface{}{
-				"service": -100,
+				"service": "-00:01:40",
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'service' must be non-negative"},
+				"errors": []interface{}{"Field 'service' must be non-negative with the format 'HH:MM:SS'"},
 			},
 		},
 		{
@@ -375,7 +375,7 @@ func TestUpdateBreak(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"id":         "4668767710686035977",
-				"service":    float64(100),
+				"service":    "00:01:40",
 				"vehicle_id": "2550908592071787332",
 				"data":       map[string]interface{}{},
 				"created_at": "2021-10-26 21:24:38",
@@ -386,13 +386,13 @@ func TestUpdateBreak(t *testing.T) {
 			statusCode: 200,
 			breakID:    4668767710686035977,
 			body: map[string]interface{}{
-				"service":    float64(101),
+				"service":    "00:01:41",
 				"vehicle_id": "2550908592071787332",
 				"data":       map[string]interface{}{"s": 1},
 			},
 			resBody: map[string]interface{}{
 				"id":         "4668767710686035977",
-				"service":    float64(101),
+				"service":    "00:01:41",
 				"vehicle_id": "2550908592071787332",
 				"data":       map[string]interface{}{"s": float64(1)},
 				"created_at": "2021-10-26 21:24:38",
