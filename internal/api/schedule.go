@@ -42,7 +42,7 @@ import (
 // @Accept application/json
 // @Produce application/json
 // @Param project_id path int true "Project ID"
-// @Success 200 {object} util.SuccessResponse{data=util.Schedule}
+// @Success 200 {object} util.SuccessResponse{data=[]util.Schedule}
 // @Failure 400 {object} util.ErrorResponse
 // @Router /projects/{project_id}/schedule [post]
 func (server *Server) CreateSchedule(w http.ResponseWriter, r *http.Request) {
@@ -76,7 +76,7 @@ func (server *Server) CreateSchedule(w http.ResponseWriter, r *http.Request) {
 // @Accept application/json
 // @Produce text/calendar,application/json
 // @Param project_id path int true "Project ID"
-// @Success 200 {object} util.SuccessResponse{data=util.Schedule}
+// @Success 200 {object} util.SuccessResponse{data=[]util.Schedule}
 // @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
 // @Router /projects/{project_id}/schedule [get]
