@@ -62,6 +62,8 @@ func TestCreateJobTimeWindow(t *testing.T) {
 			jobID:      3324729385723589729,
 			body:       map[string]interface{}{},
 			resBody: map[string]interface{}{
+				"code":    "400",
+				"message": "Bad Request",
 				"errors": []interface{}{
 					"Field 'tw_open' of type 'string' is required",
 					"Field 'tw_close' of type 'string' is required",
@@ -76,6 +78,8 @@ func TestCreateJobTimeWindow(t *testing.T) {
 				"tw_open": "2021-10-26 21:24:38",
 			},
 			resBody: map[string]interface{}{
+				"code":    "400",
+				"message": "Bad Request",
 				"errors": []interface{}{
 					"Field 'tw_close' of type 'string' is required",
 				},
@@ -89,6 +93,8 @@ func TestCreateJobTimeWindow(t *testing.T) {
 				"tw_close": "2021-10-26 21:24:38",
 			},
 			resBody: map[string]interface{}{
+				"code":    "400",
+				"message": "Bad Request",
 				"errors": []interface{}{
 					"Field 'tw_open' of type 'string' is required",
 				},
@@ -103,6 +109,8 @@ func TestCreateJobTimeWindow(t *testing.T) {
 				"tw_close": "2021-10-26 21:24:38",
 			},
 			resBody: map[string]interface{}{
+				"code":    "400",
+				"message": "Bad Request",
 				"errors": []interface{}{
 					"Field 'tw_open' must be less than or equal to field 'tw_close'",
 				},
@@ -117,6 +125,8 @@ func TestCreateJobTimeWindow(t *testing.T) {
 				"tw_close": "2021-10-26 21:24:38",
 			},
 			resBody: map[string]interface{}{
+				"code":    "400",
+				"message": "Bad Request",
 				"errors": []interface{}{
 					"Job with the given 'job_id' does not exist",
 				},
@@ -131,8 +141,12 @@ func TestCreateJobTimeWindow(t *testing.T) {
 				"tw_close": "2021-10-26 21:24:38",
 			},
 			resBody: map[string]interface{}{
-				"tw_open":  "2021-10-26 21:20:20",
-				"tw_close": "2021-10-26 21:24:38",
+				"data": map[string]interface{}{
+					"tw_open":  "2021-10-26 21:20:20",
+					"tw_close": "2021-10-26 21:24:38",
+				},
+				"code":    "201",
+				"message": "Created",
 			},
 		},
 		{
@@ -144,6 +158,8 @@ func TestCreateJobTimeWindow(t *testing.T) {
 				"tw_close": "2021-10-26 21:24:38",
 			},
 			resBody: map[string]interface{}{
+				"code":    "400",
+				"message": "Bad Request",
 				"errors": []interface{}{
 					"Jobs time window with given values already exist",
 				},
@@ -180,9 +196,12 @@ func TestCreateJobTimeWindow(t *testing.T) {
 			if err = json.Unmarshal(body, &m); err != nil {
 				t.Error(err)
 			}
-			delete(m, "id")
-			delete(m, "created_at")
-			delete(m, "updated_at")
+			if mData, ok := m["data"].(map[string]interface{}); ok {
+				delete(mData, "id")
+				delete(mData, "created_at")
+				delete(mData, "updated_at")
+				m["data"] = mData
+			}
 			assert.Equal(t, tc.resBody, m)
 		})
 	}
@@ -198,40 +217,52 @@ func TestListJobTimeWindows(t *testing.T) {
 		name       string
 		statusCode int
 		jobID      int
-		resBody    []map[string]interface{}
+		resBody    map[string]interface{}
 	}{
 		{
 			name:       "Invalid ID",
 			statusCode: 200,
 			jobID:      100,
-			resBody:    []map[string]interface{}{},
+			resBody: map[string]interface{}{
+				"data":    []interface{}{},
+				"code":    "200",
+				"message": "OK",
+			},
 		},
 		{
 			name:       "Valid ID",
 			statusCode: 200,
 			jobID:      6362411701075685873,
-			resBody: []map[string]interface{}{
-				{
-					"id":         "6362411701075685873",
-					"tw_open":    "2020-10-10 00:00:00",
-					"tw_close":   "2020-10-10 00:00:10",
-					"created_at": "2021-10-26 21:25:41",
-					"updated_at": "2021-10-26 21:25:41",
+			resBody: map[string]interface{}{
+				"data": []interface{}{
+					map[string]interface{}{
+						"id":         "6362411701075685873",
+						"tw_open":    "2020-10-10 00:00:00",
+						"tw_close":   "2020-10-10 00:00:10",
+						"created_at": "2021-10-26 21:25:41",
+						"updated_at": "2021-10-26 21:25:41",
+					},
+					map[string]interface{}{
+						"id":         "6362411701075685873",
+						"tw_open":    "2020-10-11 00:00:00",
+						"tw_close":   "2020-10-12 00:00:00",
+						"created_at": "2021-10-26 21:25:51",
+						"updated_at": "2021-10-26 21:25:51",
+					},
 				},
-				{
-					"id":         "6362411701075685873",
-					"tw_open":    "2020-10-11 00:00:00",
-					"tw_close":   "2020-10-12 00:00:00",
-					"created_at": "2021-10-26 21:25:51",
-					"updated_at": "2021-10-26 21:25:51",
-				},
+				"code":    "200",
+				"message": "OK",
 			},
 		},
 		{
 			name:       "Valid ID but no time window",
 			statusCode: 200,
 			jobID:      3324729385723589729,
-			resBody:    []map[string]interface{}{},
+			resBody: map[string]interface{}{
+				"data":    []interface{}{},
+				"code":    "200",
+				"message": "OK",
+			},
 		},
 	}
 
@@ -252,7 +283,7 @@ func TestListJobTimeWindows(t *testing.T) {
 
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
-			m := []map[string]interface{}{}
+			m := map[string]interface{}{}
 			if err = json.Unmarshal(body, &m); err != nil {
 				t.Error(err)
 			}
@@ -280,6 +311,7 @@ func TestDeleteJobTimeWindow(t *testing.T) {
 			jobID:      100,
 			resBody: map[string]interface{}{
 				"error": "Not Found",
+				"code":  "404",
 			},
 		},
 		{
@@ -287,7 +319,8 @@ func TestDeleteJobTimeWindow(t *testing.T) {
 			statusCode: 200,
 			jobID:      6362411701075685873,
 			resBody: map[string]interface{}{
-				"success": true,
+				"code":    "200",
+				"message": "OK",
 			},
 		},
 		{
@@ -296,6 +329,7 @@ func TestDeleteJobTimeWindow(t *testing.T) {
 			jobID:      3324729385723589729,
 			resBody: map[string]interface{}{
 				"error": "Not Found",
+				"code":  "404",
 			},
 		},
 	}

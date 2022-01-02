@@ -62,9 +62,13 @@ func TestCreateBreak(t *testing.T) {
 			vehicleID:  2550908592071787332,
 			body:       map[string]interface{}{},
 			resBody: map[string]interface{}{
-				"service":    "00:00:00",
-				"vehicle_id": "2550908592071787332",
-				"data":       map[string]interface{}{},
+				"data": map[string]interface{}{
+					"service":    "00:00:00",
+					"vehicle_id": "2550908592071787332",
+					"data":       map[string]interface{}{},
+				},
+				"code":    "201",
+				"message": "Created",
 			},
 		},
 		{
@@ -75,9 +79,13 @@ func TestCreateBreak(t *testing.T) {
 				"service": "00:01:40",
 			},
 			resBody: map[string]interface{}{
-				"service":    "00:01:40",
-				"vehicle_id": "2550908592071787332",
-				"data":       map[string]interface{}{},
+				"data": map[string]interface{}{
+					"service":    "00:01:40",
+					"vehicle_id": "2550908592071787332",
+					"data":       map[string]interface{}{},
+				},
+				"code":    "201",
+				"message": "Created",
 			},
 		},
 		{
@@ -88,7 +96,9 @@ func TestCreateBreak(t *testing.T) {
 				"service": "-00:01:40",
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'service' must be non-negative with the format 'HH:MM:SS'"},
+				"code":    "400",
+				"message": "Bad Request",
+				"errors":  []interface{}{"Field 'service' must be non-negative with the format 'HH:MM:SS'"},
 			},
 		},
 		{
@@ -99,9 +109,13 @@ func TestCreateBreak(t *testing.T) {
 				"data": map[string]interface{}{"key": "value"},
 			},
 			resBody: map[string]interface{}{
-				"service":    "00:00:00",
-				"vehicle_id": "2550908592071787332",
-				"data":       map[string]interface{}{"key": "value"},
+				"data": map[string]interface{}{
+					"service":    "00:00:00",
+					"vehicle_id": "2550908592071787332",
+					"data":       map[string]interface{}{"key": "value"},
+				},
+				"code":    "201",
+				"message": "Created",
 			},
 		},
 		{
@@ -110,6 +124,8 @@ func TestCreateBreak(t *testing.T) {
 			vehicleID:  123,
 			body:       map[string]interface{}{},
 			resBody: map[string]interface{}{
+				"code":    "400",
+				"message": "Bad Request",
 				"errors": []interface{}{
 					"Vehicle with the given 'vehicle_id' does not exist",
 				},
@@ -124,9 +140,13 @@ func TestCreateBreak(t *testing.T) {
 				"data":    map[string]interface{}{"key": "value"},
 			},
 			resBody: map[string]interface{}{
-				"service":    "00:03:35",
-				"vehicle_id": "2550908592071787332",
-				"data":       map[string]interface{}{"key": "value"},
+				"data": map[string]interface{}{
+					"service":    "00:03:35",
+					"vehicle_id": "2550908592071787332",
+					"data":       map[string]interface{}{"key": "value"},
+				},
+				"code":    "201",
+				"message": "Created",
 			},
 		},
 	}
@@ -160,9 +180,12 @@ func TestCreateBreak(t *testing.T) {
 			if err = json.Unmarshal(body, &m); err != nil {
 				t.Error(err)
 			}
-			delete(m, "id")
-			delete(m, "created_at")
-			delete(m, "updated_at")
+			if mData, ok := m["data"].(map[string]interface{}); ok {
+				delete(mData, "id")
+				delete(mData, "created_at")
+				delete(mData, "updated_at")
+				m["data"] = mData
+			}
 			assert.Equal(t, tc.resBody, m)
 		})
 	}
@@ -178,42 +201,54 @@ func TestListBreaks(t *testing.T) {
 		name       string
 		statusCode int
 		vehicleID  int
-		resBody    []map[string]interface{}
+		resBody    map[string]interface{}
 	}{
 		{
 			name:       "Invalid ID",
 			statusCode: 200,
 			vehicleID:  100,
-			resBody:    []map[string]interface{}{},
+			resBody: map[string]interface{}{
+				"data":    []interface{}{},
+				"code":    "200",
+				"message": "OK",
+			},
 		},
 		{
 			name:       "Valid ID",
 			statusCode: 200,
 			vehicleID:  2550908592071787332,
-			resBody: []map[string]interface{}{
-				{
-					"id":         "4668767710686035977",
-					"service":    "00:00:01",
-					"vehicle_id": "2550908592071787332",
-					"data":       map[string]interface{}{"key": "value"},
-					"created_at": "2021-10-26 21:24:38",
-					"updated_at": "2021-10-26 21:24:38",
+			resBody: map[string]interface{}{
+				"data": []interface{}{
+					map[string]interface{}{
+						"id":         "4668767710686035977",
+						"service":    "00:00:01",
+						"vehicle_id": "2550908592071787332",
+						"data":       map[string]interface{}{"key": "value"},
+						"created_at": "2021-10-26 21:24:38",
+						"updated_at": "2021-10-26 21:24:38",
+					},
+					map[string]interface{}{
+						"id":         "3990300682121424906",
+						"service":    "00:05:24",
+						"vehicle_id": "2550908592071787332",
+						"data":       map[string]interface{}{"s": float64(1)},
+						"created_at": "2021-10-26 21:24:52",
+						"updated_at": "2021-10-26 21:24:52",
+					},
 				},
-				{
-					"id":         "3990300682121424906",
-					"service":    "00:05:24",
-					"vehicle_id": "2550908592071787332",
-					"data":       map[string]interface{}{"s": float64(1)},
-					"created_at": "2021-10-26 21:24:52",
-					"updated_at": "2021-10-26 21:24:52",
-				},
+				"code":    "200",
+				"message": "OK",
 			},
 		},
 		{
 			name:       "Valid ID but no break",
 			statusCode: 200,
 			vehicleID:  150202809001685363,
-			resBody:    []map[string]interface{}{},
+			resBody: map[string]interface{}{
+				"data":    []interface{}{},
+				"code":    "200",
+				"message": "OK",
+			},
 		},
 	}
 
@@ -234,7 +269,7 @@ func TestListBreaks(t *testing.T) {
 
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
-			m := []map[string]interface{}{}
+			m := map[string]interface{}{}
 			if err = json.Unmarshal(body, &m); err != nil {
 				t.Error(err)
 			}
@@ -261,6 +296,7 @@ func TestGetBreak(t *testing.T) {
 			breakID:    100,
 			resBody: map[string]interface{}{
 				"error": "Not Found",
+				"code":  "404",
 			},
 		},
 		{
@@ -268,12 +304,16 @@ func TestGetBreak(t *testing.T) {
 			statusCode: 200,
 			breakID:    4668767710686035977,
 			resBody: map[string]interface{}{
-				"id":         "4668767710686035977",
-				"service":    "00:00:01",
-				"vehicle_id": "2550908592071787332",
-				"data":       map[string]interface{}{"key": "value"},
-				"created_at": "2021-10-26 21:24:38",
-				"updated_at": "2021-10-26 21:24:38",
+				"data": map[string]interface{}{
+					"id":         "4668767710686035977",
+					"service":    "00:00:01",
+					"vehicle_id": "2550908592071787332",
+					"data":       map[string]interface{}{"key": "value"},
+					"created_at": "2021-10-26 21:24:38",
+					"updated_at": "2021-10-26 21:24:38",
+				},
+				"code":    "200",
+				"message": "OK",
 			},
 		},
 	}
@@ -324,11 +364,15 @@ func TestUpdateBreak(t *testing.T) {
 			breakID:    4668767710686035977,
 			body:       map[string]interface{}{},
 			resBody: map[string]interface{}{
-				"id":         "4668767710686035977",
-				"service":    "00:00:01",
-				"vehicle_id": "2550908592071787332",
-				"data":       map[string]interface{}{"key": "value"},
-				"created_at": "2021-10-26 21:24:38",
+				"data": map[string]interface{}{
+					"id":         "4668767710686035977",
+					"service":    "00:00:01",
+					"vehicle_id": "2550908592071787332",
+					"data":       map[string]interface{}{"key": "value"},
+					"created_at": "2021-10-26 21:24:38",
+				},
+				"code":    "200",
+				"message": "OK",
 			},
 		},
 		{
@@ -338,6 +382,7 @@ func TestUpdateBreak(t *testing.T) {
 			body:       map[string]interface{}{},
 			resBody: map[string]interface{}{
 				"error": "Not Found",
+				"code":  "404",
 			},
 		},
 		{
@@ -348,11 +393,15 @@ func TestUpdateBreak(t *testing.T) {
 				"service": "00:01:40",
 			},
 			resBody: map[string]interface{}{
-				"id":         "4668767710686035977",
-				"service":    "00:01:40",
-				"vehicle_id": "2550908592071787332",
-				"data":       map[string]interface{}{"key": "value"},
-				"created_at": "2021-10-26 21:24:38",
+				"data": map[string]interface{}{
+					"id":         "4668767710686035977",
+					"service":    "00:01:40",
+					"vehicle_id": "2550908592071787332",
+					"data":       map[string]interface{}{"key": "value"},
+					"created_at": "2021-10-26 21:24:38",
+				},
+				"code":    "200",
+				"message": "OK",
 			},
 		},
 		{
@@ -363,7 +412,9 @@ func TestUpdateBreak(t *testing.T) {
 				"service": "-00:01:40",
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'service' must be non-negative with the format 'HH:MM:SS'"},
+				"code":    "400",
+				"message": "Bad Request",
+				"errors":  []interface{}{"Field 'service' must be non-negative with the format 'HH:MM:SS'"},
 			},
 		},
 		{
@@ -374,11 +425,15 @@ func TestUpdateBreak(t *testing.T) {
 				"data": map[string]interface{}{},
 			},
 			resBody: map[string]interface{}{
-				"id":         "4668767710686035977",
-				"service":    "00:01:40",
-				"vehicle_id": "2550908592071787332",
-				"data":       map[string]interface{}{},
-				"created_at": "2021-10-26 21:24:38",
+				"data": map[string]interface{}{
+					"id":         "4668767710686035977",
+					"service":    "00:01:40",
+					"vehicle_id": "2550908592071787332",
+					"data":       map[string]interface{}{},
+					"created_at": "2021-10-26 21:24:38",
+				},
+				"code":    "200",
+				"message": "OK",
 			},
 		},
 		{
@@ -391,11 +446,15 @@ func TestUpdateBreak(t *testing.T) {
 				"data":       map[string]interface{}{"s": 1},
 			},
 			resBody: map[string]interface{}{
-				"id":         "4668767710686035977",
-				"service":    "00:01:41",
-				"vehicle_id": "2550908592071787332",
-				"data":       map[string]interface{}{"s": float64(1)},
-				"created_at": "2021-10-26 21:24:38",
+				"data": map[string]interface{}{
+					"id":         "4668767710686035977",
+					"service":    "00:01:41",
+					"vehicle_id": "2550908592071787332",
+					"data":       map[string]interface{}{"s": float64(1)},
+					"created_at": "2021-10-26 21:24:38",
+				},
+				"code":    "200",
+				"message": "OK",
 			},
 		},
 	}
@@ -429,7 +488,10 @@ func TestUpdateBreak(t *testing.T) {
 			if err = json.Unmarshal(body, &m); err != nil {
 				t.Error(err)
 			}
-			delete(m, "updated_at")
+			if mData, ok := m["data"].(map[string]interface{}); ok {
+				delete(mData, "updated_at")
+				m["data"] = mData
+			}
 			assert.Equal(t, tc.resBody, m)
 		})
 	}
@@ -453,6 +515,7 @@ func TestDeleteBreak(t *testing.T) {
 			breakID:    100,
 			resBody: map[string]interface{}{
 				"error": "Not Found",
+				"code":  "404",
 			},
 		},
 		{
@@ -460,7 +523,8 @@ func TestDeleteBreak(t *testing.T) {
 			statusCode: 200,
 			breakID:    4668767710686035977,
 			resBody: map[string]interface{}{
-				"success": true,
+				"code":    "200",
+				"message": "OK",
 			},
 		},
 	}
