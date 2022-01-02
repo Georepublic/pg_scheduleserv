@@ -241,7 +241,7 @@ func (server *Server) DeleteJob(w http.ResponseWriter, r *http.Request) {
 // @Accept application/json
 // @Produce text/calendar,application/json
 // @Param job_id path int true "Job ID"
-// @Success 200 {object} util.SuccessResponse{data=util.Schedule}
+// @Success 200 {object} util.SuccessResponse{data=[]util.Schedule}
 // @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
 // @Router /jobs/{job_id}/schedule [get]

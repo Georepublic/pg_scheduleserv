@@ -242,7 +242,7 @@ func (server *Server) DeleteVehicle(w http.ResponseWriter, r *http.Request) {
 // @Accept application/json
 // @Produce text/calendar,application/json
 // @Param vehicle_id path int true "Vehicle ID"
-// @Success 200 {object} util.SuccessResponse{data=util.Schedule}
+// @Success 200 {object} util.SuccessResponse{data=[]util.Schedule}
 // @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
 // @Router /vehicles/{vehicle_id}/schedule [get]
