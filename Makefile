@@ -39,10 +39,10 @@ migratedown:
 	migrate -path migrations -database postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB) -verbose down
 .PHONY: migratedown
 
-swagger:
+doc:
 	swag init
 	swagger generate markdown -f docs/swagger.json --output=docs/api.md
-.PHONY: swagger
+.PHONY: doc
 
 check-mod:
 	go mod tidy
