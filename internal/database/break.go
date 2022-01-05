@@ -63,6 +63,10 @@ func (q *Queries) DBGetBreak(ctx context.Context, id int64) (Break, error) {
 }
 
 func (q *Queries) DBListBreaks(ctx context.Context, vehicleID int64) ([]Break, error) {
+	_, err := q.DBGetVehicle(ctx, vehicleID)
+	if err != nil {
+		return nil, err
+	}
 	table_name := "breaks"
 	additional_query := " WHERE vehicle_id = $1 AND deleted = FALSE ORDER BY created_at"
 	sql := "SELECT " + util.GetOutputFields(Break{}) + " FROM " + table_name + additional_query

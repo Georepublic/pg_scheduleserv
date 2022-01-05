@@ -77,6 +77,10 @@ func (q *Queries) DBGetVehicle(ctx context.Context, id int64) (Vehicle, error) {
 }
 
 func (q *Queries) DBListVehicles(ctx context.Context, projectID int64) ([]Vehicle, error) {
+	_, err := q.DBGetProject(ctx, projectID)
+	if err != nil {
+		return nil, err
+	}
 	table_name := "vehicles"
 	additional_query := " WHERE project_id = $1 AND deleted = FALSE ORDER BY created_at"
 	sql := "SELECT " + util.GetOutputFields(Vehicle{}) + " FROM " + table_name + additional_query

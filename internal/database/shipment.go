@@ -79,6 +79,10 @@ func (q *Queries) DBGetShipment(ctx context.Context, id int64) (Shipment, error)
 }
 
 func (q *Queries) DBListShipments(ctx context.Context, projectID int64) ([]Shipment, error) {
+	_, err := q.DBGetProject(ctx, projectID)
+	if err != nil {
+		return nil, err
+	}
 	table_name := "shipments"
 	additional_query := " WHERE project_id = $1 AND deleted = FALSE ORDER BY created_at"
 	sql := "SELECT " + util.GetOutputFields(Shipment{}) + " FROM " + table_name + additional_query

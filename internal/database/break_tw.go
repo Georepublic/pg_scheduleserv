@@ -49,6 +49,10 @@ func (q *Queries) DBCreateBreakTimeWindow(ctx context.Context, arg CreateBreakTi
 }
 
 func (q *Queries) DBListBreakTimeWindows(ctx context.Context, id int64) ([]BreakTimeWindow, error) {
+	_, err := q.DBGetBreak(ctx, id)
+	if err != nil {
+		return nil, err
+	}
 	table_name := "breaks_time_windows"
 	additional_query := " WHERE id = $1 ORDER BY created_at"
 	sql := "SELECT " + util.GetOutputFields(BreakTimeWindow{}) + " FROM " + table_name + additional_query

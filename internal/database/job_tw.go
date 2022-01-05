@@ -49,6 +49,10 @@ func (q *Queries) DBCreateJobTimeWindow(ctx context.Context, arg CreateJobTimeWi
 }
 
 func (q *Queries) DBListJobTimeWindows(ctx context.Context, id int64) ([]JobTimeWindow, error) {
+	_, err := q.DBGetJob(ctx, id)
+	if err != nil {
+		return nil, err
+	}
 	table_name := "jobs_time_windows"
 	additional_query := " WHERE id = $1 ORDER BY created_at"
 	sql := "SELECT " + util.GetOutputFields(JobTimeWindow{}) + " FROM " + table_name + additional_query
