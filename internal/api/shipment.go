@@ -242,7 +242,7 @@ func (server *Server) DeleteShipment(w http.ResponseWriter, r *http.Request) {
 // @Accept application/json
 // @Produce text/calendar,application/json
 // @Param shipment_id path int true "Shipment ID"
-// @Success 200 {object} util.SuccessResponse{data=[]util.Schedule}
+// @Success 200 {object} util.SuccessResponse{data=[]util.ScheduleDataTask}
 // @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
 // @Router /shipments/{shipment_id}/schedule [get]
@@ -265,7 +265,10 @@ func (server *Server) GetShipmentSchedule(w http.ResponseWriter, r *http.Request
 		calendar, filename := server.GetScheduleICal(schedule)
 		server.FormatICAL(w, http.StatusOK, calendar, filename)
 	case "application/json":
-		server.FormatJSON(w, http.StatusOK, schedule)
+		server.FormatJSON(w, http.StatusOK, util.ScheduleDataTask{
+			Schedule:  schedule.Schedule,
+			ProjectID: schedule.ProjectID,
+		})
 	default:
 		calendar, filename := server.GetScheduleICal(schedule)
 		server.FormatICAL(w, http.StatusOK, calendar, filename)

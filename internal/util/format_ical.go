@@ -39,7 +39,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type Schedule struct {
+type ScheduleDB struct {
 	Type        string         `json:"type" example:"job"`
 	ProjectID   int64          `json:"project_id,string" example:"1234567812345678"`
 	VehicleID   int64          `json:"vehicle_id,string" example:"1234567812345678"`
@@ -57,6 +57,93 @@ type Schedule struct {
 	CreatedAt   string         `json:"created_at" example:"2021-12-01 13:00:00"`
 	UpdatedAt   string         `json:"updated_at" example:"2021-12-01 13:00:00"`
 }
+
+/*
+-------------------------
+Schedule Response
+-------------------------
+*/
+
+type ScheduleRoute struct {
+	Type        string         `json:"type" example:"job"`
+	TaskID      int64          `json:"task_id,string" example:"1234567812345678"`
+	Location    LocationParams `json:"location"`
+	Arrival     string         `json:"arrival" example:"2021-12-01 13:00:00"`
+	Departure   string         `json:"departure" example:"2021-12-01 13:00:00"`
+	TravelTime  string         `json:"travel_time" example:"00:16:40"`
+	SetupTime   string         `json:"setup_time" example:"00:00:00"`
+	ServiceTime string         `json:"service_time" example:"00:02:00"`
+	WaitingTime string         `json:"waiting_time" example:"00:00:00"`
+	Load        []int64        `json:"load" example:"0,0"`
+	TaskData    interface{}    `json:"task_data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
+	CreatedAt   string         `json:"created_at" example:"2021-12-01 13:00:00"`
+	UpdatedAt   string         `json:"updated_at" example:"2021-12-01 13:00:00"`
+}
+
+type ScheduleResponse struct {
+	VehicleID   int64           `json:"vehicle_id,string"`
+	VehicleData interface{}     `json:"vehicle_data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
+	Route       []ScheduleRoute `json:"route"`
+}
+
+/*
+-------------------------
+Metadata Response
+-------------------------
+*/
+
+type ScheduleSummary struct {
+	VehicleID   int64       `json:"vehicle_id,string" example:"1234567812345678"`
+	TravelTime  string      `json:"travel_time" example:"00:16:40"`
+	SetupTime   string      `json:"setup_time" example:"00:00:00"`
+	ServiceTime string      `json:"service_time" example:"00:02:00"`
+	WaitingTime string      `json:"waiting_time" example:"00:00:00"`
+	VehicleData interface{} `json:"vehicle_data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
+}
+
+type ScheduleUnassigned struct {
+	Type     string         `json:"type" example:"job"`
+	TaskID   int64          `json:"task_id,string" example:"1234567812345678"`
+	Location LocationParams `json:"location"`
+	TaskData interface{}    `json:"task_data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
+}
+
+type MetadataResponse struct {
+	Summary      []ScheduleSummary    `json:"summary"`
+	Unassigned   []ScheduleUnassigned `json:"unassigned"`
+	TotalTravel  string               `json:"total_travel" example:"01:00:00"`
+	TotalSetup   string               `json:"total_setup" example:"00:05:00"`
+	TotalService string               `json:"total_service" example:"00:10:00"`
+	TotalWaiting string               `json:"total_waiting" example:"00:30:00"`
+}
+
+/*
+-------------------------
+Schedule Data
+-------------------------
+*/
+
+type ScheduleData struct {
+	Schedule  []ScheduleResponse `json:"schedule"`
+	Metadata  MetadataResponse   `json:"metadata"`
+	ProjectID int64              `json:"project_id,string,omitempty" example:"1234567812345678"`
+}
+
+type ScheduleDataOverview struct {
+	Metadata  MetadataResponse `json:"metadata"`
+	ProjectID int64            `json:"project_id,string,omitempty" example:"1234567812345678"`
+}
+
+type ScheduleDataTask struct {
+	Schedule  []ScheduleResponse `json:"schedule"`
+	ProjectID int64              `json:"project_id,string,omitempty" example:"1234567812345678"`
+}
+
+/*
+-------------------------
+ICal Format struct
+-------------------------
+*/
 
 type ICal struct {
 	ID          string
@@ -85,22 +172,22 @@ func parseTime(time_str string) time.Time {
 	return t
 }
 
-func getSummary(schedule Schedule) string {
-	return fmt.Sprintf("%s - Vehicle %d", strings.Title(schedule.Type), schedule.VehicleID)
+func getSummary(route ScheduleRoute, vehicleID int64) string {
+	return fmt.Sprintf("%s - Vehicle %d", strings.Title(route.Type), vehicleID)
 }
 
-func getLocation(schedule Schedule) string {
-	return fmt.Sprintf("(%.4f, %.4f)", *schedule.Location.Latitude, *schedule.Location.Longitude)
+func getLocation(route ScheduleRoute) string {
+	return fmt.Sprintf("(%.4f, %.4f)", *route.Location.Latitude, *route.Location.Longitude)
 }
 
-func getDescription(schedule Schedule) string {
-	desc := fmt.Sprintf("Project ID: %d\n", schedule.ProjectID)
-	desc += fmt.Sprintf("Vehicle ID: %d\n", schedule.VehicleID)
-	desc += fmt.Sprintf("Task ID: %d\n", schedule.TaskID)
-	desc += fmt.Sprintf("Travel Time: %s\n", schedule.TravelTime)
-	desc += fmt.Sprintf("Service Time: %s\n", schedule.ServiceTime)
-	desc += fmt.Sprintf("Waiting Time: %s\n", schedule.WaitingTime)
-	desc += fmt.Sprintf("Load: %d\n", schedule.Load)
+func getDescription(route ScheduleRoute, projectID int64, vehicleID int64) string {
+	desc := fmt.Sprintf("Project ID: %d\n", projectID)
+	desc += fmt.Sprintf("Vehicle ID: %d\n", vehicleID)
+	desc += fmt.Sprintf("Task ID: %d\n", route.TaskID)
+	desc += fmt.Sprintf("Travel Time: %s\n", route.TravelTime)
+	desc += fmt.Sprintf("Service Time: %s\n", route.ServiceTime)
+	desc += fmt.Sprintf("Waiting Time: %s\n", route.WaitingTime)
+	desc += fmt.Sprintf("Load: %d\n", route.Load)
 	return desc
 }
 
@@ -139,32 +226,29 @@ func (r *Formatter) FormatICAL(w http.ResponseWriter, respCode int, calendar []I
 	}
 }
 
-func (r *Formatter) GetScheduleICal(schedule []Schedule) ([]ICal, string) {
+func (r *Formatter) GetScheduleICal(scheduleData ScheduleData) ([]ICal, string) {
 	var calendar []ICal
 
-	var projectID int64
-	if len(schedule) > 0 {
-		projectID = schedule[0].ProjectID
-	} else {
-		projectID = 0
-	}
+	projectID := scheduleData.ProjectID
 	filename := fmt.Sprintf("schedule-%d.ics", projectID)
+	schedule := scheduleData.Schedule
 	for i := 0; i < len(schedule); i++ {
-		if schedule[i].VehicleID == -1 || schedule[i].TaskID == 0 {
-			continue
+		route := schedule[i].Route
+		vehicleID := schedule[i].VehicleID
+		for j := 0; j < len(route); j++ {
+			entry := ICal{
+				ID:          fmt.Sprintf("%s%d@scheduleserv", route[j].Type, route[j].TaskID),
+				CreatedTime: parseTime(route[j].CreatedAt),
+				DtStampTime: time.Now(),
+				ModifiedAt:  parseTime(route[j].UpdatedAt),
+				StartAt:     parseTime(route[j].Arrival),
+				EndAt:       parseTime(route[j].Departure),
+				Summary:     getSummary(route[j], vehicleID),
+				Location:    getLocation(route[j]),
+				Description: getDescription(route[j], projectID, vehicleID),
+			}
+			calendar = append(calendar, entry)
 		}
-		entry := ICal{
-			ID:          fmt.Sprintf("%s%d@scheduleserv", schedule[i].Type, schedule[i].TaskID),
-			CreatedTime: parseTime(schedule[i].CreatedAt),
-			DtStampTime: time.Now(),
-			ModifiedAt:  parseTime(schedule[i].UpdatedAt),
-			StartAt:     parseTime(schedule[i].Arrival),
-			EndAt:       parseTime(schedule[i].Departure),
-			Summary:     getSummary(schedule[i]),
-			Location:    getLocation(schedule[i]),
-			Description: getDescription(schedule[i]),
-		}
-		calendar = append(calendar, entry)
 	}
 	return calendar, filename
 }
