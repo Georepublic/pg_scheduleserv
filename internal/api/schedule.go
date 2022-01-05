@@ -32,17 +32,21 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/Georepublic/pg_scheduleserv/internal/util"
 	"github.com/gorilla/mux"
 )
 
 // CreateSchedule godoc
 // @Summary Schedule the tasks
-// @Description Schedule the tasks present in a project, deleting any previous schedule
+// @Description Schedule the tasks present in a project, deleting any previous schedule and return the new schedule.
+// @Description
+// @Description **For JSON content type**: When overview = true, only the metadata is returned. Default value is false, which also returns the summary object.
 // @Tags Schedule
 // @Accept application/json
 // @Produce application/json
 // @Param project_id path int true "Project ID"
-// @Success 200 {object} util.SuccessResponse{data=[]util.Schedule}
+// @Param overview query bool false "Overview" comment here is there
+// @Success 201 {object} util.SuccessResponse{data=util.ScheduleData}
 // @Failure 400 {object} util.ErrorResponse
 // @Router /projects/{project_id}/schedule [post]
 func (server *Server) CreateSchedule(w http.ResponseWriter, r *http.Request) {
@@ -66,17 +70,28 @@ func (server *Server) CreateSchedule(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, schedule)
+	overview := r.URL.Query().Get("overview")
+	if overview == "true" {
+		server.FormatJSON(w, http.StatusCreated, util.ScheduleDataOverview{
+			Metadata:  schedule.Metadata,
+			ProjectID: schedule.ProjectID,
+		})
+	} else {
+		server.FormatJSON(w, http.StatusCreated, schedule)
+	}
 }
 
 // GetSchedule godoc
 // @Summary Get the schedule
-// @Description Get the schedule for a project
+// @Description Get the schedule for a project.
+// @Description
+// @Description **For JSON content type**: When overview = true, only the metadata is returned. Default value is false, which also returns the summary object.
 // @Tags Schedule
 // @Accept application/json
 // @Produce text/calendar,application/json
 // @Param project_id path int true "Project ID"
-// @Success 200 {object} util.SuccessResponse{data=[]util.Schedule}
+// @Param overview query bool false "Overview"
+// @Success 200 {object} util.SuccessResponse{data=util.ScheduleData}
 // @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
 // @Router /projects/{project_id}/schedule [get]
@@ -99,7 +114,15 @@ func (server *Server) GetSchedule(w http.ResponseWriter, r *http.Request) {
 		calendar, filename := server.GetScheduleICal(schedule)
 		server.FormatICAL(w, http.StatusOK, calendar, filename)
 	case "application/json":
-		server.FormatJSON(w, http.StatusOK, schedule)
+		overview := r.URL.Query().Get("overview")
+		if overview == "true" {
+			server.FormatJSON(w, http.StatusOK, util.ScheduleDataOverview{
+				Metadata:  schedule.Metadata,
+				ProjectID: schedule.ProjectID,
+			})
+		} else {
+			server.FormatJSON(w, http.StatusOK, schedule)
+		}
 	default:
 		calendar, filename := server.GetScheduleICal(schedule)
 		server.FormatICAL(w, http.StatusOK, calendar, filename)

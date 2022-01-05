@@ -238,11 +238,14 @@ func (server *Server) DeleteVehicle(w http.ResponseWriter, r *http.Request) {
 // GetVehicleSchedule godoc
 // @Summary Get the schedule for a vehicle
 // @Description Get the schedule for a vehicle using vehicle_id
+// @Description
+// @Description **For JSON content type**: When overview = true, only the metadata is returned. Default value is false, which also returns the summary object.
 // @Tags Vehicle
 // @Accept application/json
 // @Produce text/calendar,application/json
 // @Param vehicle_id path int true "Vehicle ID"
-// @Success 200 {object} util.SuccessResponse{data=[]util.Schedule}
+// @Param overview query bool false "Overview"
+// @Success 200 {object} util.SuccessResponse{data=[]util.ScheduleDB}
 // @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
 // @Router /vehicles/{vehicle_id}/schedule [get]
@@ -265,7 +268,15 @@ func (server *Server) GetVehicleSchedule(w http.ResponseWriter, r *http.Request)
 		calendar, filename := server.GetScheduleICal(schedule)
 		server.FormatICAL(w, http.StatusOK, calendar, filename)
 	case "application/json":
-		server.FormatJSON(w, http.StatusOK, schedule)
+		overview := r.URL.Query().Get("overview")
+		if overview == "true" {
+			server.FormatJSON(w, http.StatusOK, util.ScheduleDataOverview{
+				Metadata:  schedule.Metadata,
+				ProjectID: schedule.ProjectID,
+			})
+		} else {
+			server.FormatJSON(w, http.StatusOK, schedule)
+		}
 	default:
 		calendar, filename := server.GetScheduleICal(schedule)
 		server.FormatICAL(w, http.StatusOK, calendar, filename)
