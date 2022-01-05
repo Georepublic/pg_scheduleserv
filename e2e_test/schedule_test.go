@@ -59,12 +59,11 @@ func TestCreateSchedule(t *testing.T) {
 	}{
 		{
 			name:       "Invalid ID",
-			statusCode: 201,
+			statusCode: 404,
 			projectID:  123,
 			resBody: map[string]interface{}{
-				"data":    []interface{}{},
-				"code":    "201",
-				"message": "Created",
+				"error": "Not Found",
+				"code":  "404",
 			},
 		},
 		{
@@ -552,12 +551,11 @@ func TestGetScheduleJson(t *testing.T) {
 	}{
 		{
 			name:       "Invalid ID",
-			statusCode: 200,
+			statusCode: 404,
 			projectID:  123,
 			resBody: map[string]interface{}{
-				"data":    []interface{}{},
-				"code":    "200",
-				"message": "OK",
+				"error": "Not Found",
+				"code":  "404",
 			},
 		},
 		{
@@ -797,13 +795,6 @@ func TestGetScheduleICal(t *testing.T) {
 		filename   string
 	}{
 		{
-			name:       "Invalid ID",
-			statusCode: 200,
-			projectID:  123,
-			resBody:    []util.ICal{},
-			filename:   "schedule-0.ics",
-		},
-		{
 			name:       "Valid ID, no schedule",
 			statusCode: 200,
 			projectID:  2593982828701335033,
@@ -911,14 +902,13 @@ func TestDeleteSchedule(t *testing.T) {
 		projectID  int
 		resBody    map[string]interface{}
 	}{
-		// TODO: Check this
 		{
 			name:       "Invalid ID",
 			statusCode: 200,
 			projectID:  100,
 			resBody: map[string]interface{}{
-				"code":    "200",
-				"message": "OK",
+				"error": "Not Found",
+				"code":  "404",
 			},
 		},
 		{

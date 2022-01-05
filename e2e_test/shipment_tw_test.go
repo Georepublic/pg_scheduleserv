@@ -281,12 +281,11 @@ func TestListShipmentTimeWindows(t *testing.T) {
 	}{
 		{
 			name:       "Invalid ID",
-			statusCode: 200,
+			statusCode: 404,
 			shipmentID: 100,
 			resBody: map[string]interface{}{
-				"data":    []interface{}{},
-				"code":    "200",
-				"message": "OK",
+				"error": "Not Found",
+				"code":  "404",
 			},
 		},
 		{

@@ -405,12 +405,11 @@ func TestListVehicles(t *testing.T) {
 	}{
 		{
 			name:       "Invalid ID",
-			statusCode: 200,
+			statusCode: 404,
 			projectID:  100,
 			resBody: map[string]interface{}{
-				"data":    []interface{}{},
-				"code":    "200",
-				"message": "OK",
+				"error": "Not Found",
+				"code":  "404",
 			},
 		},
 		{
@@ -1188,12 +1187,11 @@ func TestGetVehicleScheduleJson(t *testing.T) {
 	}{
 		{
 			name:       "Invalid ID",
-			statusCode: 200,
+			statusCode: 404,
 			vehicleID:  123,
 			resBody: map[string]interface{}{
-				"data":    []interface{}{},
-				"code":    "200",
-				"message": "OK",
+				"error": "Not Found",
+				"code":  "404",
 			},
 		},
 		{
@@ -1411,13 +1409,6 @@ func TestGetVehicleScheduleICal(t *testing.T) {
 		resBody    []util.ICal
 		filename   string
 	}{
-		{
-			name:       "Invalid ID",
-			statusCode: 200,
-			vehicleID:  123,
-			resBody:    []util.ICal{},
-			filename:   "schedule-0.ics",
-		},
 		{
 			name:       "Valid ID, no schedule",
 			statusCode: 200,
