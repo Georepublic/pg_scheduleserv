@@ -75,6 +75,10 @@ func (q *Queries) DBGetJob(ctx context.Context, id int64) (Job, error) {
 }
 
 func (q *Queries) DBListJobs(ctx context.Context, projectID int64) ([]Job, error) {
+	_, err := q.DBGetProject(ctx, projectID)
+	if err != nil {
+		return nil, err
+	}
 	table_name := "jobs"
 	additional_query := " WHERE project_id = $1 AND deleted = FALSE ORDER BY created_at"
 	sql := "SELECT " + util.GetOutputFields(Job{}) + " FROM " + table_name + additional_query

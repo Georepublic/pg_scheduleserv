@@ -50,6 +50,10 @@ func (q *Queries) DBCreateShipmentTimeWindow(ctx context.Context, arg CreateShip
 }
 
 func (q *Queries) DBListShipmentTimeWindows(ctx context.Context, id int64) ([]ShipmentTimeWindow, error) {
+	_, err := q.DBGetShipment(ctx, id)
+	if err != nil {
+		return nil, err
+	}
 	table_name := "shipments_time_windows"
 	additional_query := " WHERE id = $1 ORDER BY created_at"
 	sql := "SELECT " + util.GetOutputFields(ShipmentTimeWindow{}) + " FROM " + table_name + additional_query
