@@ -57,13 +57,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Break"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Break"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -105,7 +117,7 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -150,13 +162,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Break"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Break"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -194,16 +218,28 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/database.BreakTimeWindow"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/database.BreakTimeWindow"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -242,13 +278,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.BreakTimeWindow"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.BreakTimeWindow"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -284,7 +332,7 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -322,13 +370,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Job"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Job"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -370,7 +430,7 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -406,13 +466,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Job"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Job"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -451,13 +523,28 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/util.Schedule"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/util.ScheduleDataTask"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -495,16 +582,28 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/database.JobTimeWindow"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/database.JobTimeWindow"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -543,13 +642,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.JobTimeWindow"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.JobTimeWindow"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -585,7 +696,7 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -614,16 +725,28 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/database.Project"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/database.Project"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -655,13 +778,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Project"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Project"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -693,13 +828,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Project"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Project"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -741,7 +888,7 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -786,13 +933,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Project"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Project"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -830,16 +989,28 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/database.Job"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/database.Job"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -878,13 +1049,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Job"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Job"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -892,7 +1075,7 @@ var doc = `{
         },
         "/projects/{project_id}/schedule": {
             "get": {
-                "description": "Get the schedule for a project",
+                "description": "Get the schedule for a project.\n\n**For JSON content type**: When overview = true, only the metadata is returned. Default value is false, which also returns the summary object.",
                 "consumes": [
                     "application/json"
                 ],
@@ -911,19 +1094,37 @@ var doc = `{
                         "name": "project_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Overview",
+                        "name": "overview",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/util.Schedule"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/util.ScheduleData"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -935,7 +1136,7 @@ var doc = `{
                 }
             },
             "post": {
-                "description": "Schedule the tasks present in a project, deleting any previous schedule",
+                "description": "Schedule the tasks present in a project, deleting any previous schedule and return the new schedule.\n\n**For JSON content type**: When overview = true, only the metadata is returned. Default value is false, which also returns the summary object.",
                 "consumes": [
                     "application/json"
                 ],
@@ -953,19 +1154,37 @@ var doc = `{
                         "name": "project_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Overview",
+                        "name": "overview",
+                        "in": "query"
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/util.Schedule"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/util.ScheduleData"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -1001,7 +1220,7 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -1039,16 +1258,28 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/database.Shipment"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/database.Shipment"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -1087,13 +1318,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Shipment"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Shipment"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -1125,16 +1368,28 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/database.Vehicle"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/database.Vehicle"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -1173,13 +1428,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Vehicle"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Vehicle"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -1211,13 +1478,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Shipment"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Shipment"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -1259,7 +1538,7 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -1304,13 +1583,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Shipment"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Shipment"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -1349,13 +1640,28 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/util.Schedule"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/util.ScheduleDataTask"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -1393,16 +1699,28 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/database.ShipmentTimeWindow"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/database.ShipmentTimeWindow"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -1441,13 +1759,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.ShipmentTimeWindow"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.ShipmentTimeWindow"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -1483,7 +1813,7 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -1521,13 +1851,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Vehicle"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Vehicle"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -1569,7 +1911,7 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -1614,13 +1956,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Vehicle"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Vehicle"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -1658,16 +2012,28 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/database.Break"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/database.Break"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -1706,13 +2072,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Break"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Break"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -1720,7 +2098,7 @@ var doc = `{
         },
         "/vehicles/{vehicle_id}/schedule": {
             "get": {
-                "description": "Get the schedule for a vehicle using vehicle_id",
+                "description": "Get the schedule for a vehicle using vehicle_id\n\n**For JSON content type**: When overview = true, only the metadata is returned. Default value is false, which also returns the summary object.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1739,19 +2117,40 @@ var doc = `{
                         "name": "vehicle_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Overview",
+                        "name": "overview",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/util.Schedule"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/util.ScheduleDB"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -2540,6 +2939,29 @@ var doc = `{
                 }
             }
         },
+        "util.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "400"
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "Error message1",
+                        "Error message2"
+                    ]
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Bad Request"
+                }
+            }
+        },
         "util.LocationParams": {
             "type": "object",
             "required": [
@@ -2557,31 +2979,53 @@ var doc = `{
                 }
             }
         },
-        "util.MultiError": {
+        "util.MetadataResponse": {
             "type": "object",
             "properties": {
-                "errors": {
+                "summary": {
                     "type": "array",
                     "items": {
-                        "type": "string"
-                    },
-                    "example": [
-                        "Error message1",
-                        "Error message2"
-                    ]
+                        "$ref": "#/definitions/util.ScheduleSummary"
+                    }
+                },
+                "total_service": {
+                    "type": "string",
+                    "example": "00:10:00"
+                },
+                "total_setup": {
+                    "type": "string",
+                    "example": "00:05:00"
+                },
+                "total_travel": {
+                    "type": "string",
+                    "example": "01:00:00"
+                },
+                "total_waiting": {
+                    "type": "string",
+                    "example": "00:30:00"
+                },
+                "unassigned": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/util.ScheduleUnassigned"
+                    }
                 }
             }
         },
         "util.NotFound": {
             "type": "object",
             "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "404"
+                },
                 "error": {
                     "type": "string",
                     "example": "Not Found"
                 }
             }
         },
-        "util.Schedule": {
+        "util.ScheduleDB": {
             "type": "object",
             "properties": {
                 "arrival": {
@@ -2667,12 +3111,217 @@ var doc = `{
                 }
             }
         },
+        "util.ScheduleData": {
+            "type": "object",
+            "properties": {
+                "metadata": {
+                    "$ref": "#/definitions/util.MetadataResponse"
+                },
+                "project_id": {
+                    "type": "string",
+                    "example": "1234567812345678"
+                },
+                "schedule": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/util.ScheduleResponse"
+                    }
+                }
+            }
+        },
+        "util.ScheduleDataTask": {
+            "type": "object",
+            "properties": {
+                "project_id": {
+                    "type": "string",
+                    "example": "1234567812345678"
+                },
+                "schedule": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/util.ScheduleResponse"
+                    }
+                }
+            }
+        },
+        "util.ScheduleResponse": {
+            "type": "object",
+            "properties": {
+                "route": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/util.ScheduleRoute"
+                    }
+                },
+                "vehicle_data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
+                },
+                "vehicle_id": {
+                    "type": "string",
+                    "example": "0"
+                }
+            }
+        },
+        "util.ScheduleRoute": {
+            "type": "object",
+            "properties": {
+                "arrival": {
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
+                },
+                "departure": {
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
+                },
+                "load": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "example": [
+                        0,
+                        0
+                    ]
+                },
+                "location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "service_time": {
+                    "type": "string",
+                    "example": "00:02:00"
+                },
+                "setup_time": {
+                    "type": "string",
+                    "example": "00:00:00"
+                },
+                "task_data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
+                },
+                "task_id": {
+                    "type": "string",
+                    "example": "1234567812345678"
+                },
+                "travel_time": {
+                    "type": "string",
+                    "example": "00:16:40"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "job"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2021-12-01 13:00:00"
+                },
+                "waiting_time": {
+                    "type": "string",
+                    "example": "00:00:00"
+                }
+            }
+        },
+        "util.ScheduleSummary": {
+            "type": "object",
+            "properties": {
+                "service_time": {
+                    "type": "string",
+                    "example": "00:02:00"
+                },
+                "setup_time": {
+                    "type": "string",
+                    "example": "00:00:00"
+                },
+                "travel_time": {
+                    "type": "string",
+                    "example": "00:16:40"
+                },
+                "vehicle_data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
+                },
+                "vehicle_id": {
+                    "type": "string",
+                    "example": "1234567812345678"
+                },
+                "waiting_time": {
+                    "type": "string",
+                    "example": "00:00:00"
+                }
+            }
+        },
+        "util.ScheduleUnassigned": {
+            "type": "object",
+            "properties": {
+                "location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "task_data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
+                },
+                "task_id": {
+                    "type": "string",
+                    "example": "1234567812345678"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "job"
+                }
+            }
+        },
         "util.Success": {
             "type": "object",
             "properties": {
-                "success": {
+                "code": {
                     "type": "string",
-                    "example": "true"
+                    "example": "200"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "OK"
+                }
+            }
+        },
+        "util.SuccessResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "200"
+                },
+                "data": {},
+                "message": {
+                    "type": "string",
+                    "example": "OK"
                 }
             }
         }

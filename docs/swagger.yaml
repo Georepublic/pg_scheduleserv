@@ -549,6 +549,22 @@ definitions:
         example: "2021-12-01 13:00:00"
         type: string
     type: object
+  util.ErrorResponse:
+    properties:
+      code:
+        example: "400"
+        type: string
+      errors:
+        example:
+        - Error message1
+        - Error message2
+        items:
+          type: string
+        type: array
+      message:
+        example: Bad Request
+        type: string
+    type: object
   util.LocationParams:
     properties:
       latitude:
@@ -561,23 +577,39 @@ definitions:
     - latitude
     - longitude
     type: object
-  util.MultiError:
+  util.MetadataResponse:
     properties:
-      errors:
-        example:
-        - Error message1
-        - Error message2
+      summary:
         items:
-          type: string
+          $ref: '#/definitions/util.ScheduleSummary'
+        type: array
+      total_service:
+        example: "00:10:00"
+        type: string
+      total_setup:
+        example: "00:05:00"
+        type: string
+      total_travel:
+        example: "01:00:00"
+        type: string
+      total_waiting:
+        example: "00:30:00"
+        type: string
+      unassigned:
+        items:
+          $ref: '#/definitions/util.ScheduleUnassigned'
         type: array
     type: object
   util.NotFound:
     properties:
+      code:
+        example: "404"
+        type: string
       error:
         example: Not Found
         type: string
     type: object
-  util.Schedule:
+  util.ScheduleDB:
     properties:
       arrival:
         example: "2021-12-01 13:00:00"
@@ -639,10 +671,154 @@ definitions:
         example: "00:00:00"
         type: string
     type: object
+  util.ScheduleData:
+    properties:
+      metadata:
+        $ref: '#/definitions/util.MetadataResponse'
+      project_id:
+        example: "1234567812345678"
+        type: string
+      schedule:
+        items:
+          $ref: '#/definitions/util.ScheduleResponse'
+        type: array
+    type: object
+  util.ScheduleDataTask:
+    properties:
+      project_id:
+        example: "1234567812345678"
+        type: string
+      schedule:
+        items:
+          $ref: '#/definitions/util.ScheduleResponse'
+        type: array
+    type: object
+  util.ScheduleResponse:
+    properties:
+      route:
+        items:
+          $ref: '#/definitions/util.ScheduleRoute'
+        type: array
+      vehicle_data:
+        additionalProperties:
+          type: string
+        example:
+          key1: value1
+          key2: value2
+        type: object
+      vehicle_id:
+        example: "0"
+        type: string
+    type: object
+  util.ScheduleRoute:
+    properties:
+      arrival:
+        example: "2021-12-01 13:00:00"
+        type: string
+      created_at:
+        example: "2021-12-01 13:00:00"
+        type: string
+      departure:
+        example: "2021-12-01 13:00:00"
+        type: string
+      load:
+        example:
+        - 0
+        - 0
+        items:
+          type: integer
+        type: array
+      location:
+        $ref: '#/definitions/util.LocationParams'
+      service_time:
+        example: "00:02:00"
+        type: string
+      setup_time:
+        example: "00:00:00"
+        type: string
+      task_data:
+        additionalProperties:
+          type: string
+        example:
+          key1: value1
+          key2: value2
+        type: object
+      task_id:
+        example: "1234567812345678"
+        type: string
+      travel_time:
+        example: "00:16:40"
+        type: string
+      type:
+        example: job
+        type: string
+      updated_at:
+        example: "2021-12-01 13:00:00"
+        type: string
+      waiting_time:
+        example: "00:00:00"
+        type: string
+    type: object
+  util.ScheduleSummary:
+    properties:
+      service_time:
+        example: "00:02:00"
+        type: string
+      setup_time:
+        example: "00:00:00"
+        type: string
+      travel_time:
+        example: "00:16:40"
+        type: string
+      vehicle_data:
+        additionalProperties:
+          type: string
+        example:
+          key1: value1
+          key2: value2
+        type: object
+      vehicle_id:
+        example: "1234567812345678"
+        type: string
+      waiting_time:
+        example: "00:00:00"
+        type: string
+    type: object
+  util.ScheduleUnassigned:
+    properties:
+      location:
+        $ref: '#/definitions/util.LocationParams'
+      task_data:
+        additionalProperties:
+          type: string
+        example:
+          key1: value1
+          key2: value2
+        type: object
+      task_id:
+        example: "1234567812345678"
+        type: string
+      type:
+        example: job
+        type: string
+    type: object
   util.Success:
     properties:
-      success:
-        example: "true"
+      code:
+        example: "200"
+        type: string
+      message:
+        example: OK
+        type: string
+    type: object
+  util.SuccessResponse:
+    properties:
+      code:
+        example: "200"
+        type: string
+      data: {}
+      message:
+        example: OK
         type: string
     type: object
 host: localhost:9100
@@ -680,7 +856,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -704,11 +880,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Break'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Break'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -738,11 +919,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Break'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Break'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -771,7 +957,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -795,13 +981,18 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/database.BreakTimeWindow'
-            type: array
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/database.BreakTimeWindow'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: List break time windows for a break
       tags:
       - Break
@@ -827,11 +1018,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.BreakTimeWindow'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.BreakTimeWindow'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: Create a new break time window
       tags:
       - Break
@@ -856,7 +1052,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -880,11 +1076,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Job'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Job'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -908,11 +1109,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Job'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Job'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -938,11 +1144,18 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.Schedule'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/util.ScheduleDataTask'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -971,7 +1184,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -995,13 +1208,18 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/database.JobTimeWindow'
-            type: array
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/database.JobTimeWindow'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: List job time windows for a job
       tags:
       - Job
@@ -1027,11 +1245,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.JobTimeWindow'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.JobTimeWindow'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: Create a new job time window
       tags:
       - Job
@@ -1046,13 +1269,18 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/database.Project'
-            type: array
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/database.Project'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: List projects
       tags:
       - Project
@@ -1073,11 +1301,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Project'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Project'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: Create a new project
       tags:
       - Project
@@ -1102,7 +1335,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1126,11 +1359,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Project'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Project'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1160,11 +1398,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Project'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Project'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1189,13 +1432,18 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/database.Job'
-            type: array
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/database.Job'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: List jobs for a project
       tags:
       - Job
@@ -1221,11 +1469,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Job'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Job'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: Create a new job
       tags:
       - Job
@@ -1250,7 +1503,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1261,13 +1514,20 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get the schedule for a project
+      description: |-
+        Get the schedule for a project.
+
+        **For JSON content type**: When overview = true, only the metadata is returned. Default value is false, which also returns the summary object.
       parameters:
       - description: Project ID
         in: path
         name: project_id
         required: true
         type: integer
+      - description: Overview
+        in: query
+        name: overview
+        type: boolean
       produces:
       - text/calendar
       - application/json
@@ -1275,11 +1535,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.Schedule'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/util.ScheduleData'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1290,25 +1555,36 @@ paths:
     post:
       consumes:
       - application/json
-      description: Schedule the tasks present in a project, deleting any previous
-        schedule
+      description: |-
+        Schedule the tasks present in a project, deleting any previous schedule and return the new schedule.
+
+        **For JSON content type**: When overview = true, only the metadata is returned. Default value is false, which also returns the summary object.
       parameters:
       - description: Project ID
         in: path
         name: project_id
         required: true
         type: integer
+      - description: Overview
+        in: query
+        name: overview
+        type: boolean
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
-            $ref: '#/definitions/util.Schedule'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/util.ScheduleData'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: Schedule the tasks
       tags:
       - Schedule
@@ -1329,13 +1605,18 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/database.Shipment'
-            type: array
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/database.Shipment'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: List shipments for a project
       tags:
       - Shipment
@@ -1361,11 +1642,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Shipment'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Shipment'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: Create a new shipment
       tags:
       - Shipment
@@ -1386,13 +1672,18 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/database.Vehicle'
-            type: array
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/database.Vehicle'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: List vehicles for a project
       tags:
       - Vehicle
@@ -1418,11 +1709,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Vehicle'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Vehicle'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: Create a new vehicle
       tags:
       - Vehicle
@@ -1447,7 +1743,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1471,11 +1767,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Shipment'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Shipment'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1505,11 +1806,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Shipment'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Shipment'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1535,11 +1841,18 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.Schedule'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/util.ScheduleDataTask'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1568,7 +1881,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1592,13 +1905,18 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/database.ShipmentTimeWindow'
-            type: array
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/database.ShipmentTimeWindow'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: List shipment time windows for a shipment
       tags:
       - Shipment
@@ -1624,11 +1942,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.ShipmentTimeWindow'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.ShipmentTimeWindow'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: Create a new shipment time window
       tags:
       - Shipment
@@ -1653,7 +1976,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1677,11 +2000,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Vehicle'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Vehicle'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1711,11 +2039,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Vehicle'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Vehicle'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1740,13 +2073,18 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/database.Break'
-            type: array
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/database.Break'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: List breaks
       tags:
       - Break
@@ -1772,11 +2110,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Break'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Break'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: Create a new break
       tags:
       - Break
@@ -1784,13 +2127,20 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get the schedule for a vehicle using vehicle_id
+      description: |-
+        Get the schedule for a vehicle using vehicle_id
+
+        **For JSON content type**: When overview = true, only the metadata is returned. Default value is false, which also returns the summary object.
       parameters:
       - description: Vehicle ID
         in: path
         name: vehicle_id
         required: true
         type: integer
+      - description: Overview
+        in: query
+        name: overview
+        type: boolean
       produces:
       - text/calendar
       - application/json
@@ -1798,11 +2148,18 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.Schedule'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/util.ScheduleDB'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
