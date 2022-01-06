@@ -1189,7 +1189,9 @@ func TestGetJobScheduleJson(t *testing.T) {
 			statusCode: 200,
 			jobID:      6362411701075685873,
 			resBody: map[string]interface{}{
-				"data":    []interface{}{},
+				"data": map[string]interface{}{
+					"schedule": []interface{}{},
+				},
 				"code":    "200",
 				"message": "OK",
 			},
@@ -1199,35 +1201,41 @@ func TestGetJobScheduleJson(t *testing.T) {
 			statusCode: 200,
 			jobID:      3324729385723589730,
 			resBody: map[string]interface{}{
-				"data": []interface{}{
-					map[string]interface{}{
-						"type":       "job",
-						"project_id": "3909655254191459783",
-						"vehicle_id": "7300272137290532981",
-						"task_id":    "3324729385723589730",
-						"location": map[string]interface{}{
-							"latitude":  23.3458,
-							"longitude": 2.3242,
+				"data": map[string]interface{}{
+					"schedule": []interface{}{
+						map[string]interface{}{
+							"vehicle_id": "7300272137290532981",
+							"vehicle_data": map[string]interface{}{
+								"s": float64(1),
+							},
+							"route": []interface{}{
+								map[string]interface{}{
+									"type":    "job",
+									"task_id": "3324729385723589730",
+									"location": map[string]interface{}{
+										"latitude":  23.3458,
+										"longitude": 2.3242,
+									},
+									"arrival":      "2020-01-03 16:42:27",
+									"departure":    "2020-01-03 16:47:27",
+									"travel_time":  "54:32:27",
+									"setup_time":   "00:00:00",
+									"service_time": "00:05:00",
+									"waiting_time": "00:00:00",
+									"load": []interface{}{
+										0.0,
+										0.0,
+									},
+									"task_data": map[string]interface{}{
+										"key": "value",
+									},
+									"created_at": "2021-12-29 01:05:34",
+									"updated_at": "2021-12-29 01:05:34",
+								},
+							},
 						},
-						"arrival":      "2020-01-03 16:42:27",
-						"departure":    "2020-01-03 16:47:27",
-						"travel_time":  "54:32:27",
-						"setup_time":   "00:00:00",
-						"service_time": "00:05:00",
-						"waiting_time": "00:00:00",
-						"load": []interface{}{
-							0.0,
-							0.0,
-						},
-						"vehicle_data": map[string]interface{}{
-							"s": 1.0,
-						},
-						"task_data": map[string]interface{}{
-							"key": "value",
-						},
-						"created_at": "2021-12-29 01:05:34",
-						"updated_at": "2021-12-29 01:05:34",
 					},
+					"project_id": "3909655254191459783",
 				},
 				"code":    "200",
 				"message": "OK",
@@ -1279,7 +1287,7 @@ func TestGetJobScheduleICal(t *testing.T) {
 		{
 			name:       "Valid ID, no schedule",
 			statusCode: 200,
-			jobID:      3329730179111013588,
+			jobID:      2229737119501208952,
 			resBody:    []util.ICal{},
 			filename:   "schedule-0.ics",
 		},
