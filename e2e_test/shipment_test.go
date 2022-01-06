@@ -1244,7 +1244,9 @@ func TestGetShipmentScheduleJson(t *testing.T) {
 			statusCode: 200,
 			shipmentID: 3329730179111013588,
 			resBody: map[string]interface{}{
-				"data":    []interface{}{},
+				"data": map[string]interface{}{
+					"schedule": []interface{}{},
+				},
 				"code":    "200",
 				"message": "OK",
 			},
@@ -1254,59 +1256,60 @@ func TestGetShipmentScheduleJson(t *testing.T) {
 			statusCode: 200,
 			shipmentID: 3341766951177830852,
 			resBody: map[string]interface{}{
-				"data": []interface{}{
-					map[string]interface{}{
-						"type":       "pickup",
-						"project_id": "3909655254191459782",
-						"vehicle_id": "7300272137290532980",
-						"task_id":    "3341766951177830852",
-						"location": map[string]interface{}{
-							"latitude":  -32.234,
-							"longitude": -23.2342,
+				"data": map[string]interface{}{
+					"schedule": []interface{}{
+						map[string]interface{}{
+							"vehicle_id": "7300272137290532980",
+							"vehicle_data": map[string]interface{}{
+								"s": float64(1),
+							},
+							"route": []interface{}{
+								map[string]interface{}{
+									"type":    "pickup",
+									"task_id": "3341766951177830852",
+									"location": map[string]interface{}{
+										"latitude":  -32.234,
+										"longitude": -23.2342,
+									},
+									"arrival":      "2020-01-01 10:10:00",
+									"departure":    "2020-01-01 10:10:01",
+									"travel_time":  "00:00:00",
+									"setup_time":   "00:00:00",
+									"service_time": "00:00:01",
+									"waiting_time": "00:00:00",
+									"load": []interface{}{
+										float64(3),
+										float64(5),
+									},
+									"task_data":  map[string]interface{}{},
+									"created_at": "2021-12-08 20:04:16",
+									"updated_at": "2021-12-08 20:04:16",
+								},
+								map[string]interface{}{
+									"type":    "delivery",
+									"task_id": "3341766951177830852",
+									"location": map[string]interface{}{
+										"latitude":  23.3458,
+										"longitude": 2.3242,
+									},
+									"arrival":      "2020-01-03 20:52:34",
+									"departure":    "2020-01-03 20:52:37",
+									"travel_time":  "58:42:33",
+									"setup_time":   "00:00:00",
+									"service_time": "00:00:03",
+									"waiting_time": "00:00:00",
+									"load": []interface{}{
+										float64(0),
+										float64(0),
+									},
+									"task_data":  map[string]interface{}{},
+									"created_at": "2021-12-08 20:04:16",
+									"updated_at": "2021-12-08 20:04:16",
+								},
+							},
 						},
-						"arrival":      "2020-01-01 10:10:00",
-						"departure":    "2020-01-01 10:10:01",
-						"travel_time":  "00:00:00",
-						"setup_time":   "00:00:00",
-						"service_time": "00:00:01",
-						"waiting_time": "00:00:00",
-						"load": []interface{}{
-							float64(3),
-							float64(5),
-						},
-						"vehicle_data": map[string]interface{}{
-							"s": float64(1),
-						},
-						"task_data":  map[string]interface{}{},
-						"created_at": "2021-12-08 20:04:16",
-						"updated_at": "2021-12-08 20:04:16",
 					},
-					map[string]interface{}{
-						"type":       "delivery",
-						"project_id": "3909655254191459782",
-						"vehicle_id": "7300272137290532980",
-						"task_id":    "3341766951177830852",
-						"location": map[string]interface{}{
-							"latitude":  23.3458,
-							"longitude": 2.3242,
-						},
-						"arrival":      "2020-01-03 20:52:34",
-						"departure":    "2020-01-03 20:52:37",
-						"travel_time":  "58:42:33",
-						"setup_time":   "00:00:00",
-						"service_time": "00:00:03",
-						"waiting_time": "00:00:00",
-						"load": []interface{}{
-							float64(0),
-							float64(0),
-						},
-						"vehicle_data": map[string]interface{}{
-							"s": float64(1),
-						},
-						"task_data":  map[string]interface{}{},
-						"created_at": "2021-12-08 20:04:16",
-						"updated_at": "2021-12-08 20:04:16",
-					},
+					"project_id": "3909655254191459782",
 				},
 				"code":    "200",
 				"message": "OK",
