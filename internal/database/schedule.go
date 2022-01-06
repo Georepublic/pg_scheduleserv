@@ -238,7 +238,6 @@ func scanScheduleRows(rows pgx.Rows) (util.ScheduleData, error) {
 			VehicleData: prevI.VehicleData,
 			Route:       route,
 		})
-		route = nil
 	}
 
 	if !fullSummaryFound && len(summary) != 0 {
