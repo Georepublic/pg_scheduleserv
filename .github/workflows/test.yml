@@ -25,6 +25,7 @@ jobs:
           echo "PGIS=3" >> $GITHUB_ENV
           echo "VROOMVER=1.11.0" >> $GITHUB_ENV
           echo "VRPVER=0.3.0" >> $GITHUB_ENV
+          echo "DEVELOP=true" >> $GITHUB_ENV
 
       - name: Add PostgreSQL APT repository
         run: |
@@ -74,6 +75,7 @@ jobs:
           make
 
       - name: Cache vrpRouting
+        if: ${{ env.DEVELOP != 'true' }}
         id: cache-vrprouting
         uses: actions/cache@v2
         env:
@@ -84,10 +86,9 @@ jobs:
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ env.VRPVER }}
 
       - name: Clone vrpRouting
-        if: steps.cache-vroom.outputs.cache-hit != 'true'
+        if: steps.cache-vroom.outputs.cache-hit != 'true' || ${{ env.DEVELOP }} == "true"
         run: |
-          DEVELOP=true
-          if [ "${DEVELOP}" = true ]; then
+          if [ "${{ env.DEVELOP }}" = true ]; then
             git clone --depth 1 https://github.com/pgRouting/vrprouting -b develop
             mv vrprouting ~/vrprouting-${{ env.VRPVER }}
           else
