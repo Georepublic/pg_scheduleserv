@@ -70,6 +70,8 @@ func setup(db_url string, filename string) (*api.Server, *pgxpool.Pool) {
 		logrus.Printf("Unable to apply the up migrations: %v\n", err)
 		os.Exit(1)
 	}
-	applyTestData(db_url, filename)
+	if filename != "" {
+		applyTestData(db_url, filename)
+	}
 	return server, conn
 }

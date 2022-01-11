@@ -157,6 +157,7 @@ CREATE TABLE IF NOT EXISTS projects (
   name              VARCHAR   NOT NULL,
   exploration_level INTEGER   NOT NULL DEFAULT 5,
   timeout           INTERVAL  NOT NULL DEFAULT '-00:00:01'::INTERVAL,
+  max_shift         INTERVAL  NOT NULL DEFAULT '00:30:00'::INTERVAL,
 
   data        JSONB     NOT NULL DEFAULT '{}'::JSONB,
   created_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
@@ -199,6 +200,7 @@ CREATE TABLE IF NOT EXISTS jobs (
   data            JSONB     NOT NULL DEFAULT '{}'::JSONB,
   created_at      TIMESTAMP NOT NULL DEFAULT current_timestamp,
   updated_at      TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  status          TEXT      NOT NULL DEFAULT 'unscheduled'::TEXT,
   deleted         BOOLEAN   NOT NULL DEFAULT FALSE,
 
   CHECK(id >= 0),
@@ -246,6 +248,7 @@ CREATE TABLE IF NOT EXISTS shipments (
   data              JSONB     NOT NULL DEFAULT '{}'::JSONB,
   created_at        TIMESTAMP NOT NULL DEFAULT current_timestamp,
   updated_at        TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  status            TEXT      NOT NULL DEFAULT 'unscheduled'::TEXT,
   deleted           BOOLEAN   NOT NULL DEFAULT FALSE,
 
   CHECK(id >= 0),
@@ -393,11 +396,12 @@ CREATE TABLE IF NOT EXISTS schedules (
 );
 -- SCHEDULE TABLE end
 
--- Create schedule for a project
-CREATE OR REPLACE FUNCTION create_schedule(BIGINT)
+-- Create schedule for a project (fresh scheduling, deleting any previous schedule)
+CREATE OR REPLACE FUNCTION create_schedule_forced(BIGINT)
 RETURNS void
 AS $BODY$
   DELETE FROM schedules WHERE project_id = $1;
+
   INSERT INTO schedules
     (type, project_id, vehicle_id, location_id, task_id, vehicle_data, task_data,
     arrival, travel_time, setup_time, service_time, waiting_time, departure, load)
@@ -425,8 +429,127 @@ AS $BODY$
     exploration_level => (SELECT exploration_level FROM projects WHERE id = $1),
     timeout => (SELECT timeout FROM projects WHERE id = $1)
   );
+
+  -- Update schedule jobs status
+  UPDATE jobs SET status = 'scheduled'::TEXT
+    WHERE project_id = $1 AND id IN (
+      SELECT task_id FROM schedules
+      WHERE project_id = $1 AND type = 'job'::STEP_TYPE AND vehicle_id > 0
+    );
+
+  -- Update unschedule jobs status
+  UPDATE jobs SET status = 'unscheduled'::TEXT
+    WHERE project_id = $1 AND id IN (
+      SELECT task_id FROM schedules
+      WHERE project_id = $1 AND type = 'job'::STEP_TYPE AND vehicle_id = -1
+    );
+
+  -- Update schedule shipments status
+  UPDATE shipments SET status = 'scheduled'::TEXT
+    WHERE project_id = $1 AND id IN (
+      SELECT task_id FROM schedules
+      WHERE project_id = $1 AND type = 'pickup'::STEP_TYPE AND vehicle_id > 0
+    );  -- Pickup and delivery always occur with same id
+
+  -- Update unschedule shipments status
+  UPDATE shipments SET status = 'unscheduled'::TEXT
+    WHERE project_id = $1 AND id IN (
+      SELECT task_id FROM schedules
+      WHERE project_id = $1 AND type = 'pickup'::STEP_TYPE AND vehicle_id = -1
+    );
+
 $BODY$ LANGUAGE sql VOLATILE STRICT;
 
+
+-- Create schedule for a project (such that any previous scheduled tasks are not likely to be unscheduled)
+CREATE OR REPLACE FUNCTION create_schedule_unforced(BIGINT)
+RETURNS void
+AS $BODY$
+
+  DELETE FROM schedules WHERE project_id = $1;
+
+  WITH delta AS (SELECT max_shift FROM projects WHERE id = $1)
+  INSERT INTO schedules
+    (type, project_id, vehicle_id, location_id, task_id, vehicle_data, task_data,
+    arrival, travel_time, setup_time, service_time, waiting_time, departure, load)
+  SELECT
+    CASE
+      WHEN step_type = 0 THEN 'summary'::STEP_TYPE
+      WHEN step_type = 1 THEN 'start'::STEP_TYPE
+      WHEN step_type = 2 THEN 'job'::STEP_TYPE
+      WHEN step_type = 3 THEN 'pickup'::STEP_TYPE
+      WHEN step_type = 4 THEN 'delivery'::STEP_TYPE
+      WHEN step_type = 5 THEN 'break'::STEP_TYPE
+      WHEN step_type = 6 THEN 'end'::STEP_TYPE
+    END,
+    $1::BIGINT, vehicle_id, location_id, task_id, vehicle_data, task_data,
+    arrival, travel_time, setup_time, service_time, waiting_time, departure, load
+  FROM vrp_vroom(
+    -- jobs (Unscheduled jobs + Scheduled jobs with 100 priority)
+    'SELECT id, location_id, setup, service, delivery, pickup, skills, priority
+     FROM jobs WHERE project_id = ' || $1 || ' AND status = ''unscheduled'' AND deleted = FALSE
+     UNION
+     SELECT id, location_id, setup, service, delivery, pickup, skills, 100 AS priority
+     FROM jobs WHERE project_id = ' || $1 || ' AND status = ''scheduled'' AND deleted = FALSE',
+
+    -- jobs_time_windows (For unscheduled, select original time windows. For scheduled, alter the time window with a delta interval)
+    'SELECT J.id AS id, tw_open, tw_close
+     FROM jobs_time_windows TW LEFT JOIN jobs J ON(TW.id = J.id)
+     WHERE status = ''unscheduled'' AND project_id = ' || $1 || '
+    UNION
+     SELECT J.id AS id, GREATEST(tw_open, arrival - $$' || (SELECT * FROM delta) || '$$::INTERVAL) AS tw_open, LEAST(tw_close, arrival + $$' || (SELECT * FROM delta) || '$$::INTERVAL) AS tw_close
+     FROM jobs_time_windows TW LEFT JOIN jobs J ON(TW.id = J.id) JOIN schedules S ON (J.id = S.task_id)
+     WHERE status = ''scheduled'' AND type = ''job'' AND J.project_id = ' || $1 || ' ORDER BY id, tw_open', -- TODO (IF tw_open > tw_close)
+
+    -- shipments (Unscheduled shipments + Scheduled shipments with 100 priority)
+    'SELECT id, p_location_id, p_setup, p_service, d_location_id, d_setup, d_service, amount, skills, priority
+     FROM shipments WHERE project_id = ' || $1 || ' AND status = ''unscheduled'' AND deleted = FALSE
+     UNION
+     SELECT id, p_location_id, p_setup, p_service, d_location_id, d_setup, d_service, amount, skills, 100 AS priority
+     FROM shipments WHERE project_id = ' || $1 || ' AND status = ''scheduled'' AND deleted = FALSE',
+
+    -- shipments_time_windows (TODO)
+    'SELECT id, kind, tw_open, tw_close FROM shipments_time_windows ORDER BY id, tw_open',
+
+    -- vehicles
+    'SELECT * FROM vehicles WHERE deleted = FALSE AND project_id = ' || $1 || '',
+
+    'SELECT * FROM breaks WHERE deleted = FALSE',
+    'SELECT * FROM breaks_time_windows ORDER BY id, tw_open',
+    'SELECT * FROM matrix',
+    exploration_level => (SELECT exploration_level FROM projects WHERE id = $1),
+    timeout => (SELECT timeout FROM projects WHERE id = $1)
+  );
+
+  -- Update schedule jobs status
+  UPDATE jobs SET status = 'scheduled'::TEXT
+    WHERE project_id = $1 AND id IN (
+      SELECT task_id FROM schedules
+      WHERE project_id = $1 AND type = 'job'::STEP_TYPE AND vehicle_id > 0
+    );
+
+  -- Update unschedule jobs status
+  UPDATE jobs SET status = 'unscheduled'::TEXT
+    WHERE project_id = $1 AND id IN (
+      SELECT task_id FROM schedules
+      WHERE project_id = $1 AND type = 'job'::STEP_TYPE AND vehicle_id = -1
+    );
+
+  -- Update schedule shipments status
+  UPDATE shipments SET status = 'scheduled'::TEXT
+    WHERE project_id = $1 AND id IN (
+      SELECT task_id FROM schedules
+      WHERE project_id = $1 AND type = 'pickup'::STEP_TYPE AND vehicle_id > 0
+    );  -- Pickup and delivery always occur with same id
+
+  -- Update unschedule shipments status
+  UPDATE shipments SET status = 'unscheduled'::TEXT
+    WHERE project_id = $1 AND id IN (
+      SELECT task_id FROM schedules
+      WHERE project_id = $1 AND type = 'pickup'::STEP_TYPE AND vehicle_id = -1
+    );
+
+$BODY$ LANGUAGE sql VOLATILE STRICT;
 
 
 CREATE OR REPLACE FUNCTION create_schedule_with_matrix(BIGINT, start_ids BIGINT[], end_ids BIGINT[], durations BIGINT[])
