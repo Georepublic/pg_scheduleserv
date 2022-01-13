@@ -211,6 +211,7 @@ func SerializeICal(calendar []ICal) string {
 func (r *Formatter) FormatICAL(w http.ResponseWriter, respCode int, calendar []ICal, filename string) {
 	// Set the content-type, content-disposition, and response code in the header
 	w.Header().Set("Content-Type", "text/calendar")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", filename))
 	w.WriteHeader(respCode)
 
