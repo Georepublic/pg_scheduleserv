@@ -1,0 +1,31 @@
+import BaseAPI from "./BaseAPI.js";
+
+export default class ScheduleAPI {
+  constructor() {
+    this.baseAPI = new BaseAPI();
+  }
+
+  createSchedule(projectID) {
+    return this.baseAPI.post(`/projects/${projectID}/schedule`, data);
+  }
+
+  getSchedule(projectID) {
+    return this.baseAPI.get(`/projects/${projectID}/schedule`);
+  }
+
+  getJobSchedule(jobID) {
+    return this.baseAPI.get(`/jobs/${jobID}/schedule`);
+  }
+
+  getShipmentSchedule(shipmentID) {
+    return this.baseAPI.get(`/shipments/${shipmentID}/schedule`);
+  }
+
+  getVehicleSchedule(vehicleID) {
+    return this.baseAPI.get(`/vehicles/${vehicleID}/schedule`);
+  }
+
+  deleteSchedule(projectID) {
+    return this.baseAPI.delete(`/projects/${projectID}/schedule`);
+  }
+}
