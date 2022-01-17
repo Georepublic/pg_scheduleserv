@@ -17,7 +17,7 @@ export default class VehicleAPI {
     return this.baseAPI.get(`/${vehicleID}`);
   }
 
-  editVehicle(vehicleID, data) {
+  updateVehicle(vehicleID, data) {
     return this.baseAPI.patch(`/${vehicleID}`, data);
   }
 

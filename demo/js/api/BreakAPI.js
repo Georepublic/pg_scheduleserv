@@ -17,7 +17,7 @@ export default class BreakAPI {
     return this.baseAPI.get(`/${breakID}`);
   }
 
-  editBreak(breakID, data) {
+  updateBreak(breakID, data) {
     return this.baseAPI.patch(`/${breakID}`, data);
   }
 

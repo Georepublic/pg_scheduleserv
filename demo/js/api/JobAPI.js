@@ -17,7 +17,7 @@ export default class JobAPI {
     return this.baseAPI.get(`/${jobID}`);
   }
 
-  editJob(jobID, data) {
+  updateJob(jobID, data) {
     return this.baseAPI.patch(`/${jobID}`, data);
   }
 

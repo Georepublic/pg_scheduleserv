@@ -9,16 +9,16 @@ export default class ProjectAPI {
     return this.baseAPI.get(`/projects`);
   }
 
-  createProject(data) {
-    return this.baseAPI.post(`/projects`, data);
+  saveProject(data) {
+    if (data["id"]) {
+      return this.baseAPI.patch(`/projects/${data["id"]}`, data);
+    } else {
+      return this.baseAPI.post(`/projects`, data);
+    }
   }
 
   getProject(projectID) {
     return this.baseAPI.get(`/projects/${projectID}`);
-  }
-
-  editProject(projectID, data) {
-    return this.baseAPI.patch(`/projects/${projectID}`, data);
   }
 
   deleteProject(projectID) {

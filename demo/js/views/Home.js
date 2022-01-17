@@ -9,7 +9,12 @@ export default class extends AbstractView {
 
   getHtml() {
     return `
-        <center><h2>Welcome to pg_scheduleserv demo application</h2></center>
+        <div class="heading">
+          <h2>Welcome to pg_scheduleserv demo application</h2>
+        </div>
+        <div class="sub-heading">
+          <a href="/projects" type="button" class="btn btn-outline-primary" data-link>View all Projects</a>
+        </div>
         `;
   }
 }
