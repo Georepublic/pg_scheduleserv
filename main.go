@@ -26,7 +26,6 @@ along with pg_scheduleserv.  If not, see <https://www.gnu.org/licenses/>.
 
 ******************************************************************GRP-GNU-AGPL*/
 
-
 package main
 
 import (

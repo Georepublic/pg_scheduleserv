@@ -37,6 +37,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v4"
+	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
 )
 
@@ -65,7 +66,9 @@ func NewServer(conn *pgx.Conn) *Server {
 
 func (server *Server) Start(port string) error {
 	logrus.Info("Serving requests on port", port)
-	return http.ListenAndServe(port, util.Logger(server.Router))
+
+	// handle CORS
+	return http.ListenAndServe(port, util.Logger(cors.AllowAll().Handler(server.Router)))
 }
 
 func (server *Server) handleRoutes(router *mux.Router) {
