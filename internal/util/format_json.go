@@ -75,7 +75,6 @@ func (r *Formatter) FormatJSON(w http.ResponseWriter, respCode int, data interfa
 
 	// Set the content-type and response code in the header
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(respCode)
 
 	if data == nil {
