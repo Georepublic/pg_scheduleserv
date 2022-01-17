@@ -37,3 +37,11 @@ indent_size = 2
 # .bat files want CRLF
 [*.bat]
 end_of_line = crlf
+
+[*.js]
+indent_style = space
+indent_size = 2
+
+[*.html]
+indent_style = space
+indent_size = 2
