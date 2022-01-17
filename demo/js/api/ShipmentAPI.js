@@ -17,7 +17,7 @@ export default class ShipmentAPI {
     return this.baseAPI.get(`/${shipmentID}`);
   }
 
-  editShipment(shipmentID, data) {
+  updateShipment(shipmentID, data) {
     return this.baseAPI.patch(`/${shipmentID}`, data);
   }
 
