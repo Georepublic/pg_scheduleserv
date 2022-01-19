@@ -18,4 +18,13 @@ export default class {
   setHtmlRight(html) {
     document.querySelector("#app-right").innerHTML = html;
   }
+
+  setHeading(heading) {
+    let html = `<h2>${heading}</h2>`;
+    document.querySelector("#heading").innerHTML = html;
+  }
+
+  setSubHeading(subHeading) {
+    document.querySelector("#sub-heading").innerHTML = subHeading;
+  }
 }

@@ -9,11 +9,13 @@ export default class extends AbstractView {
 
     // initialize the view with loading icon before data is loaded
     this.setHtml(this.getLoadingHtml());
+    this.setHeading("Projects");
+    this.setSubHeading("");
 
-    this._refresh();
+    this.refresh();
   }
 
-  _refresh() {
+  refresh() {
     this.projectAPI
       .listProjects()
       .then((projects) => {
@@ -28,7 +30,6 @@ export default class extends AbstractView {
 
   getLoadingHtml() {
     return `
-      <div class="heading"><h2>Projects</h2></div>
       <div class="list-group">
         <div class="list-group-item flex-column align-items-start">
           <div class="d-flex w-100 justify-content-between">
@@ -42,7 +43,6 @@ export default class extends AbstractView {
   // get the html heading and list of projects by calling the getProjectHtml function
   getCompleteHtml(projects) {
     return `
-      <div class="heading"><h2>Projects</h2></div>
       <div class="list-group">${this.getProjectHtml(projects)}</div>
       ${this.getProjectCreateButton()}
     `;
