@@ -70,9 +70,9 @@ const router = async () => {
 window.addEventListener("popstate", router);
 
 document.addEventListener("DOMContentLoaded", () => {
-  document.body.addEventListener("click", (e) => {
-    const el = e.target.closest("a");
-    if (el && el.matches("[data-link]")) {
+  document.addEventListener("click", (e) => {
+    const el = e.target.closest("[data-link]");
+    if (el) {
       e.preventDefault();
       navigateTo(el.href);
     }
