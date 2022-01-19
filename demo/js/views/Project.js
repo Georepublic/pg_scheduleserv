@@ -1,6 +1,7 @@
 import AbstractView from "./AbstractView.js";
 import ProjectAPI from "../api/ProjectAPI.js";
-import LocationAPI from "../api/LocationAPI.js";
+import JobView from "./JobView.js";
+import MapView from "./MapView.js";
 
 export default class extends AbstractView {
   constructor(params) {
@@ -8,23 +9,35 @@ export default class extends AbstractView {
     this.setTitle("Projects");
 
     this.setHtml(this.getLoadingHtml());
+    this.setSubHeading("");
 
     this.projectAPI = new ProjectAPI();
-    this.locationAPI = new LocationAPI();
 
     this.projectAPI
       .getProject(params.id)
       .then((project) => {
+        this.setHeading(project.name);
         this.setHtml(this.getHtml(project));
       })
       .then(() => {
-        this.createMap();
-      });
+        var mapView = new MapView();
+        mapView.createMap();
+      }).then(() => {
+        // call JobAPI to get jobs and pass them to JobView
+        this.projectAPI.getJobs(params.id).then((jobs) => {
+          var jobView = new JobView({
+            jobs: jobs,
+            projectID: params.id,
+          });
+          jobView.render();
+        });
+      })
+
+      this.setHeading("Projects");
   }
 
   getLoadingHtml() {
     return `
-      <div class="heading"><h2>Project</h2></div>
       <div class="list-group">
         <div class="list-group-item flex-column align-items-start">
           <div class="d-flex w-100 justify-content-between">
@@ -35,35 +48,8 @@ export default class extends AbstractView {
     `;
   }
 
-  createMap() {
-    var latitude = 35.7127;
-    var longitude = 139.762;
-
-    this.locationAPI.getLocation().then((location) => {
-      latitude = location.latitude;
-      longitude = location.longitude;
-    }).catch((error) => {
-      console.log(error);
-    }).then(() => {
-      // create new open layer map
-      var map = new ol.Map({
-        target: "map",
-        layers: [
-          new ol.layer.Tile({
-            source: new ol.source.OSM(),
-          }),
-        ],
-        view: new ol.View({
-          center: ol.proj.fromLonLat([longitude, latitude]),
-          zoom: 12,
-        }),
-      });
-    })
-  }
-
   getHtml(project) {
     var html = `
-    <div class="heading"><h2>${project.name}</h2></div>
     <div class="list-group">
       <div id="project-${project.id}" class="list-group-item flex-column align-items-start">
         <div class="d-flex w-100 justify-content-between">
