@@ -14,14 +14,14 @@ export default class ShipmentAPI {
   }
 
   getShipment(shipmentID) {
-    return this.baseAPI.get(`/${shipmentID}`);
+    return this.baseAPI.get(`/shipments/${shipmentID}`);
   }
 
   updateShipment(shipmentID, data) {
-    return this.baseAPI.patch(`/${shipmentID}`, data);
+    return this.baseAPI.patch(`/shipments/${shipmentID}`, data);
   }
 
   deleteShipment(shipmentID) {
-    return this.baseAPI.delete(`/${shipmentID}`);
+    return this.baseAPI.delete(`/shipments/${shipmentID}`);
   }
 }
