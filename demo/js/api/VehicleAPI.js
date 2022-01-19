@@ -14,14 +14,14 @@ export default class VehicleAPI {
   }
 
   getVehicle(vehicleID) {
-    return this.baseAPI.get(`/${vehicleID}`);
+    return this.baseAPI.get(`/vehicles/${vehicleID}`);
   }
 
   updateVehicle(vehicleID, data) {
-    return this.baseAPI.patch(`/${vehicleID}`, data);
+    return this.baseAPI.patch(`/vehicles/${vehicleID}`, data);
   }
 
   deleteVehicle(vehicleID) {
-    return this.baseAPI.delete(`/${vehicleID}`);
+    return this.baseAPI.delete(`/vehicles/${vehicleID}`);
   }
 }
