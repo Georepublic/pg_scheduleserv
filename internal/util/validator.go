@@ -108,7 +108,7 @@ func ValidateInput(jsonStruct map[string]interface{}, originalStruct interface{}
 		if ok && requiredType.Kind() == reflect.Slice {
 			convertible := true
 			for i := 0; i < len(typ2); i++ {
-				if !reflect.TypeOf(typ2[i]).ConvertibleTo(requiredType.Elem()) {
+				if typ2[i] == nil || !reflect.TypeOf(typ2[i]).ConvertibleTo(requiredType.Elem()) {
 					convertible = false
 				}
 			}
