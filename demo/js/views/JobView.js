@@ -172,7 +172,6 @@ export default class extends AbstractView {
             <div class="form-group">
               <label for="edit-job-location">Location (Lat, Lon)</label>
               <input type="text" class="form-control" name="location" value="${job.location.latitude}, ${job.location.longitude}" data-action="location-change">
-              <button type="button" class="btn btn-primary" data-action="toggle-map-click">Choose on Map</button>
             </div>
             <div class="form-group">
               <label for="edit-job-setup">Setup</label>
@@ -289,9 +288,9 @@ export default class extends AbstractView {
         this.setHtmlRight(jobHtml);
 
         this.mapView.removeMapPointer();
-        this.mapView.deactivateMap();
         this.mapView.fitMarkers(this.markers);
         this.mapView.addMarkerOnClick(job.location.latitude, job.location.longitude);
+        this.mapView.activateMap();
       },
       onJobEditClick: (job) => {
         // get the complete html for the job
@@ -301,9 +300,9 @@ export default class extends AbstractView {
         this.setHtmlRight(jobHtml);
 
         this.mapView.removeMapPointer();
-        this.mapView.deactivateMap();
         this.mapView.setCenter(job.location.latitude, job.location.longitude);
         this.mapView.addMarkerOnClick(job.location.latitude, job.location.longitude);
+        this.mapView.activateMap();
       },
       onJobSave: (job, newJobs) => {
         this.jobs = newJobs;
