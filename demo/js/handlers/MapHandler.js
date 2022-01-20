@@ -1,22 +1,6 @@
 export default class {
-  constructor({ onToggleMapClick, onLocationTextChange }) {
-    this.handleToggleMapClick(onToggleMapClick);
+  constructor({ onLocationTextChange }) {
     this.handleLocationTextChange(onLocationTextChange);
-  }
-
-  handleToggleMapClick(onToggleMapClick) {
-    document.addEventListener("click", (event) => {
-      const el = event.target.closest(`[data-action="toggle-map-click"]`);
-      if (el) {
-        // if innertext is done, change it to choose
-        if (el.innerText === "Choose on Map") {
-          el.innerText = "Done";
-        } else {
-          el.innerText = "Choose on Map";
-        }
-        onToggleMapClick();
-      }
-    });
   }
 
   handleLocationTextChange(onLocationTextChange) {

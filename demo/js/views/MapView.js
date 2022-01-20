@@ -4,8 +4,6 @@ import MapHandler from "../handlers/MapHandler.js";
 export default class {
   constructor() {
     this.locationAPI = new LocationAPI();
-    this.mapActivated = false;
-
     this.handler = new MapHandler(this.handlers());
   }
 
@@ -31,7 +29,6 @@ export default class {
   }
 
   activateMap() {
-    this.mapActivated = true;
     this.map.getContainer().classList.add("active");
 
     if (this.newMarker && this.newMarker.dragging) {
@@ -52,7 +49,6 @@ export default class {
   }
 
   deactivateMap() {
-    this.mapActivated = false;
     this.map.off("mouseover");
     this.map.getContainer().classList.remove("active");
     this.map.off("click");
@@ -81,6 +77,8 @@ export default class {
 
       // update popup
       this.newMarker.setPopupContent("Latitude: " + latitude + "<br>Longitude: " + longitude).openPopup();
+
+      this.setCenter(latitude, longitude);
 
       // update textbox
       document.querySelector("input[name=location]").value = latitude + ", " + longitude;
@@ -156,17 +154,10 @@ export default class {
 
   handlers() {
     return {
-      onToggleMapClick: () => {
-        if (!this.mapActivated) {
-          this.activateMap();
-        } else {
-          this.deactivateMap();
-        }
-      },
-
       onLocationTextChange: (latitude, longitude) => {
         this.removeMapPointer();
         this.addMarkerOnClick(latitude, longitude);
+        this.activateMap();
       }
     };
   }
