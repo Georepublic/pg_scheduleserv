@@ -66,7 +66,7 @@ func ValidateInput(jsonStruct map[string]interface{}, originalStruct interface{}
 	resType := reflect.TypeOf(originalStruct)
 	if resType.Kind() != reflect.Struct {
 		logrus.Debug(resType.Kind())
-		panic("Bad type: requires a struct")
+		logrus.Error("Bad type: requires a struct")
 	}
 	for i := 0; i < resType.NumField(); i++ {
 		fieldType := resType.Field(i)

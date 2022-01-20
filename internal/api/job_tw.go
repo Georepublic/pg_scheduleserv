@@ -108,7 +108,8 @@ func (server *Server) ListJobTimeWindows(w http.ResponseWriter, r *http.Request)
 	vars := mux.Vars(r)
 	job_id, err := strconv.ParseInt(vars["job_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
@@ -136,7 +137,8 @@ func (server *Server) DeleteJobTimeWindow(w http.ResponseWriter, r *http.Request
 	vars := mux.Vars(r)
 	job_id, err := strconv.ParseInt(vars["job_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()

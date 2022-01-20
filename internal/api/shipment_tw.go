@@ -108,7 +108,8 @@ func (server *Server) ListShipmentTimeWindows(w http.ResponseWriter, r *http.Req
 	vars := mux.Vars(r)
 	shipment_id, err := strconv.ParseInt(vars["shipment_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
@@ -136,7 +137,8 @@ func (server *Server) DeleteShipmentTimeWindow(w http.ResponseWriter, r *http.Re
 	vars := mux.Vars(r)
 	shipment_id, err := strconv.ParseInt(vars["shipment_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()

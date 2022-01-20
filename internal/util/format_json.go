@@ -33,6 +33,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/hashicorp/go-multierror"
@@ -45,6 +46,11 @@ func getFinalData(respCode int, data interface{}) (int, interface{}) {
 		respCode = http.StatusNotFound
 		data = nil
 		return respCode, data
+	}
+
+	// Custom error message in case of conversion errors
+	if typ, ok := data.(*strconv.NumError); ok {
+		data = fmt.Errorf(`Invalid value "%s", %s`, typ.Num, typ.Err)
 	}
 
 	// Convert validation errors to []string

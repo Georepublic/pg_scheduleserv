@@ -108,7 +108,8 @@ func (server *Server) ListShipments(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	project_id, err := strconv.ParseInt(vars["project_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
@@ -136,7 +137,8 @@ func (server *Server) GetShipment(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	shipment_id, err := strconv.ParseInt(vars["shipment_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
@@ -172,7 +174,8 @@ func (server *Server) UpdateShipment(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	shipment_id, err := strconv.ParseInt(vars["shipment_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	// Validate the input type
@@ -222,7 +225,8 @@ func (server *Server) DeleteShipment(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	shipment_id, err := strconv.ParseInt(vars["shipment_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
@@ -250,7 +254,8 @@ func (server *Server) GetShipmentSchedule(w http.ResponseWriter, r *http.Request
 	vars := mux.Vars(r)
 	shipmentID, err := strconv.ParseInt(vars["shipment_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
