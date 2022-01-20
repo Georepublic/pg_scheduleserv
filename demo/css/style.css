@@ -1,3 +1,7 @@
+.navbar {
+    margin-bottom: 50px;
+}
+
 .heading, .sub-heading {
     text-align: center;
     margin-bottom: 20px;
@@ -6,6 +10,18 @@
 #map {
     height: 700px;
     width: 100%;
+}
+
+#map.active {
+    cursor: pointer;
+    border: red solid 2px;
+}
+
+.myDivIcon {
+    /* Horizontally center the text (icon) */
+    text-align: center;
+    /* Vertically center the text (icon) */
+    line-height: 10px;
 }
 
 .color-1 {
