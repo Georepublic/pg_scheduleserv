@@ -1,16 +1,15 @@
 import JobAPI from "../api/JobAPI.js";
-import Json from "../utils/Json.js";
 
 export default class {
-  constructor(jobs, emptyJob, { onJobView, onJobCreate, onJobEdit, onJobDelete, onJobSave, onJobClose }) {
+  constructor(jobs, emptyJob, { onJobView, onJobCreateClick, onJobEditClick, onJobDelete, onJobSave, onJobClose }) {
     // get the jobs from the params
     this.jobs = jobs;
     this.emptyJob = emptyJob;
     this.jobAPI = new JobAPI();
 
     this.handleJobView(onJobView);
-    this.handleJobCreate(onJobCreate);
-    this.handleJobEdit(onJobEdit);
+    this.handleJobCreateClick(onJobCreateClick);
+    this.handleJobEditClick(onJobEditClick);
     this.handleJobDelete(onJobDelete);
     this.handleJobSave(onJobSave);
     this.handleJobClose(onJobClose);
@@ -36,21 +35,21 @@ export default class {
     });
   }
 
-  handleJobCreate(onJobCreate) {
+  handleJobCreateClick(onJobCreateClick) {
     document.addEventListener("click", (event) => {
       const el = event.target.closest(`[data-action="job-create"]`);
       if (el) {
-        onJobCreate();
+        onJobCreateClick();
       }
     });
   }
 
-  handleJobEdit(onJobEdit) {
+  handleJobEditClick(onJobEditClick) {
     document.addEventListener("click", (event) => {
       const el = event.target.closest(`[data-action="job-edit"]`);
       if (el) {
         let jobID = el.dataset.id;
-        onJobEdit(this.getJob(jobID));
+        onJobEditClick(this.getJob(jobID));
       }
     });
   }
@@ -86,25 +85,24 @@ export default class {
         }
         const id = job["id"];
 
-        // job["data"] is a json, convert it to json, give error if it is not json
-        job["data"] = Json.parseJson(job["data"]);
-
         this.jobAPI.saveJob(job).then((job) => {
           // edit the job in the list, or append a new job to the list depending on the id
           if (id) {
             // update the job
-            this.jobs = this.jobs.map((job) => {
-              if (job.id === id) {
+            this.jobs = this.jobs.map((oldJob) => {
+              if (oldJob.id === job.id) {
                 return job;
               }
-              return job;
+              return oldJob;
             });
           } else {
             // append the new job to the list
             this.jobs.push(job);
           }
           onJobSave(job, this.jobs);
-        });
+        }).catch(err => {
+          console.log(err);
+        })
       }
     });
   }

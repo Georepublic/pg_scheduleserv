@@ -1,3 +1,5 @@
+import Parser from "../utils/Parser.js";
+import Toast from "../utils/Toast.js";
 import BaseAPI from "./BaseAPI.js";
 
 export default class JobAPI {
@@ -5,33 +7,27 @@ export default class JobAPI {
     this.baseAPI = new BaseAPI();
   }
 
-  processData(data) {
-    // convert location to {latitude, longitude} by removing () if present and splitting by comma and trim
-    const location = data["location"].replace(/[()]/g, "").split(",").map(function(item) {
-      return item.trim();
-    });
-    data["location"] = {
-      // convert string to float64
-      latitude: parseFloat(location[0]),
-      longitude: parseFloat(location[1])
-    }
-    data["delivery"] = data["delivery"].split(",").map(function(item) {
-      return parseInt(item);
-    });
-    data["pickup"] = data["pickup"].split(",").map(function (item) {
-      return parseInt(item);
-    });
-    data["skills"] = data["skills"].split(",").map(function (item) {
-      return parseInt(item);
-    });
-
-    data["priority"] = parseInt(data["priority"]);
-
-    return data;
+  parseJob(data) {
+    return {
+      id: data.id,
+      location: Parser.parseLocation(data.location),
+      setup: Parser.parseDuration(data.setup),
+      service: Parser.parseDuration(data.service),
+      delivery: Parser.parseAmount(data.delivery),
+      pickup: Parser.parseAmount(data.pickup),
+      skills: Parser.parseAmount(data.skills),
+      priority: Parser.parsePriority(data.priority),
+      project_id: data.project_id,
+      data: Parser.parseJSON(data.data),
+    };
   }
 
   saveJob(data) {
-    data = this.processData(data);
+    try {
+      data = this.parseJob(data);
+    } catch (e) {
+      return Promise.reject(e);
+    }
 
     if (data["id"]) {
       return this.baseAPI.patch(`/jobs/${data["id"]}`, data);

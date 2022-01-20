@@ -1,5 +1,6 @@
 import JobAPI from "../api/JobAPI.js";
 import JobHandler from "../handlers/JobHandler.js";
+import Random from "../utils/Random.js";
 import AbstractView from "./AbstractView.js";
 
 export default class extends AbstractView {
@@ -9,6 +10,7 @@ export default class extends AbstractView {
     // get the jobs from the params
     this.jobs = params.jobs;
     this.projectID = params.projectID;
+    this.mapView = params.mapView;
     this.selectedJob = null;
     this.jobAPI = new JobAPI();
 
@@ -22,6 +24,18 @@ export default class extends AbstractView {
 
     // set the html for the jobs
     this.setHtmlLeft(jobsHtml);
+
+    if (this.markers) {
+      this.mapView.removeMarkers(this.markers);
+    }
+
+    this.markers = {};
+    this.jobs.forEach((job) => {
+      const randomColor = Random.getRandomColor(job.id);
+      let marker = this.mapView.addMarker(job.location.latitude, job.location.longitude, "house", randomColor);
+      this.markers[job.id] = marker;
+      this.mapView.fitMarkers(this.markers);
+    });
   }
 
   // get the html for the jobs
@@ -100,13 +114,13 @@ export default class extends AbstractView {
             <p class="mb-1">Service: ${job.service}</p>
           </div>
           <div class="d-flex w-100 justify-content-between">
-            <p class="mb-1">Delivery: ${job.delivery}</p>
+            <p class="mb-1">Delivery: [${job.delivery}]</p>
           </div>
           <div class="d-flex w-100 justify-content-between">
-            <p class="mb-1">Pickup: ${job.pickup}</p>
+            <p class="mb-1">Pickup: [${job.pickup}]</p>
           </div>
           <div class="d-flex w-100 justify-content-between">
-            <p class="mb-1">Skills: ${job.skills}</p>
+            <p class="mb-1">Skills: [${job.skills}]</p>
           </div>
           <div class="d-flex w-100 justify-content-between">
             <p class="mb-1">Priority: ${job.priority}</p>
@@ -152,16 +166,16 @@ export default class extends AbstractView {
             <input type="hidden" name="project_id" value="${job.project_id}">
             <div class="form-group">
               <label for="edit-job-location">Location (Lat, Lon)</label>
-              <input type="text" class="form-control" name="location" value="${job.location.latitude}, ${job.location.longitude}">
+              <input type="text" class="form-control" name="location" value="${job.location.latitude}, ${job.location.longitude}" data-action="location-change">
               <button type="button" class="btn btn-primary" data-action="toggle-map-click">Choose on Map</button>
             </div>
             <div class="form-group">
               <label for="edit-job-setup">Setup</label>
-              <input type="text" class="form-control" name="setup" value="${job.setup}">
+              <input type="time" class="form-control" name="setup" value="${job.setup}" step="1">
             </div>
             <div class="form-group">
               <label for="edit-job-service">Service</label>
-              <input type="text" class="form-control" name="service" value="${job.service}">
+              <input type="time" class="form-control" name="service" value="${job.service}" step="1">
             </div>
             <div class="form-group">
               <label for="edit-job-delivery">Delivery</label>
@@ -177,7 +191,7 @@ export default class extends AbstractView {
             </div>
             <div class="form-group">
               <label for="edit-job-priority">Priority</label>
-              <input type="text" class="form-control" name="priority" value="${job.priority}">
+              <input type="number" class="form-control" name="priority" min="0" max="100" value="${job.priority}">
             </div>
             <div class="form-group">
               <label for="edit-job-data">Data</label>
@@ -202,6 +216,9 @@ export default class extends AbstractView {
     let jobViewElement = document.querySelector(`[data-action="job-view"][data-id="${jobID}"]`);
     jobViewElement.classList.add("active");
     this.selectedJob = jobID;
+
+    // move the element into view
+    jobViewElement.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
   deselectJob() {
@@ -213,17 +230,19 @@ export default class extends AbstractView {
   }
 
   getEmptyJob() {
+    // get map center
+    let coordinates = this.mapView.getCenter();
     return {
       id: "",
       location: {
-        latitude: 0,
-        longitude: 0
+        latitude: coordinates[0],
+        longitude: coordinates[1],
       },
       setup: "00:00:00",
       service: "00:00:00",
-      delivery: "0",
-      pickup: "0",
-      skills: "0",
+      delivery: "",
+      pickup: "",
+      skills: "",
       priority: "0",
       project_id: this.projectID,
       data: {},
@@ -247,22 +266,39 @@ export default class extends AbstractView {
 
         // select the job
         this.selectJob(job.id);
+
+        this.mapView.removeMapPointer();
+        this.mapView.deactivateMap();
+        this.mapView.setCenter(job.location.latitude, job.location.longitude);
+        this.mapView.addMapPointer(job.location.latitude, job.location.longitude);
       },
-      onJobCreate: () => {
+      onJobCreateClick: () => {
         this.deselectJob();
 
+        const job = this.getEmptyJob();
+
         // create the job edit html with empty job
-        let jobHtml = this.getEditJobHtml(this.getEmptyJob());
+        let jobHtml = this.getEditJobHtml(job);
 
         // set the html for the job
         this.setHtmlRight(jobHtml);
+
+        this.mapView.removeMapPointer();
+        this.mapView.deactivateMap();
+        this.mapView.fitMarkers(this.markers);
+        this.mapView.addMarkerOnClick(job.location.latitude, job.location.longitude);
       },
-      onJobEdit: (job) => {
+      onJobEditClick: (job) => {
         // get the complete html for the job
         let jobHtml = this.getEditJobHtml(job);
 
         // set the html for the job
         this.setHtmlRight(jobHtml);
+
+        this.mapView.removeMapPointer();
+        this.mapView.deactivateMap();
+        this.mapView.setCenter(job.location.latitude, job.location.longitude);
+        this.mapView.addMarkerOnClick(job.location.latitude, job.location.longitude);
       },
       onJobSave: (job, newJobs) => {
         this.jobs = newJobs;
@@ -274,10 +310,15 @@ export default class extends AbstractView {
         this.setHtmlRight("");
         this.jobs = newJobs;
         this.render();
+        this.mapView.removeMapPointer();
+        this.mapView.deactivateMap();
       },
       onJobClose: () => {
         this.deselectJob();
         this.setHtmlRight("");
+        this.mapView.removeMapPointer();
+        this.mapView.deactivateMap();
+        this.mapView.fitMarkers(this.markers);
       },
     };
   }
