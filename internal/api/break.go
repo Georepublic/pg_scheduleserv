@@ -108,7 +108,8 @@ func (server *Server) ListBreaks(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	vehicle_id, err := strconv.ParseInt(vars["vehicle_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
@@ -136,7 +137,8 @@ func (server *Server) GetBreak(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	break_id, err := strconv.ParseInt(vars["break_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
@@ -172,7 +174,8 @@ func (server *Server) UpdateBreak(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	break_id, err := strconv.ParseInt(vars["break_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	// Validate the input type
@@ -222,7 +225,8 @@ func (server *Server) DeleteBreak(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	break_id, err := strconv.ParseInt(vars["break_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()

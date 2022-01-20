@@ -108,7 +108,8 @@ func (server *Server) ListVehicles(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	project_id, err := strconv.ParseInt(vars["project_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
@@ -136,7 +137,8 @@ func (server *Server) GetVehicle(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	vehicle_id, err := strconv.ParseInt(vars["vehicle_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
@@ -172,7 +174,8 @@ func (server *Server) UpdateVehicle(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	vehicle_id, err := strconv.ParseInt(vars["vehicle_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	// Validate the input type
@@ -222,7 +225,8 @@ func (server *Server) DeleteVehicle(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	vehicle_id, err := strconv.ParseInt(vars["vehicle_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
@@ -253,7 +257,8 @@ func (server *Server) GetVehicleSchedule(w http.ResponseWriter, r *http.Request)
 	vars := mux.Vars(r)
 	vehicleID, err := strconv.ParseInt(vars["vehicle_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()

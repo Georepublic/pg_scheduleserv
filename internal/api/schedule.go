@@ -54,7 +54,8 @@ func (server *Server) CreateSchedule(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	projectID, err := strconv.ParseInt(vars["project_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
@@ -99,7 +100,8 @@ func (server *Server) GetSchedule(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	projectID, err := strconv.ParseInt(vars["project_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
@@ -145,7 +147,8 @@ func (server *Server) DeleteSchedule(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	project_id, err := strconv.ParseInt(vars["project_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()

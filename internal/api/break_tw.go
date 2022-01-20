@@ -108,7 +108,8 @@ func (server *Server) ListBreakTimeWindows(w http.ResponseWriter, r *http.Reques
 	vars := mux.Vars(r)
 	break_id, err := strconv.ParseInt(vars["break_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
@@ -136,7 +137,8 @@ func (server *Server) DeleteBreakTimeWindow(w http.ResponseWriter, r *http.Reque
 	vars := mux.Vars(r)
 	break_id, err := strconv.ParseInt(vars["break_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()

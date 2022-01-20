@@ -124,7 +124,8 @@ func (server *Server) GetProject(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	project_id, err := strconv.ParseInt(vars["project_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
@@ -160,7 +161,8 @@ func (server *Server) UpdateProject(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	project_id, err := strconv.ParseInt(vars["project_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	// Validate the input type
@@ -210,7 +212,8 @@ func (server *Server) DeleteProject(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	project_id, err := strconv.ParseInt(vars["project_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
