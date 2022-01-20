@@ -33,6 +33,11 @@ export default class extends AbstractView {
     this.jobs.forEach((job) => {
       const randomColor = Random.getRandomColor(job.id);
       let marker = this.mapView.addMarker(job.location.latitude, job.location.longitude, "house", randomColor);
+
+      marker.on('click', () => {
+        this.handlers().onJobView(job);
+      });
+
       this.markers[job.id] = marker;
       this.mapView.fitMarkers(this.markers);
     });
