@@ -20,16 +20,17 @@ export default class extends AbstractView {
         this.setHtml(this.getHtml(project));
       })
       .then(() => {
-        var mapView = new MapView();
-        mapView.createMap();
-      }).then(() => {
-        // call JobAPI to get jobs and pass them to JobView
-        this.projectAPI.getJobs(params.id).then((jobs) => {
-          var jobView = new JobView({
-            jobs: jobs,
-            projectID: params.id,
+        this.mapView = new MapView();
+        this.mapView.createMap().then(() => {
+          // call JobAPI to get jobs and pass them to JobView
+          this.projectAPI.getJobs(params.id).then((jobs) => {
+            var jobView = new JobView({
+              jobs: jobs,
+              projectID: params.id,
+              mapView: this.mapView,
+            });
+            jobView.render();
           });
-          jobView.render();
         });
       })
 
