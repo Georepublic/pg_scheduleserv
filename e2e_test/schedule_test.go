@@ -29,7 +29,6 @@ along with pg_scheduleserv.  If not, see <https://www.gnu.org/licenses/>.
 package e2etest
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -48,7 +47,7 @@ import (
 func TestCreateSchedule(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -457,7 +456,7 @@ func TestCreateSchedule(t *testing.T) {
 func TestGetScheduleJson(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -674,7 +673,7 @@ func TestGetScheduleJson(t *testing.T) {
 func TestGetScheduleICal(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -783,7 +782,7 @@ func TestGetScheduleICal(t *testing.T) {
 func TestDeleteSchedule(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {

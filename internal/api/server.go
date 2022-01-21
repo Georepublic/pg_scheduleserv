@@ -36,20 +36,20 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
 )
 
 type Server struct {
-	conn     *pgx.Conn
+	conn     *pgxpool.Pool
 	Router   *mux.Router
 	validate *validator.Validate
 	*database.Store
 	*util.Formatter
 }
 
-func NewServer(conn *pgx.Conn) *Server {
+func NewServer(conn *pgxpool.Pool) *Server {
 	router := mux.NewRouter().StrictSlash(true)
 	server := &Server{
 		conn:      conn,
