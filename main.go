@@ -38,7 +38,7 @@ import (
 
 	"github.com/Georepublic/pg_scheduleserv/internal/api"
 	"github.com/Georepublic/pg_scheduleserv/internal/config"
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/sirupsen/logrus"
 )
 
@@ -81,12 +81,12 @@ func main() {
 		config.DatabasePort,
 		config.DatabaseName,
 	)
-	conn, err := pgx.Connect(context.Background(), connectionURL)
+	conn, err := pgxpool.Connect(context.Background(), connectionURL)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
 	}
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	server := api.NewServer(conn)
 	logrus.Error(server.Start(config.ServerBindAddress))
 }

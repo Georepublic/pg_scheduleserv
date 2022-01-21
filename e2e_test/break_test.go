@@ -30,7 +30,6 @@ package e2etest
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -45,7 +44,7 @@ import (
 func TestCreateBreak(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -194,7 +193,7 @@ func TestCreateBreak(t *testing.T) {
 func TestListBreaks(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -280,7 +279,7 @@ func TestListBreaks(t *testing.T) {
 func TestGetBreak(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -346,7 +345,7 @@ func TestGetBreak(t *testing.T) {
 func TestUpdateBreak(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -499,7 +498,7 @@ func TestUpdateBreak(t *testing.T) {
 func TestDeleteBreak(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {

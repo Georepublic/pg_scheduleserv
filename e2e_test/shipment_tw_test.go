@@ -30,7 +30,6 @@ package e2etest
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -45,7 +44,7 @@ import (
 func TestCreateShipmentTimeWindow(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -270,7 +269,7 @@ func TestCreateShipmentTimeWindow(t *testing.T) {
 func TestListShipmentTimeWindows(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -383,7 +382,7 @@ func TestListShipmentTimeWindows(t *testing.T) {
 func TestDeleteShipmentTimeWindow(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {

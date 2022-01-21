@@ -39,7 +39,7 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/sirupsen/logrus"
 )
 
@@ -53,8 +53,8 @@ func applyTestData(db_url string, filename string) {
 	}
 }
 
-func setup(db_url string, filename string) (*api.Server, *pgx.Conn) {
-	conn, err := pgx.Connect(context.Background(), db_url)
+func setup(db_url string, filename string) (*api.Server, *pgxpool.Pool) {
+	conn, err := pgxpool.Connect(context.Background(), db_url)
 	if err != nil {
 		logrus.Printf("Unable to connect to database: %v\n", err)
 		os.Exit(1)

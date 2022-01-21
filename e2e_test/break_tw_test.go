@@ -30,7 +30,6 @@ package e2etest
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -45,7 +44,7 @@ import (
 func TestCreateBreakTimeWindow(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -210,7 +209,7 @@ func TestCreateBreakTimeWindow(t *testing.T) {
 func TestListBreakTimeWindows(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -294,7 +293,7 @@ func TestListBreakTimeWindows(t *testing.T) {
 func TestDeleteBreakTimeWindow(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {

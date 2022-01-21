@@ -30,7 +30,6 @@ package e2etest
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -49,7 +48,7 @@ import (
 func TestCreateShipment(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -394,7 +393,7 @@ func TestCreateShipment(t *testing.T) {
 func TestListShipments(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -498,7 +497,7 @@ func TestListShipments(t *testing.T) {
 func TestGetShipment(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -578,7 +577,7 @@ func TestGetShipment(t *testing.T) {
 func TestUpdateShipment(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -1163,7 +1162,7 @@ func TestUpdateShipment(t *testing.T) {
 func TestDeleteShipment(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -1221,7 +1220,7 @@ func TestDeleteShipment(t *testing.T) {
 func TestGetShipmentScheduleJson(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -1348,7 +1347,7 @@ func TestGetShipmentScheduleJson(t *testing.T) {
 func TestGetShipmentScheduleICal(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {

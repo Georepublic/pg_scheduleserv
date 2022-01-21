@@ -30,7 +30,6 @@ package e2etest
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -45,7 +44,7 @@ import (
 func TestCreateJobTimeWindow(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -210,7 +209,7 @@ func TestCreateJobTimeWindow(t *testing.T) {
 func TestListJobTimeWindows(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -294,7 +293,7 @@ func TestListJobTimeWindows(t *testing.T) {
 func TestDeleteJobTimeWindow(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
