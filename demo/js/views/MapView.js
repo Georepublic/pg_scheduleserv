@@ -1,7 +1,7 @@
 import LocationAPI from "../api/LocationAPI.js";
 import MapHandler from "../handlers/MapHandler.js";
 
-export default class {
+export default class MapView {
   constructor() {
     this.locationAPI = new LocationAPI();
     this.handler = new MapHandler(this.handlers());
@@ -133,14 +133,16 @@ export default class {
   }
 
   fitMarkers(markers) {
-    var bounds = new L.LatLngBounds();
-    for (var key in markers) {
-      var marker = markers[key];
-      bounds.extend(marker.getLatLng());
+    if (Object.keys(markers).length > 0) {
+      var bounds = new L.LatLngBounds();
+      for (var key in markers) {
+        var marker = markers[key];
+        bounds.extend(marker.getLatLng());
+      }
+      this.map.flyToBounds(bounds, {
+        animate: true,
+      });
     }
-    this.map.flyToBounds(bounds, {
-      animate: true,
-    });
   }
 
   removeAllMarkers() {

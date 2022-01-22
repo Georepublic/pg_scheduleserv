@@ -50,12 +50,6 @@ const router = async () => {
     };
   }
 
-  const app = document.querySelector("#app");
-  const appLeft = document.querySelector("#app-left");
-  const appRight = document.querySelector("#app-right");
-
-  app.innerHTML = appLeft.innerHTML = appRight.innerHTML = "";
-
   const view = new match.route.view(getParams(match));
 
   document.querySelectorAll(".nav-link").forEach((el) => {

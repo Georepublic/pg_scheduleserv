@@ -3,9 +3,15 @@ import JobHandler from "../handlers/JobHandler.js";
 import Random from "../utils/Random.js";
 import AbstractView from "./AbstractView.js";
 
-export default class extends AbstractView {
+export default class JobView extends AbstractView {
   constructor(params) {
-    super(params);
+    super(params, false);
+
+    if (isNaN(JobView.counter)) {
+      JobView.counter = 0;
+    }
+    JobView.counter++;
+    this.counter = JobView.counter;
 
     // get the jobs from the params
     this.jobs = params.jobs;

@@ -1,6 +1,18 @@
-export default class {
-  constructor(params) {
+export default class AbstractView {
+  constructor(params, init=true) {
     this.params = params;
+    if (init) {
+      this.initHtml();
+    }
+  }
+
+  initHtml() {
+    let html = `
+      <div class="col-md-3" id="app-left"></div>
+      <div class="col-md-6" id="app"></div>
+      <div class="col-md-3" id="app-right"></div>
+    `;
+    document.querySelector("#main").innerHTML = html;
   }
 
   setTitle(title) {

@@ -1,11 +1,14 @@
-export default class {
+export default class MapHandler {
   constructor({ onLocationTextChange }) {
+    this.appLeft = document.querySelector("#app-left");
+    this.app = document.querySelector("#app");
+    this.appRight = document.querySelector("#app-right");
+
     this.handleLocationTextChange(onLocationTextChange);
   }
 
   handleLocationTextChange(onLocationTextChange) {
-    document.addEventListener("input", (event) => {
-      console.log("Input event")
+    this.appRight.addEventListener("input", (event) => {
       const el = event.target.closest(`[data-action="location-change"]`);
       if (el) {
         let location = el.value;
