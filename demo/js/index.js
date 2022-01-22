@@ -1,6 +1,6 @@
 import Home from "./views/Home.js";
-import ProjectList from "./views/ProjectList.js";
-import Project from "./views/Project.js";
+import ProjectListView from "./views/ProjectListView.js";
+import ProjectView from "./views/ProjectView.js";
 
 const pathToRegex = (path) =>
   new RegExp(
@@ -28,8 +28,8 @@ const navigateTo = (url) => {
 const router = async () => {
   const routes = [
     { path: "/", view: Home },
-    { path: "/projects", view: ProjectList },
-    { path: "/projects/:id", view: Project },
+    { path: "/projects", view: ProjectListView },
+    { path: "/projects/:id", view: ProjectView },
   ];
 
   const potentialMatches = routes.map((route) => {

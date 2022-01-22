@@ -3,7 +3,7 @@ import ProjectAPI from "../api/ProjectAPI.js";
 import JobView from "./JobView.js";
 import MapView from "./MapView.js";
 
-export default class Project extends AbstractView {
+export default class ProjectView extends AbstractView {
   constructor(params) {
     super(params);
     this.setTitle("Projects");
