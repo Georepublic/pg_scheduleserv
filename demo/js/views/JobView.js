@@ -7,12 +7,6 @@ export default class JobView extends AbstractView {
   constructor(params) {
     super(params, false);
 
-    if (isNaN(JobView.counter)) {
-      JobView.counter = 0;
-    }
-    JobView.counter++;
-    this.counter = JobView.counter;
-
     // get the jobs from the params
     this.jobs = params.jobs;
     this.projectID = params.projectID;
@@ -160,7 +154,7 @@ export default class JobView extends AbstractView {
     return html;
   }
 
-  getEditJobHtml(job) {
+  getJobFormHtml(job) {
     let html = `
       <div class="card">
         <div class="card-header job-view-heading">
@@ -288,7 +282,7 @@ export default class JobView extends AbstractView {
         const job = this.getEmptyJob();
 
         // create the job edit html with empty job
-        let jobHtml = this.getEditJobHtml(job);
+        let jobHtml = this.getJobFormHtml(job);
 
         // set the html for the job
         this.setHtmlRight(jobHtml);
@@ -300,7 +294,7 @@ export default class JobView extends AbstractView {
       },
       onJobEditClick: (job) => {
         // get the complete html for the job
-        let jobHtml = this.getEditJobHtml(job);
+        let jobHtml = this.getJobFormHtml(job);
 
         // set the html for the job
         this.setHtmlRight(jobHtml);

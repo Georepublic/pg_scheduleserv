@@ -1,7 +1,7 @@
 import ProjectAPI from "../api/ProjectAPI.js";
 import AbstractView from "./AbstractView.js";
 
-export default class ProjectList extends AbstractView {
+export default class ProjectListView extends AbstractView {
   constructor(params) {
     super(params);
     this.setTitle("Projects");
