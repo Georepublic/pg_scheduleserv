@@ -2914,11 +2914,11 @@ Status: Bad Request
 
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
-| created_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
+| created_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 | data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | id | string| `string` |  | |  | `1234567812345678` |
 | service | string| `string` |  | |  | `00:02:00` |
-| updated_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
+| updated_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 | vehicle_id | string| `string` |  | |  | `1234567812345678` |
 
 
@@ -2934,11 +2934,11 @@ Status: Bad Request
 
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
-| created_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
+| created_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 | id | string| `string` |  | |  | `1234567812345678` |
-| tw_close | string| `string` |  | |  | `2021-12-31 23:59:00` |
-| tw_open | string| `string` |  | |  | `2021-12-31 23:00:00` |
-| updated_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
+| tw_close | string| `string` |  | |  | `2021-12-31T23:59:00` |
+| tw_open | string| `string` |  | |  | `2021-12-31T23:00:00` |
+| updated_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 
 
 
@@ -2969,8 +2969,8 @@ Status: Bad Request
 
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
-| tw_close | string| `string` | ✓ | |  | `2021-12-31 23:59:00` |
-| tw_open | string| `string` | ✓ | |  | `2021-12-31 23:00:00` |
+| tw_close | string| `string` | ✓ | |  | `2021-12-31T23:59:00` |
+| tw_open | string| `string` | ✓ | |  | `2021-12-31T23:00:00` |
 
 
 
@@ -3007,8 +3007,8 @@ Status: Bad Request
 
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
-| tw_close | string| `string` | ✓ | |  | `2021-12-31 23:59:00` |
-| tw_open | string| `string` | ✓ | |  | `2021-12-31 23:00:00` |
+| tw_close | string| `string` | ✓ | |  | `2021-12-31T23:59:00` |
+| tw_open | string| `string` | ✓ | |  | `2021-12-31T23:00:00` |
 
 
 
@@ -3064,8 +3064,8 @@ Status: Bad Request
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
 | kind | string| `string` | ✓ | |  | `p` |
-| tw_close | string| `string` | ✓ | |  | `2021-12-31 23:59:00` |
-| tw_open | string| `string` | ✓ | |  | `2021-12-31 23:00:00` |
+| tw_close | string| `string` | ✓ | |  | `2021-12-31T23:59:00` |
+| tw_open | string| `string` | ✓ | |  | `2021-12-31T23:00:00` |
 
 
 
@@ -3087,8 +3087,8 @@ Status: Bad Request
 | skills | []integer| `[]int64` |  | |  | `[1,5]` |
 | speed_factor | number| `float64` |  | |  | `1` |
 | start_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` | ✓ | |  |  |
-| tw_close | string| `string` |  | |  | `2021-12-31 23:59:00` |
-| tw_open | string| `string` |  | |  | `2021-12-31 23:00:00` |
+| tw_close | string| `string` |  | |  | `2021-12-31T23:59:00` |
+| tw_open | string| `string` |  | |  | `2021-12-31T23:00:00` |
 
 
 
@@ -3103,7 +3103,7 @@ Status: Bad Request
 
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
-| created_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
+| created_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 | data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | delivery | []integer| `[]int64` |  | |  | `[10,20]` |
 | id | string| `string` |  | |  | `1234567812345678` |
@@ -3114,7 +3114,7 @@ Status: Bad Request
 | service | string| `string` |  | |  | `00:02:00` |
 | setup | string| `string` |  | |  | `00:00:00` |
 | skills | []integer| `[]int64` |  | |  | `[1,5]` |
-| updated_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
+| updated_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 
 
 
@@ -3129,11 +3129,11 @@ Status: Bad Request
 
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
-| created_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
+| created_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 | id | string| `string` |  | |  | `1234567812345678` |
-| tw_close | string| `string` |  | |  | `2021-12-31 23:59:00` |
-| tw_open | string| `string` |  | |  | `2021-12-31 23:00:00` |
-| updated_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
+| tw_close | string| `string` |  | |  | `2021-12-31T23:59:00` |
+| tw_open | string| `string` |  | |  | `2021-12-31T23:00:00` |
+| updated_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 
 
 
@@ -3148,11 +3148,11 @@ Status: Bad Request
 
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
-| created_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
+| created_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 | data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | id | string| `string` |  | |  | `1234567812345678` |
 | name | string| `string` |  | |  | `Sample Project` |
-| updated_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
+| updated_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 
 
 
@@ -3168,7 +3168,7 @@ Status: Bad Request
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
 | amount | []integer| `[]int64` |  | |  | `[5,15]` |
-| created_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
+| created_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 | d_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
 | d_service | string| `string` |  | |  | `00:02:00` |
 | d_setup | string| `string` |  | |  | `00:00:00` |
@@ -3180,7 +3180,7 @@ Status: Bad Request
 | priority | integer| `int64` |  | |  | `10` |
 | project_id | string| `string` |  | |  | `1234567812345678` |
 | skills | []integer| `[]int64` |  | |  | `[1,5]` |
-| updated_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
+| updated_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 
 
 
@@ -3195,12 +3195,12 @@ Status: Bad Request
 
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
-| created_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
+| created_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 | id | string| `string` |  | |  | `1234567812345678` |
 | kind | string| `string` |  | |  | `p` |
-| tw_close | string| `string` |  | |  | `2021-12-31 23:59:00` |
-| tw_open | string| `string` |  | |  | `2021-12-31 23:00:00` |
-| updated_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
+| tw_close | string| `string` |  | |  | `2021-12-31T23:59:00` |
+| tw_open | string| `string` |  | |  | `2021-12-31T23:00:00` |
+| updated_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 
 
 
@@ -3246,8 +3246,8 @@ Status: Bad Request
 | skills | []integer| `[]int64` |  | |  | `[1,5]` |
 | speed_factor | number| `float64` |  | |  | `1` |
 | start_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
-| tw_close | string| `string` |  | |  | `2021-12-31 23:59:00` |
-| tw_open | string| `string` |  | |  | `2021-12-31 23:00:00` |
+| tw_close | string| `string` |  | |  | `2021-12-31T23:59:00` |
+| tw_open | string| `string` |  | |  | `2021-12-31T23:00:00` |
 
 
 
@@ -3263,7 +3263,7 @@ Status: Bad Request
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
 | capacity | []integer| `[]int64` |  | |  | `[50,25]` |
-| created_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
+| created_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 | data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | end_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
 | id | string| `string` |  | |  | `1234567812345678` |
@@ -3272,9 +3272,9 @@ Status: Bad Request
 | skills | []integer| `[]int64` |  | |  | `[1,5]` |
 | speed_factor | number| `float64` |  | |  | `1` |
 | start_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
-| tw_close | string| `string` |  | |  | `2021-12-31 23:59:00` |
-| tw_open | string| `string` |  | |  | `2021-12-31 23:00:00` |
-| updated_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
+| tw_close | string| `string` |  | |  | `2021-12-31T23:59:00` |
+| tw_open | string| `string` |  | |  | `2021-12-31T23:00:00` |
+| updated_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 
 
 
@@ -3358,9 +3358,9 @@ Status: Bad Request
 
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
-| arrival | string| `string` |  | |  | `2021-12-01 13:00:00` |
-| created_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
-| departure | string| `string` |  | |  | `2021-12-01 13:00:00` |
+| arrival | string| `string` |  | |  | `2021-12-01T13:00:00` |
+| created_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
+| departure | string| `string` |  | |  | `2021-12-01T13:00:00` |
 | load | []integer| `[]int64` |  | |  | `[0,0]` |
 | location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
 | project_id | string| `string` |  | |  | `1234567812345678` |
@@ -3370,7 +3370,7 @@ Status: Bad Request
 | task_id | string| `string` |  | |  | `1234567812345678` |
 | travel_time | string| `string` |  | |  | `00:16:40` |
 | type | string| `string` |  | |  | `job` |
-| updated_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
+| updated_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 | vehicle_data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | vehicle_id | string| `string` |  | |  | `1234567812345678` |
 | waiting_time | string| `string` |  | |  | `00:00:00` |
@@ -3438,9 +3438,9 @@ Status: Bad Request
 
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
-| arrival | string| `string` |  | |  | `2021-12-01 13:00:00` |
-| created_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
-| departure | string| `string` |  | |  | `2021-12-01 13:00:00` |
+| arrival | string| `string` |  | |  | `2021-12-01T13:00:00` |
+| created_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
+| departure | string| `string` |  | |  | `2021-12-01T13:00:00` |
 | load | []integer| `[]int64` |  | |  | `[0,0]` |
 | location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
 | service_time | string| `string` |  | |  | `00:02:00` |
@@ -3449,7 +3449,7 @@ Status: Bad Request
 | task_id | string| `string` |  | |  | `1234567812345678` |
 | travel_time | string| `string` |  | |  | `00:16:40` |
 | type | string| `string` |  | |  | `job` |
-| updated_at | string| `string` |  | |  | `2021-12-01 13:00:00` |
+| updated_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 | waiting_time | string| `string` |  | |  | `00:00:00` |
 
 
