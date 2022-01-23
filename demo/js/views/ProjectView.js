@@ -1,6 +1,7 @@
 import AbstractView from "./AbstractView.js";
 import ProjectAPI from "../api/ProjectAPI.js";
 import JobView from "./JobView.js";
+import ShipmentView from "./ShipmentView.js";
 import MapView from "./MapView.js";
 
 export default class ProjectView extends AbstractView {
@@ -21,18 +22,30 @@ export default class ProjectView extends AbstractView {
       })
       .then(() => {
         this.mapView = new MapView();
-        this.mapView.createMap().then(() => {
-          // call JobAPI to get jobs and pass them to JobView
-          this.projectAPI.getJobs(params.id).then((jobs) => {
-            var jobView = new JobView({
-              jobs: jobs,
-              projectID: params.id,
-              mapView: this.mapView,
-            });
-            jobView.render();
+        return this.mapView.createMap();
+      })
+      .then(() => {
+        // call JobAPI to get jobs and pass them to JobView
+        return this.projectAPI.getJobs(params.id).then((jobs) => {
+          var jobView = new JobView({
+            jobs: jobs,
+            projectID: params.id,
+            mapView: this.mapView,
           });
+          jobView.render();
         });
       })
+      .then(() => {
+        // call ShipmentAPI to get shipments and pass them to ShipmentView
+        return this.projectAPI.getShipments(params.id).then((shipments) => {
+          var shipmentView = new ShipmentView({
+            shipments: shipments,
+            projectID: params.id,
+            mapView: this.mapView,
+          });
+          shipmentView.render();
+        });
+      });
 
       this.setHeading("Projects");
   }

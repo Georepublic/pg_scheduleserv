@@ -7,9 +7,7 @@ export default class JobHandler {
     this.emptyJob = emptyJob;
     this.jobAPI = new JobAPI();
 
-    this.appLeft = document.querySelector("#app-left");
-    this.app = document.querySelector("#app");
-    this.appRight = document.querySelector("#app-right");
+    this.main = document.querySelector("#main");
 
     this.handleJobView(onJobView);
     this.handleJobCreateClick(onJobCreateClick);
@@ -30,7 +28,7 @@ export default class JobHandler {
   }
 
   handleJobView(onJobView) {
-    this.appLeft.addEventListener("click", (event) => {
+    this.main.addEventListener("click", (event) => {
       const el = event.target.closest(`[data-action="job-view"]`);
       if (el) {
         let jobID = el.dataset.id;
@@ -40,7 +38,7 @@ export default class JobHandler {
   }
 
   handleJobCreateClick(onJobCreateClick) {
-    this.appLeft.addEventListener("click", (event) => {
+    this.main.addEventListener("click", (event) => {
       const el = event.target.closest(`[data-action="job-create"]`);
       if (el) {
         onJobCreateClick();
@@ -49,7 +47,7 @@ export default class JobHandler {
   }
 
   handleJobEditClick(onJobEditClick) {
-    this.appRight.addEventListener("click", (event) => {
+    this.main.addEventListener("click", (event) => {
       const el = event.target.closest(`[data-action="job-edit"]`);
       if (el) {
         let jobID = el.dataset.id;
@@ -59,7 +57,7 @@ export default class JobHandler {
   }
 
   handleJobDelete(onJobDelete) {
-    this.appRight.addEventListener("click", (event) => {
+    this.main.addEventListener("click", (event) => {
       const el = event.target.closest(`[data-action="job-delete"]`);
       if (el) {
         let jobID = el.dataset.id;
@@ -78,7 +76,7 @@ export default class JobHandler {
   }
 
   handleJobSave(onJobSave) {
-    this.appRight.addEventListener("click", (event) => {
+    this.main.addEventListener("click", (event) => {
       const el = event.target.closest(`[data-action="job-save"]`);
       if (el) {
         const form = el.closest("form");
@@ -112,7 +110,7 @@ export default class JobHandler {
   }
 
   handleJobClose(onJobClose) {
-    this.appRight.addEventListener("click", (event) => {
+    this.main.addEventListener("click", (event) => {
       const el = event.target.closest(`[data-action="job-close"]`);
       if (el) {
         onJobClose();

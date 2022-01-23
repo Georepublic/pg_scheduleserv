@@ -32,21 +32,29 @@
     background-color: #0f0;
 }
 
-.job-view-heading {
+.card-header {
     color: white;
     background-color: #00f;
 }
 
-div[data-action="job-view"]:hover {
+.list-group {
+    margin-bottom: 20px;
+}
+
+.list-group-item {
+    margin-left: 10px;
+}
+
+.list-group-item:hover {
     cursor: pointer;
     background-color: #eee;
 }
 
-div[data-action="job-view"].active {
-    background-color: rgb(0, 127, 255);
+.list-group-item.active {
+    background-color: rgb(0, 128, 255);
 }
 
-button[data-action="job-close"] {
+button[data-action="job-close"], button[data-action="shipment-close"] {
     float: right;
 }
 

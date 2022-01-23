@@ -1,5 +1,4 @@
 import Parser from "../utils/Parser.js";
-import Toast from "../utils/Toast.js";
 import BaseAPI from "./BaseAPI.js";
 
 export default class JobAPI {

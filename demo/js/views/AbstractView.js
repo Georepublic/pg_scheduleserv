@@ -8,11 +8,13 @@ export default class AbstractView {
 
   initHtml() {
     let html = `
+    <div class="row" id="main">
       <div class="col-md-3" id="app-left"></div>
       <div class="col-md-6" id="app"></div>
       <div class="col-md-3" id="app-right"></div>
+    </div>
     `;
-    document.querySelector("#main").innerHTML = html;
+    document.querySelector("#main").outerHTML = html;
   }
 
   setTitle(title) {
@@ -21,6 +23,10 @@ export default class AbstractView {
 
   setHtml(html) {
     document.querySelector("#app").innerHTML = html;
+  }
+
+  appendHtmlLeft(html) {
+    document.querySelector("#app-left").innerHTML += html;
   }
 
   setHtmlLeft(html) {

@@ -25,6 +25,14 @@ export default class ProjectAPI {
     return this.baseAPI.get(`/projects/${projectID}/jobs`);
   }
 
+  getShipments(projectID) {
+    return this.baseAPI.get(`/projects/${projectID}/shipments`);
+  }
+
+  getVehicles(projectID) {
+    return this.baseAPI.get(`/projects/${projectID}/vehicles`);
+  }
+
   deleteProject(projectID) {
     return this.baseAPI.delete(`/projects/${projectID}`);
   }
