@@ -45,8 +45,8 @@ type ScheduleDB struct {
 	VehicleID   int64          `json:"vehicle_id,string" example:"1234567812345678"`
 	TaskID      int64          `json:"task_id,string" example:"1234567812345678"`
 	Location    LocationParams `json:"location"`
-	Arrival     string         `json:"arrival" example:"2021-12-01 13:00:00"`
-	Departure   string         `json:"departure" example:"2021-12-01 13:00:00"`
+	Arrival     string         `json:"arrival" example:"2021-12-01T13:00:00"`
+	Departure   string         `json:"departure" example:"2021-12-01T13:00:00"`
 	TravelTime  string         `json:"travel_time" example:"00:16:40"`
 	SetupTime   string         `json:"setup_time" example:"00:00:00"`
 	ServiceTime string         `json:"service_time" example:"00:02:00"`
@@ -54,8 +54,8 @@ type ScheduleDB struct {
 	Load        []int64        `json:"load" example:"0,0"`
 	VehicleData interface{}    `json:"vehicle_data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 	TaskData    interface{}    `json:"task_data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
-	CreatedAt   string         `json:"created_at" example:"2021-12-01 13:00:00"`
-	UpdatedAt   string         `json:"updated_at" example:"2021-12-01 13:00:00"`
+	CreatedAt   string         `json:"created_at" example:"2021-12-01T13:00:00"`
+	UpdatedAt   string         `json:"updated_at" example:"2021-12-01T13:00:00"`
 }
 
 /*
@@ -68,16 +68,16 @@ type ScheduleRoute struct {
 	Type        string         `json:"type" example:"job"`
 	TaskID      int64          `json:"task_id,string" example:"1234567812345678"`
 	Location    LocationParams `json:"location"`
-	Arrival     string         `json:"arrival" example:"2021-12-01 13:00:00"`
-	Departure   string         `json:"departure" example:"2021-12-01 13:00:00"`
+	Arrival     string         `json:"arrival" example:"2021-12-01T13:00:00"`
+	Departure   string         `json:"departure" example:"2021-12-01T13:00:00"`
 	TravelTime  string         `json:"travel_time" example:"00:16:40"`
 	SetupTime   string         `json:"setup_time" example:"00:00:00"`
 	ServiceTime string         `json:"service_time" example:"00:02:00"`
 	WaitingTime string         `json:"waiting_time" example:"00:00:00"`
 	Load        []int64        `json:"load" example:"0,0"`
 	TaskData    interface{}    `json:"task_data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
-	CreatedAt   string         `json:"created_at" example:"2021-12-01 13:00:00"`
-	UpdatedAt   string         `json:"updated_at" example:"2021-12-01 13:00:00"`
+	CreatedAt   string         `json:"created_at" example:"2021-12-01T13:00:00"`
+	UpdatedAt   string         `json:"updated_at" example:"2021-12-01T13:00:00"`
 }
 
 type ScheduleResponse struct {
@@ -163,7 +163,7 @@ BEGIN:VEVENT\r\nUID:1234567812345678\r\nCREATED:20211201T130000Z\r\nLAST-MODIFIE
 DESCRIPTION:Description here\\n\r\nORGANIZER;CN=This Machine:sender@domain\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n`
 
 func parseTime(time_str string) time.Time {
-	layout := "2006-01-02 15:04:05"
+	layout := "2006-01-02T15:04:05"
 	t, err := time.Parse(layout, time_str)
 
 	if err != nil {

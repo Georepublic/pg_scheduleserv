@@ -40,8 +40,8 @@ type CreateVehicleParams struct {
 	EndLocation   *util.LocationParams `json:"end_location" validate:"required"`
 	Capacity      *[]int64             `json:"capacity" validate:"omitempty,dive,min=0" example:"50,25"`
 	Skills        *[]int32             `json:"skills" validate:"omitempty,dive,min=0" example:"1,5"`
-	TwOpen        *string              `json:"tw_open" validate:"omitempty,datetime=2006-01-02 15:04:05" example:"2021-12-31 23:00:00"`
-	TwClose       *string              `json:"tw_close" validate:"omitempty,datetime=2006-01-02 15:04:05" example:"2021-12-31 23:59:00"`
+	TwOpen        *string              `json:"tw_open" validate:"omitempty,datetime=2006-01-02T15:04:05" example:"2021-12-31T23:00:00"`
+	TwClose       *string              `json:"tw_close" validate:"omitempty,datetime=2006-01-02T15:04:05" example:"2021-12-31T23:59:00"`
 	SpeedFactor   *float64             `json:"speed_factor" validate:"omitempty,gt=0" example:"1.0"`
 	MaxTasks      *int32               `json:"max_tasks" validate:"omitempty,gt=0" example:"20"`
 	ProjectID     *int64               `json:"project_id,string" validate:"required" swaggerignore:"true"`
@@ -53,8 +53,8 @@ type UpdateVehicleParams struct {
 	EndLocation   *util.LocationParams `json:"end_location"`
 	Capacity      *[]int64             `json:"capacity" validate:"omitempty,dive,min=0" example:"50,25"`
 	Skills        *[]int32             `json:"skills" validate:"omitempty,dive,min=0" example:"1,5"`
-	TwOpen        *string              `json:"tw_open" validate:"omitempty,datetime=2006-01-02 15:04:05" example:"2021-12-31 23:00:00"`
-	TwClose       *string              `json:"tw_close" validate:"omitempty,datetime=2006-01-02 15:04:05" example:"2021-12-31 23:59:00"`
+	TwOpen        *string              `json:"tw_open" validate:"omitempty,datetime=2006-01-02T15:04:05" example:"2021-12-31T23:00:00"`
+	TwClose       *string              `json:"tw_close" validate:"omitempty,datetime=2006-01-02T15:04:05" example:"2021-12-31T23:59:00"`
 	SpeedFactor   *float64             `json:"speed_factor" validate:"omitempty,gt=0" example:"1.0"`
 	MaxTasks      *int32               `json:"max_tasks" validate:"omitempty,gt=0" example:"20"`
 	ProjectID     *int64               `json:"project_id,string" swaggerignore:"true"`

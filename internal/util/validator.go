@@ -65,7 +65,6 @@ func ValidateInput(jsonStruct map[string]interface{}, originalStruct interface{}
 	var errors error
 	resType := reflect.TypeOf(originalStruct)
 	if resType.Kind() != reflect.Struct {
-		logrus.Debug(resType.Kind())
 		logrus.Error("Bad type: requires a struct")
 	}
 	for i := 0; i < resType.NumField(); i++ {
@@ -74,7 +73,6 @@ func ValidateInput(jsonStruct map[string]interface{}, originalStruct interface{}
 
 		// Ignore any nil fields in the input
 		if jsonStruct[tag] == nil {
-			logrus.Debug("Skipping ", tag)
 			continue
 		}
 
@@ -117,9 +115,6 @@ func ValidateInput(jsonStruct map[string]interface{}, originalStruct interface{}
 			}
 			continue
 		}
-
-		logrus.Debug(userType)
-		logrus.Debug(requiredType)
 
 		if !userType.ConvertibleTo(requiredType) {
 			errors = multierror.Append(errors, fmt.Errorf(fmt.Sprintf("Field '%s' must be of '%s' type.", tag, requiredType)))
