@@ -74,7 +74,7 @@ func TestCreateBreakTimeWindow(t *testing.T) {
 			statusCode: 400,
 			breakID:    4668767710686035977,
 			body: map[string]interface{}{
-				"tw_open": "2021-10-26 21:24:38",
+				"tw_open": "2021-10-26T21:24:38",
 			},
 			resBody: map[string]interface{}{
 				"code":    "400",
@@ -89,7 +89,7 @@ func TestCreateBreakTimeWindow(t *testing.T) {
 			statusCode: 400,
 			breakID:    4668767710686035977,
 			body: map[string]interface{}{
-				"tw_close": "2021-10-26 21:24:38",
+				"tw_close": "2021-10-26T21:24:38",
 			},
 			resBody: map[string]interface{}{
 				"code":    "400",
@@ -104,8 +104,8 @@ func TestCreateBreakTimeWindow(t *testing.T) {
 			statusCode: 400,
 			breakID:    4668767710686035977,
 			body: map[string]interface{}{
-				"tw_open":  "2021-10-26 21:24:39",
-				"tw_close": "2021-10-26 21:24:38",
+				"tw_open":  "2021-10-26T21:24:39",
+				"tw_close": "2021-10-26T21:24:38",
 			},
 			resBody: map[string]interface{}{
 				"code":    "400",
@@ -120,8 +120,8 @@ func TestCreateBreakTimeWindow(t *testing.T) {
 			statusCode: 400,
 			breakID:    100,
 			body: map[string]interface{}{
-				"tw_open":  "2021-10-26 21:24:38",
-				"tw_close": "2021-10-26 21:24:38",
+				"tw_open":  "2021-10-26T21:24:38",
+				"tw_close": "2021-10-26T21:24:38",
 			},
 			resBody: map[string]interface{}{
 				"code":    "400",
@@ -136,13 +136,13 @@ func TestCreateBreakTimeWindow(t *testing.T) {
 			statusCode: 201,
 			breakID:    4668767710686035977,
 			body: map[string]interface{}{
-				"tw_open":  "2021-10-26 21:20:20",
-				"tw_close": "2021-10-26 21:24:38",
+				"tw_open":  "2021-10-26T21:20:20",
+				"tw_close": "2021-10-26T21:24:38",
 			},
 			resBody: map[string]interface{}{
 				"data": map[string]interface{}{
-					"tw_open":  "2021-10-26 21:20:20",
-					"tw_close": "2021-10-26 21:24:38",
+					"tw_open":  "2021-10-26T21:20:20",
+					"tw_close": "2021-10-26T21:24:38",
 				},
 				"code":    "201",
 				"message": "Created",
@@ -153,8 +153,8 @@ func TestCreateBreakTimeWindow(t *testing.T) {
 			statusCode: 400,
 			breakID:    4668767710686035977,
 			body: map[string]interface{}{
-				"tw_open":  "2021-10-26 21:20:20",
-				"tw_close": "2021-10-26 21:24:38",
+				"tw_open":  "2021-10-26T21:20:20",
+				"tw_close": "2021-10-26T21:24:38",
 			},
 			resBody: map[string]interface{}{
 				"code":    "400",
@@ -235,17 +235,17 @@ func TestListBreakTimeWindows(t *testing.T) {
 				"data": []interface{}{
 					map[string]interface{}{
 						"id":         "3990300682121424906",
-						"tw_open":    "2020-01-10 00:00:00",
-						"tw_close":   "2020-01-10 07:00:10",
-						"created_at": "2021-10-26 21:25:41",
-						"updated_at": "2021-10-26 21:25:41",
+						"tw_open":    "2020-01-10T00:00:00",
+						"tw_close":   "2020-01-10T07:00:10",
+						"created_at": "2021-10-26T21:25:41",
+						"updated_at": "2021-10-26T21:25:41",
 					},
 					map[string]interface{}{
 						"id":         "3990300682121424906",
-						"tw_open":    "2020-01-11 00:00:00",
-						"tw_close":   "2020-01-12 00:00:00",
-						"created_at": "2021-10-26 21:25:51",
-						"updated_at": "2021-10-26 21:25:51",
+						"tw_open":    "2020-01-11T00:00:00",
+						"tw_close":   "2020-01-12T00:00:00",
+						"created_at": "2021-10-26T21:25:51",
+						"updated_at": "2021-10-26T21:25:51",
 					},
 				},
 				"code":    "200",
