@@ -52,7 +52,6 @@ export default class JobView extends AbstractView {
       ];
     }
 
-    // return the html for the jobs, with card heading of jobs with max height of 30vh and scrolling
     return `
       <div class="list-group">
         <div class="card">
@@ -62,7 +61,7 @@ export default class JobView extends AbstractView {
               <button type="button" class="btn btn-success" data-action="job-create" style="float: right">Add</button>
             </h5>
           </div>
-          <div style="max-height: 30vh; overflow-y: scroll;">
+          <div class="card-body-custom">
             ${jobsHtml.join("")}
           </div>
         </div>

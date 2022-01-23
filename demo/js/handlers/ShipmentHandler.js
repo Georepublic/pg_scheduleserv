@@ -97,27 +97,22 @@ export default class ShipmentHandler {
         }
         const id = shipment["id"];
 
-        this.shipmentAPI
-          .saveShipment(shipment)
-          .then((shipment) => {
-            // edit the shipment in the list, or append a new shipment to the list depending on the id
-            if (id) {
-              // update the shipment
-              this.shipments = this.shipments.map((oldShipment) => {
-                if (oldShipment.id === shipment.id) {
-                  return shipment;
-                }
-                return oldShipment;
-              });
-            } else {
-              // append the new shipment to the list
-              this.shipments.push(shipment);
-            }
-            onShipmentSave(shipment, this.shipments);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        this.shipmentAPI.saveShipment(shipment).then((shipment) => {
+          // edit the shipment in the list, or append a new shipment to the list depending on the id
+          if (id) {
+            // update the shipment
+            this.shipments = this.shipments.map((oldShipment) => {
+              if (oldShipment.id === shipment.id) {
+                return shipment;
+              }
+              return oldShipment;
+            });
+          } else {
+            // append the new shipment to the list
+            this.shipments.push(shipment);
+          }
+          onShipmentSave(shipment, this.shipments);
+        });
       }
     });
   }

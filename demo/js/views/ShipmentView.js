@@ -52,7 +52,6 @@ export default class ShipmentView extends AbstractView {
       ];
     }
 
-    // return the html for the shipments, with card heading of shipments with max height of 30vh and scrolling
     return `
       <div class="list-group">
         <div class="card">
@@ -62,7 +61,7 @@ export default class ShipmentView extends AbstractView {
               <button type="button" class="btn btn-success" data-action="shipment-create" style="float: right">Add</button>
             </h5>
           </div>
-          <div style="max-height: 30vh; overflow-y: scroll;">
+          <div class="card-body-custom">
             ${shipmentsHtml.join("")}
           </div>
         </div>
