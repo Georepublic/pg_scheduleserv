@@ -1,5 +1,5 @@
 export default class AbstractView {
-  constructor(params, init=true) {
+  constructor(params, init = true) {
     this.params = params;
     if (init) {
       this.initHtml();

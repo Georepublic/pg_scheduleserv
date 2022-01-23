@@ -6,11 +6,11 @@ export default class LocationAPI {
     return axios
       .get(`https://ipapi.co/json/`)
       .then((response) => {
-        const data = response.data
+        const data = response.data;
         return {
           latitude: data.latitude,
-          longitude: data.longitude
-        }
+          longitude: data.longitude,
+        };
       })
       .catch((error) => {
         throw error;

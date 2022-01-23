@@ -357,7 +357,7 @@ export default class ShipmentView extends AbstractView {
           shipment.p_location.latitude,
           shipment.p_location.longitude,
           shipment.d_location.latitude,
-          shipment.d_location.longitude,
+          shipment.d_location.longitude
         );
         this.mapView.activateMap();
         this.mapView.fitAllMarkers();

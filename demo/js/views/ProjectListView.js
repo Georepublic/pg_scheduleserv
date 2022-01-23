@@ -98,7 +98,7 @@ export default class ProjectListView extends AbstractView {
           id: "",
           name: "",
           exploration_level: "",
-          timeout: ""
+          timeout: "",
         }
       );
       this.handleSaveButton(div);
@@ -213,15 +213,15 @@ export default class ProjectListView extends AbstractView {
       btn.addEventListener("click", (e) => {
         const div = e.target.closest("div");
         const id = div.id.split("-")[1];
-        this.projectAPI.deleteProject(id)
-        .then(() => {
-          div.remove();
-        }).catch(err => {
-          console.log(err)
-        });
+        this.projectAPI
+          .deleteProject(id)
+          .then(() => {
+            div.remove();
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       });
     });
   }
-
-
 }

@@ -47,7 +47,7 @@ export default class ProjectView extends AbstractView {
         });
       });
 
-      this.setHeading("Projects");
+    this.setHeading("Projects");
   }
 
   getLoadingHtml() {

@@ -12,16 +12,21 @@ export default class Parser {
       isNaN(parseInt(durationArray[1])) ||
       isNaN(parseInt(durationArray[2]))
     ) {
-      Toast.error("Invalid duration: " + duration + " must be in hh:mm:ss format");
-      throw new Error("Invalid duration: " + duration + " must be in hh:mm:ss format");
+      Toast.error(
+        "Invalid duration: " + duration + " must be in hh:mm:ss format"
+      );
+      throw new Error(
+        "Invalid duration: " + duration + " must be in hh:mm:ss format"
+      );
     }
     // also check for hours, minutes, seconds
-    if (
-      parseInt(durationArray[1]) > 59 ||
-      parseInt(durationArray[2]) > 59
-    ) {
-      Toast.error("Invalid duration: " + duration + " must be in hh:mm:ss format");
-      throw new Error("Invalid duration: " + duration + " must be in hh:mm:ss format");
+    if (parseInt(durationArray[1]) > 59 || parseInt(durationArray[2]) > 59) {
+      Toast.error(
+        "Invalid duration: " + duration + " must be in hh:mm:ss format"
+      );
+      throw new Error(
+        "Invalid duration: " + duration + " must be in hh:mm:ss format"
+      );
     }
     return durationArray.join(":");
   }
@@ -35,8 +40,16 @@ export default class Parser {
         return item.trim();
       });
     if (locationArray.length !== 2) {
-      Toast.error("Invalid location: " + location + " must be in (latitude, longitude) format");
-      throw new Error("Invalid location: " + location + " must be in (latitude, longitude) format");
+      Toast.error(
+        "Invalid location: " +
+          location +
+          " must be in (latitude, longitude) format"
+      );
+      throw new Error(
+        "Invalid location: " +
+          location +
+          " must be in (latitude, longitude) format"
+      );
     }
 
     // return location as {latitude, longitude}
@@ -48,9 +61,21 @@ export default class Parser {
 
   // parse and validate priority to be an integer between 0 and 100 inclusive
   static parsePriority(priority) {
-    if (isNaN(parseInt(priority)) || parseInt(priority) < 0 || parseInt(priority) > 100) {
-      Toast.error("Invalid priority: " + priority + " must be an integer between 0 and 100 inclusive");
-      throw new Error("Invalid priority: " + priority + " must be an integer between 0 and 100 inclusive");
+    if (
+      isNaN(parseInt(priority)) ||
+      parseInt(priority) < 0 ||
+      parseInt(priority) > 100
+    ) {
+      Toast.error(
+        "Invalid priority: " +
+          priority +
+          " must be an integer between 0 and 100 inclusive"
+      );
+      throw new Error(
+        "Invalid priority: " +
+          priority +
+          " must be an integer between 0 and 100 inclusive"
+      );
     }
     return Parser._parseInteger(priority);
   }

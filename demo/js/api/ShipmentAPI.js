@@ -34,7 +34,10 @@ export default class ShipmentAPI {
     if (data["id"]) {
       return this.baseAPI.patch(`/shipments/${data["id"]}`, data);
     } else {
-      return this.baseAPI.post(`/projects/${data["project_id"]}/shipments`, data);
+      return this.baseAPI.post(
+        `/projects/${data["project_id"]}/shipments`,
+        data
+      );
     }
   }
 

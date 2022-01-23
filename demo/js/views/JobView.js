@@ -303,7 +303,7 @@ export default class JobView extends AbstractView {
         this.mapView.addJobMapPointer(
           job.location.latitude,
           job.location.longitude
-          );
+        );
         this.mapView.deactivateMap();
       },
       onJobCreateClick: () => {

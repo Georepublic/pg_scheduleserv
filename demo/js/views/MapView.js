@@ -167,10 +167,10 @@ export default class MapView {
     });
   }
 
-  addMarker(latitude, longitude, icon, color, iconPrefix="") {
+  addMarker(latitude, longitude, icon, color, iconPrefix = "") {
     // icons: truck, industry, warehouse, house
 
-    iconPrefix = "";  // not adding icon prefix for now
+    iconPrefix = ""; // not adding icon prefix for now
     var myIcon = L.divIcon({
       html: `${iconPrefix}<i class="fa-solid fa-${icon} fa-2x" style="color: ${color};"></i>`,
       iconSize: [20, 20],
@@ -333,7 +333,12 @@ export default class MapView {
       },
       onShipmentLocationTextChange: (pickup, delivery) => {
         this.removeMapPointers();
-        this.addShipmentMapPointer(pickup[0], pickup[1], delivery[0], delivery[1]);
+        this.addShipmentMapPointer(
+          pickup[0],
+          pickup[1],
+          delivery[0],
+          delivery[1]
+        );
         this.activateMap();
       },
       onVehicleLocationTextChange: (start, end) => {
