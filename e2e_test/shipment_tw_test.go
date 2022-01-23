@@ -91,7 +91,7 @@ func TestCreateShipmentTimeWindow(t *testing.T) {
 			statusCode: 400,
 			shipmentID: 3341766951177830852,
 			body: map[string]interface{}{
-				"tw_open": "2021-10-26 21:24:38",
+				"tw_open": "2021-10-26T21:24:38",
 			},
 			resBody: map[string]interface{}{
 				"code":    "400",
@@ -107,7 +107,7 @@ func TestCreateShipmentTimeWindow(t *testing.T) {
 			statusCode: 400,
 			shipmentID: 3341766951177830852,
 			body: map[string]interface{}{
-				"tw_close": "2021-10-26 21:24:38",
+				"tw_close": "2021-10-26T21:24:38",
 			},
 			resBody: map[string]interface{}{
 				"code":    "400",
@@ -124,8 +124,8 @@ func TestCreateShipmentTimeWindow(t *testing.T) {
 			shipmentID: 3341766951177830852,
 			body: map[string]interface{}{
 				"kind":     "p",
-				"tw_open":  "2021-10-26 21:24:39",
-				"tw_close": "2021-10-26 21:24:38",
+				"tw_open":  "2021-10-26T21:24:39",
+				"tw_close": "2021-10-26T21:24:38",
 			},
 			resBody: map[string]interface{}{
 				"code":    "400",
@@ -141,8 +141,8 @@ func TestCreateShipmentTimeWindow(t *testing.T) {
 			shipmentID: 100,
 			body: map[string]interface{}{
 				"kind":     "p",
-				"tw_open":  "2021-10-26 21:24:38",
-				"tw_close": "2021-10-26 21:24:38",
+				"tw_open":  "2021-10-26T21:24:38",
+				"tw_close": "2021-10-26T21:24:38",
 			},
 			resBody: map[string]interface{}{
 				"code":    "400",
@@ -158,8 +158,8 @@ func TestCreateShipmentTimeWindow(t *testing.T) {
 			shipmentID: 3341766951177830852,
 			body: map[string]interface{}{
 				"kind":     "invalid",
-				"tw_open":  "2021-10-26 21:20:20",
-				"tw_close": "2021-10-26 21:24:38",
+				"tw_open":  "2021-10-26T21:20:20",
+				"tw_close": "2021-10-26T21:24:38",
 			},
 			resBody: map[string]interface{}{
 				"code":    "400",
@@ -175,14 +175,14 @@ func TestCreateShipmentTimeWindow(t *testing.T) {
 			shipmentID: 3341766951177830852,
 			body: map[string]interface{}{
 				"kind":     "p",
-				"tw_open":  "2021-10-26 21:20:20",
-				"tw_close": "2021-10-26 21:24:38",
+				"tw_open":  "2021-10-26T21:20:20",
+				"tw_close": "2021-10-26T21:24:38",
 			},
 			resBody: map[string]interface{}{
 				"data": map[string]interface{}{
 					"kind":     "p",
-					"tw_open":  "2021-10-26 21:20:20",
-					"tw_close": "2021-10-26 21:24:38",
+					"tw_open":  "2021-10-26T21:20:20",
+					"tw_close": "2021-10-26T21:24:38",
 				},
 				"code":    "201",
 				"message": "Created",
@@ -194,14 +194,14 @@ func TestCreateShipmentTimeWindow(t *testing.T) {
 			shipmentID: 3341766951177830852,
 			body: map[string]interface{}{
 				"kind":     "d",
-				"tw_open":  "2021-10-26 21:20:20",
-				"tw_close": "2021-10-26 21:24:38",
+				"tw_open":  "2021-10-26T21:20:20",
+				"tw_close": "2021-10-26T21:24:38",
 			},
 			resBody: map[string]interface{}{
 				"data": map[string]interface{}{
 					"kind":     "d",
-					"tw_open":  "2021-10-26 21:20:20",
-					"tw_close": "2021-10-26 21:24:38",
+					"tw_open":  "2021-10-26T21:20:20",
+					"tw_close": "2021-10-26T21:24:38",
 				},
 				"code":    "201",
 				"message": "Created",
@@ -213,8 +213,8 @@ func TestCreateShipmentTimeWindow(t *testing.T) {
 			shipmentID: 3341766951177830852,
 			body: map[string]interface{}{
 				"kind":     "d",
-				"tw_open":  "2021-10-26 21:20:20",
-				"tw_close": "2021-10-26 21:24:38",
+				"tw_open":  "2021-10-26T21:20:20",
+				"tw_close": "2021-10-26T21:24:38",
 			},
 			resBody: map[string]interface{}{
 				"code":    "400",
@@ -296,26 +296,26 @@ func TestListShipmentTimeWindows(t *testing.T) {
 					map[string]interface{}{
 						"id":         "7794682317520784480",
 						"kind":       "p",
-						"tw_open":    "2020-10-10 00:00:00",
-						"tw_close":   "2020-10-10 00:00:00",
-						"created_at": "2021-10-26 20:45:31",
-						"updated_at": "2021-10-26 20:45:31",
+						"tw_open":    "2020-10-10T00:00:00",
+						"tw_close":   "2020-10-10T00:00:00",
+						"created_at": "2021-10-26T20:45:31",
+						"updated_at": "2021-10-26T20:45:31",
 					},
 					map[string]interface{}{
 						"id":         "7794682317520784480",
 						"kind":       "d",
-						"tw_open":    "2020-10-10 00:00:00",
-						"tw_close":   "2020-10-11 00:00:00",
-						"created_at": "2021-10-26 20:45:31",
-						"updated_at": "2021-10-26 20:45:31",
+						"tw_open":    "2020-10-10T00:00:00",
+						"tw_close":   "2020-10-11T00:00:00",
+						"created_at": "2021-10-26T20:45:31",
+						"updated_at": "2021-10-26T20:45:31",
 					},
 					map[string]interface{}{
 						"id":         "7794682317520784480",
 						"kind":       "p",
-						"tw_open":    "2020-10-10 00:00:10",
-						"tw_close":   "2020-10-12 00:00:00",
-						"created_at": "2021-10-26 20:45:31",
-						"updated_at": "2021-10-26 20:45:31",
+						"tw_open":    "2020-10-10T00:00:10",
+						"tw_close":   "2020-10-12T00:00:00",
+						"created_at": "2021-10-26T20:45:31",
+						"updated_at": "2021-10-26T20:45:31",
 					},
 				},
 				"code":    "200",
@@ -331,10 +331,10 @@ func TestListShipmentTimeWindows(t *testing.T) {
 					map[string]interface{}{
 						"id":         "3329730179111013588",
 						"kind":       "d",
-						"tw_open":    "2020-10-10 00:00:00",
-						"tw_close":   "2020-10-10 00:00:00",
-						"created_at": "2021-10-26 20:45:31",
-						"updated_at": "2021-10-26 20:45:31",
+						"tw_open":    "2020-10-10T00:00:00",
+						"tw_close":   "2020-10-10T00:00:00",
+						"created_at": "2021-10-26T20:45:31",
+						"updated_at": "2021-10-26T20:45:31",
 					},
 				},
 				"code":    "200",

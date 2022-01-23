@@ -74,7 +74,7 @@ func TestCreateJobTimeWindow(t *testing.T) {
 			statusCode: 400,
 			jobID:      3324729385723589729,
 			body: map[string]interface{}{
-				"tw_open": "2021-10-26 21:24:38",
+				"tw_open": "2021-10-26T21:24:38",
 			},
 			resBody: map[string]interface{}{
 				"code":    "400",
@@ -89,7 +89,7 @@ func TestCreateJobTimeWindow(t *testing.T) {
 			statusCode: 400,
 			jobID:      3324729385723589729,
 			body: map[string]interface{}{
-				"tw_close": "2021-10-26 21:24:38",
+				"tw_close": "2021-10-26T21:24:38",
 			},
 			resBody: map[string]interface{}{
 				"code":    "400",
@@ -104,8 +104,8 @@ func TestCreateJobTimeWindow(t *testing.T) {
 			statusCode: 400,
 			jobID:      3324729385723589729,
 			body: map[string]interface{}{
-				"tw_open":  "2021-10-26 21:24:39",
-				"tw_close": "2021-10-26 21:24:38",
+				"tw_open":  "2021-10-26T21:24:39",
+				"tw_close": "2021-10-26T21:24:38",
 			},
 			resBody: map[string]interface{}{
 				"code":    "400",
@@ -120,8 +120,8 @@ func TestCreateJobTimeWindow(t *testing.T) {
 			statusCode: 400,
 			jobID:      100,
 			body: map[string]interface{}{
-				"tw_open":  "2021-10-26 21:24:38",
-				"tw_close": "2021-10-26 21:24:38",
+				"tw_open":  "2021-10-26T21:24:38",
+				"tw_close": "2021-10-26T21:24:38",
 			},
 			resBody: map[string]interface{}{
 				"code":    "400",
@@ -136,13 +136,13 @@ func TestCreateJobTimeWindow(t *testing.T) {
 			statusCode: 201,
 			jobID:      3324729385723589729,
 			body: map[string]interface{}{
-				"tw_open":  "2021-10-26 21:20:20",
-				"tw_close": "2021-10-26 21:24:38",
+				"tw_open":  "2021-10-26T21:20:20",
+				"tw_close": "2021-10-26T21:24:38",
 			},
 			resBody: map[string]interface{}{
 				"data": map[string]interface{}{
-					"tw_open":  "2021-10-26 21:20:20",
-					"tw_close": "2021-10-26 21:24:38",
+					"tw_open":  "2021-10-26T21:20:20",
+					"tw_close": "2021-10-26T21:24:38",
 				},
 				"code":    "201",
 				"message": "Created",
@@ -153,8 +153,8 @@ func TestCreateJobTimeWindow(t *testing.T) {
 			statusCode: 400,
 			jobID:      3324729385723589729,
 			body: map[string]interface{}{
-				"tw_open":  "2021-10-26 21:20:20",
-				"tw_close": "2021-10-26 21:24:38",
+				"tw_open":  "2021-10-26T21:20:20",
+				"tw_close": "2021-10-26T21:24:38",
 			},
 			resBody: map[string]interface{}{
 				"code":    "400",
@@ -235,17 +235,17 @@ func TestListJobTimeWindows(t *testing.T) {
 				"data": []interface{}{
 					map[string]interface{}{
 						"id":         "6362411701075685873",
-						"tw_open":    "2020-10-10 00:00:00",
-						"tw_close":   "2020-10-10 00:00:10",
-						"created_at": "2021-10-26 21:25:41",
-						"updated_at": "2021-10-26 21:25:41",
+						"tw_open":    "2020-10-10T00:00:00",
+						"tw_close":   "2020-10-10T00:00:10",
+						"created_at": "2021-10-26T21:25:41",
+						"updated_at": "2021-10-26T21:25:41",
 					},
 					map[string]interface{}{
 						"id":         "6362411701075685873",
-						"tw_open":    "2020-10-11 00:00:00",
-						"tw_close":   "2020-10-12 00:00:00",
-						"created_at": "2021-10-26 21:25:51",
-						"updated_at": "2021-10-26 21:25:51",
+						"tw_open":    "2020-10-11T00:00:00",
+						"tw_close":   "2020-10-12T00:00:00",
+						"created_at": "2021-10-26T21:25:51",
+						"updated_at": "2021-10-26T21:25:51",
 					},
 				},
 				"code":    "200",
