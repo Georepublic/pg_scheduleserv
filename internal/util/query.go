@@ -134,7 +134,7 @@ func GetOutputFields(resourceStruct interface{}) (sql string) {
 			fieldName = fmt.Sprintf("to_char(%s, 'HH24:MI:SS')", fieldName)
 		}
 		if _, timestampFieldFound := TimestampFields[fieldName]; timestampFieldFound {
-			fieldName = fmt.Sprintf("to_char(%s, 'YYYY-MM-DD HH24:MI:SS')", fieldName)
+			fieldName = fmt.Sprintf("to_char(%s, 'YYYY-MM-DD') || 'T' || to_char(%s, 'HH24:MI:SS')", fieldName, fieldName)
 		}
 		sql += " " + fieldName
 	}
