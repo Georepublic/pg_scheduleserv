@@ -2159,7 +2159,7 @@
             "properties": {
                 "created_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "data": {
                     "type": "object",
@@ -2181,7 +2181,7 @@
                 },
                 "updated_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "vehicle_id": {
                     "type": "string",
@@ -2194,7 +2194,7 @@
             "properties": {
                 "created_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "id": {
                     "type": "string",
@@ -2202,15 +2202,15 @@
                 },
                 "tw_close": {
                     "type": "string",
-                    "example": "2021-12-31 23:59:00"
+                    "example": "2021-12-31T23:59:00"
                 },
                 "tw_open": {
                     "type": "string",
-                    "example": "2021-12-31 23:00:00"
+                    "example": "2021-12-31T23:00:00"
                 },
                 "updated_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 }
             }
         },
@@ -2242,11 +2242,11 @@
             "properties": {
                 "tw_close": {
                     "type": "string",
-                    "example": "2021-12-31 23:59:00"
+                    "example": "2021-12-31T23:59:00"
                 },
                 "tw_open": {
                     "type": "string",
-                    "example": "2021-12-31 23:00:00"
+                    "example": "2021-12-31T23:00:00"
                 }
             }
         },
@@ -2322,11 +2322,11 @@
             "properties": {
                 "tw_close": {
                     "type": "string",
-                    "example": "2021-12-31 23:59:00"
+                    "example": "2021-12-31T23:59:00"
                 },
                 "tw_open": {
                     "type": "string",
-                    "example": "2021-12-31 23:00:00"
+                    "example": "2021-12-31T23:00:00"
                 }
             }
         },
@@ -2431,11 +2431,11 @@
                 },
                 "tw_close": {
                     "type": "string",
-                    "example": "2021-12-31 23:59:00"
+                    "example": "2021-12-31T23:59:00"
                 },
                 "tw_open": {
                     "type": "string",
-                    "example": "2021-12-31 23:00:00"
+                    "example": "2021-12-31T23:00:00"
                 }
             }
         },
@@ -2492,11 +2492,11 @@
                 },
                 "tw_close": {
                     "type": "string",
-                    "example": "2021-12-31 23:59:00"
+                    "example": "2021-12-31T23:59:00"
                 },
                 "tw_open": {
                     "type": "string",
-                    "example": "2021-12-31 23:00:00"
+                    "example": "2021-12-31T23:00:00"
                 }
             }
         },
@@ -2505,7 +2505,7 @@
             "properties": {
                 "created_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "data": {
                     "type": "object",
@@ -2572,7 +2572,7 @@
                 },
                 "updated_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 }
             }
         },
@@ -2581,7 +2581,7 @@
             "properties": {
                 "created_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "id": {
                     "type": "string",
@@ -2589,15 +2589,15 @@
                 },
                 "tw_close": {
                     "type": "string",
-                    "example": "2021-12-31 23:59:00"
+                    "example": "2021-12-31T23:59:00"
                 },
                 "tw_open": {
                     "type": "string",
-                    "example": "2021-12-31 23:00:00"
+                    "example": "2021-12-31T23:00:00"
                 },
                 "updated_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 }
             }
         },
@@ -2606,7 +2606,7 @@
             "properties": {
                 "created_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "data": {
                     "type": "object",
@@ -2628,7 +2628,7 @@
                 },
                 "updated_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 }
             }
         },
@@ -2647,7 +2647,7 @@
                 },
                 "created_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "d_location": {
                     "$ref": "#/definitions/util.LocationParams"
@@ -2705,7 +2705,7 @@
                 },
                 "updated_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 }
             }
         },
@@ -2714,7 +2714,7 @@
             "properties": {
                 "created_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "id": {
                     "type": "string",
@@ -2726,15 +2726,15 @@
                 },
                 "tw_close": {
                     "type": "string",
-                    "example": "2021-12-31 23:59:00"
+                    "example": "2021-12-31T23:59:00"
                 },
                 "tw_open": {
                     "type": "string",
-                    "example": "2021-12-31 23:00:00"
+                    "example": "2021-12-31T23:00:00"
                 },
                 "updated_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 }
             }
         },
@@ -2848,11 +2848,11 @@
                 },
                 "tw_close": {
                     "type": "string",
-                    "example": "2021-12-31 23:59:00"
+                    "example": "2021-12-31T23:59:00"
                 },
                 "tw_open": {
                     "type": "string",
-                    "example": "2021-12-31 23:00:00"
+                    "example": "2021-12-31T23:00:00"
                 }
             }
         },
@@ -2871,7 +2871,7 @@
                 },
                 "created_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "data": {
                     "type": "object",
@@ -2917,15 +2917,15 @@
                 },
                 "tw_close": {
                     "type": "string",
-                    "example": "2021-12-31 23:59:00"
+                    "example": "2021-12-31T23:59:00"
                 },
                 "tw_open": {
                     "type": "string",
-                    "example": "2021-12-31 23:00:00"
+                    "example": "2021-12-31T23:00:00"
                 },
                 "updated_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 }
             }
         },
@@ -3020,15 +3020,15 @@
             "properties": {
                 "arrival": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "created_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "departure": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "load": {
                     "type": "array",
@@ -3079,7 +3079,7 @@
                 },
                 "updated_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "vehicle_data": {
                     "type": "object",
@@ -3164,15 +3164,15 @@
             "properties": {
                 "arrival": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "created_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "departure": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "load": {
                     "type": "array",
@@ -3219,7 +3219,7 @@
                 },
                 "updated_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "waiting_time": {
                     "type": "string",

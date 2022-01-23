@@ -3,7 +3,7 @@ definitions:
   database.Break:
     properties:
       created_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       data:
         additionalProperties:
@@ -19,7 +19,7 @@ definitions:
         example: "00:02:00"
         type: string
       updated_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       vehicle_id:
         example: "1234567812345678"
@@ -28,19 +28,19 @@ definitions:
   database.BreakTimeWindow:
     properties:
       created_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       id:
         example: "1234567812345678"
         type: string
       tw_close:
-        example: "2021-12-31 23:59:00"
+        example: 2021-12-31T23:59:00
         type: string
       tw_open:
-        example: "2021-12-31 23:00:00"
+        example: 2021-12-31T23:00:00
         type: string
       updated_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
     type: object
   database.CreateBreakParams:
@@ -59,10 +59,10 @@ definitions:
   database.CreateBreakTimeWindowParams:
     properties:
       tw_close:
-        example: "2021-12-31 23:59:00"
+        example: 2021-12-31T23:59:00
         type: string
       tw_open:
-        example: "2021-12-31 23:00:00"
+        example: 2021-12-31T23:00:00
         type: string
     required:
     - tw_close
@@ -115,10 +115,10 @@ definitions:
   database.CreateJobTimeWindowParams:
     properties:
       tw_close:
-        example: "2021-12-31 23:59:00"
+        example: 2021-12-31T23:59:00
         type: string
       tw_open:
-        example: "2021-12-31 23:00:00"
+        example: 2021-12-31T23:00:00
         type: string
     required:
     - tw_close
@@ -191,10 +191,10 @@ definitions:
         example: p
         type: string
       tw_close:
-        example: "2021-12-31 23:59:00"
+        example: 2021-12-31T23:59:00
         type: string
       tw_open:
-        example: "2021-12-31 23:00:00"
+        example: 2021-12-31T23:00:00
         type: string
     required:
     - kind
@@ -235,10 +235,10 @@ definitions:
       start_location:
         $ref: '#/definitions/util.LocationParams'
       tw_close:
-        example: "2021-12-31 23:59:00"
+        example: 2021-12-31T23:59:00
         type: string
       tw_open:
-        example: "2021-12-31 23:00:00"
+        example: 2021-12-31T23:00:00
         type: string
     required:
     - end_location
@@ -247,7 +247,7 @@ definitions:
   database.Job:
     properties:
       created_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       data:
         additionalProperties:
@@ -295,31 +295,31 @@ definitions:
           type: integer
         type: array
       updated_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
     type: object
   database.JobTimeWindow:
     properties:
       created_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       id:
         example: "1234567812345678"
         type: string
       tw_close:
-        example: "2021-12-31 23:59:00"
+        example: 2021-12-31T23:59:00
         type: string
       tw_open:
-        example: "2021-12-31 23:00:00"
+        example: 2021-12-31T23:00:00
         type: string
       updated_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
     type: object
   database.Project:
     properties:
       created_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       data:
         additionalProperties:
@@ -335,7 +335,7 @@ definitions:
         example: Sample Project
         type: string
       updated_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
     type: object
   database.Shipment:
@@ -348,7 +348,7 @@ definitions:
           type: integer
         type: array
       created_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       d_location:
         $ref: '#/definitions/util.LocationParams'
@@ -390,13 +390,13 @@ definitions:
           type: integer
         type: array
       updated_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
     type: object
   database.ShipmentTimeWindow:
     properties:
       created_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       id:
         example: "1234567812345678"
@@ -405,13 +405,13 @@ definitions:
         example: p
         type: string
       tw_close:
-        example: "2021-12-31 23:59:00"
+        example: 2021-12-31T23:59:00
         type: string
       tw_open:
-        example: "2021-12-31 23:00:00"
+        example: 2021-12-31T23:00:00
         type: string
       updated_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
     type: object
   database.UpdateShipmentParams:
@@ -491,10 +491,10 @@ definitions:
       start_location:
         $ref: '#/definitions/util.LocationParams'
       tw_close:
-        example: "2021-12-31 23:59:00"
+        example: 2021-12-31T23:59:00
         type: string
       tw_open:
-        example: "2021-12-31 23:00:00"
+        example: 2021-12-31T23:00:00
         type: string
     type: object
   database.Vehicle:
@@ -507,7 +507,7 @@ definitions:
           type: integer
         type: array
       created_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       data:
         additionalProperties:
@@ -540,13 +540,13 @@ definitions:
       start_location:
         $ref: '#/definitions/util.LocationParams'
       tw_close:
-        example: "2021-12-31 23:59:00"
+        example: 2021-12-31T23:59:00
         type: string
       tw_open:
-        example: "2021-12-31 23:00:00"
+        example: 2021-12-31T23:00:00
         type: string
       updated_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
     type: object
   util.ErrorResponse:
@@ -612,13 +612,13 @@ definitions:
   util.ScheduleDB:
     properties:
       arrival:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       created_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       departure:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       load:
         example:
@@ -655,7 +655,7 @@ definitions:
         example: job
         type: string
       updated_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       vehicle_data:
         additionalProperties:
@@ -713,13 +713,13 @@ definitions:
   util.ScheduleRoute:
     properties:
       arrival:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       created_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       departure:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       load:
         example:
@@ -753,7 +753,7 @@ definitions:
         example: job
         type: string
       updated_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       waiting_time:
         example: "00:00:00"
