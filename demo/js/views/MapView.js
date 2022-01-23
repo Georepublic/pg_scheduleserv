@@ -22,9 +22,6 @@ export default class MapView {
         latitude = location.latitude;
         longitude = location.longitude;
       })
-      .catch((error) => {
-        console.log(error);
-      })
       .then(() => {
         // create new leafletjs map
         this.map = L.map("map").setView([latitude, longitude], 14);
@@ -232,7 +229,7 @@ export default class MapView {
       this.vehicleMarkers.push(
         this.addMarker(
           vehicle.start_location.latitude,
-          vehicle.end_location.longitude,
+          vehicle.start_location.longitude,
           "industry",
           randomColor,
           "<b>Start</b> "
@@ -240,7 +237,7 @@ export default class MapView {
       );
       this.vehicleMarkers.push(
         this.addMarker(
-          vehicle.start_location.latitude,
+          vehicle.end_location.latitude,
           vehicle.end_location.longitude,
           "industry",
           randomColor,

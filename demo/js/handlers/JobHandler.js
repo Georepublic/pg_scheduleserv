@@ -97,27 +97,22 @@ export default class JobHandler {
         }
         const id = job["id"];
 
-        this.jobAPI
-          .saveJob(job)
-          .then((job) => {
-            // edit the job in the list, or append a new job to the list depending on the id
-            if (id) {
-              // update the job
-              this.jobs = this.jobs.map((oldJob) => {
-                if (oldJob.id === job.id) {
-                  return job;
-                }
-                return oldJob;
-              });
-            } else {
-              // append the new job to the list
-              this.jobs.push(job);
-            }
-            onJobSave(job, this.jobs);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+        this.jobAPI.saveJob(job).then((job) => {
+          // edit the job in the list, or append a new job to the list depending on the id
+          if (id) {
+            // update the job
+            this.jobs = this.jobs.map((oldJob) => {
+              if (oldJob.id === job.id) {
+                return job;
+              }
+              return oldJob;
+            });
+          } else {
+            // append the new job to the list
+            this.jobs.push(job);
+          }
+          onJobSave(job, this.jobs);
+        });
       }
     });
   }

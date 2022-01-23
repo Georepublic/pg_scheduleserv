@@ -3,6 +3,7 @@ import ProjectAPI from "../api/ProjectAPI.js";
 import JobView from "./JobView.js";
 import ShipmentView from "./ShipmentView.js";
 import MapView from "./MapView.js";
+import VehicleView from "./VehicleView.js";
 
 export default class ProjectView extends AbstractView {
   constructor(params) {
@@ -44,6 +45,17 @@ export default class ProjectView extends AbstractView {
             mapView: this.mapView,
           });
           shipmentView.render();
+        });
+      })
+      .then(() => {
+        // call VehicleAPI to get vehicles and pass them to VehicleView
+        return this.projectAPI.getVehicles(params.id).then((vehicles) => {
+          var vehicleView = new VehicleView({
+            vehicles: vehicles,
+            projectID: params.id,
+            mapView: this.mapView,
+          });
+          vehicleView.render();
         });
       });
 
