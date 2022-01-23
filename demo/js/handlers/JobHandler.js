@@ -1,7 +1,18 @@
 import JobAPI from "../api/JobAPI.js";
 
 export default class JobHandler {
-  constructor(jobs, emptyJob, { onJobView, onJobCreateClick, onJobEditClick, onJobDelete, onJobSave, onJobClose }) {
+  constructor(
+    jobs,
+    emptyJob,
+    {
+      onJobView,
+      onJobCreateClick,
+      onJobEditClick,
+      onJobDelete,
+      onJobSave,
+      onJobClose,
+    }
+  ) {
     // get the jobs from the params
     this.jobs = jobs;
     this.emptyJob = emptyJob;
@@ -62,15 +73,14 @@ export default class JobHandler {
       if (el) {
         let jobID = el.dataset.id;
         // call the job api to delete the job
-        this.jobAPI.deleteJob(jobID)
-          .then(() => {
-            // remove the job from the list
-            this.jobs = this.jobs.filter((job) => {
-              return job.id !== jobID;
-            });
-            // call the onJobDelete callback
-            onJobDelete(this.jobs);
+        this.jobAPI.deleteJob(jobID).then(() => {
+          // remove the job from the list
+          this.jobs = this.jobs.filter((job) => {
+            return job.id !== jobID;
           });
+          // call the onJobDelete callback
+          onJobDelete(this.jobs);
+        });
       }
     });
   }
@@ -87,24 +97,27 @@ export default class JobHandler {
         }
         const id = job["id"];
 
-        this.jobAPI.saveJob(job).then((job) => {
-          // edit the job in the list, or append a new job to the list depending on the id
-          if (id) {
-            // update the job
-            this.jobs = this.jobs.map((oldJob) => {
-              if (oldJob.id === job.id) {
-                return job;
-              }
-              return oldJob;
-            });
-          } else {
-            // append the new job to the list
-            this.jobs.push(job);
-          }
-          onJobSave(job, this.jobs);
-        }).catch(err => {
-          console.log(err);
-        })
+        this.jobAPI
+          .saveJob(job)
+          .then((job) => {
+            // edit the job in the list, or append a new job to the list depending on the id
+            if (id) {
+              // update the job
+              this.jobs = this.jobs.map((oldJob) => {
+                if (oldJob.id === job.id) {
+                  return job;
+                }
+                return oldJob;
+              });
+            } else {
+              // append the new job to the list
+              this.jobs.push(job);
+            }
+            onJobSave(job, this.jobs);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
       }
     });
   }
