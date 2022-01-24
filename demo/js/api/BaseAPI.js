@@ -21,7 +21,27 @@ export default class BaseAPI {
 
   get(url) {
     return axios
-      .get(this.baseURL + url)
+      .get(this.baseURL + url, {
+        headers: {
+          Accept: "application/json",
+        },
+      })
+      .then((response) => {
+        return response.data.data;
+      })
+      .catch((error) => {
+        this.showError(error);
+        throw error;
+      });
+  }
+
+  getIcal(url) {
+    return axios
+      .get(this.baseURL + url, {
+        headers: {
+          "Content-Type": "text/calendar",
+        },
+      })
       .then((response) => {
         return response.data.data;
       })

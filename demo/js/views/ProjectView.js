@@ -4,6 +4,11 @@ import JobView from "./JobView.js";
 import ShipmentView from "./ShipmentView.js";
 import MapView from "./MapView.js";
 import VehicleView from "./VehicleView.js";
+import JobAPI from "../api/JobAPI.js";
+import ShipmentAPI from "../api/ShipmentAPI.js";
+import VehicleAPI from "../api/VehicleAPI.js";
+import ScheduleAPI from "../api/ScheduleAPI.js";
+import ScheduleView from "./ScheduleView.js";
 
 export default class ProjectView extends AbstractView {
   constructor(params) {
@@ -14,6 +19,10 @@ export default class ProjectView extends AbstractView {
     this.setSubHeading("");
 
     this.projectAPI = new ProjectAPI();
+    this.jobAPI = new JobAPI();
+    this.shipmentAPI = new ShipmentAPI();
+    this.vehicleAPI = new VehicleAPI();
+    this.scheduleAPI = new ScheduleAPI();
 
     this.projectAPI
       .getProject(params.id)
@@ -27,7 +36,7 @@ export default class ProjectView extends AbstractView {
       })
       .then(() => {
         // call JobAPI to get jobs and pass them to JobView
-        return this.projectAPI.getJobs(params.id).then((jobs) => {
+        return this.jobAPI.listJobs(params.id).then((jobs) => {
           var jobView = new JobView({
             jobs: jobs,
             projectID: params.id,
@@ -38,7 +47,7 @@ export default class ProjectView extends AbstractView {
       })
       .then(() => {
         // call ShipmentAPI to get shipments and pass them to ShipmentView
-        return this.projectAPI.getShipments(params.id).then((shipments) => {
+        return this.shipmentAPI.listShipments(params.id).then((shipments) => {
           var shipmentView = new ShipmentView({
             shipments: shipments,
             projectID: params.id,
@@ -49,13 +58,24 @@ export default class ProjectView extends AbstractView {
       })
       .then(() => {
         // call VehicleAPI to get vehicles and pass them to VehicleView
-        return this.projectAPI.getVehicles(params.id).then((vehicles) => {
+        return this.vehicleAPI.listVehicles(params.id).then((vehicles) => {
           var vehicleView = new VehicleView({
             vehicles: vehicles,
             projectID: params.id,
             mapView: this.mapView,
           });
           vehicleView.render();
+        });
+      })
+      .then(() => {
+        // call ScheduleAPI to get schedules and pass them to ScheduleView
+        return this.scheduleAPI.getSchedule(params.id).then((data) => {
+          var scheduleView = new ScheduleView({
+            data: data,
+            projectID: params.id,
+            mapView: this.mapView,
+          });
+          scheduleView.render();
         });
       });
 

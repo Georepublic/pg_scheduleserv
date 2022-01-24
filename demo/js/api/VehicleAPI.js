@@ -40,6 +40,10 @@ export default class VehicleAPI {
     }
   }
 
+  listVehicles(projectID) {
+    return this.baseAPI.get(`/projects/${projectID}/vehicles`);
+  }
+
   getVehicle(vehicleID) {
     return this.baseAPI.get(`/vehicles/${vehicleID}`);
   }

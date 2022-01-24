@@ -35,7 +35,8 @@
     overflow-y: scroll;
 }
 
-.list-group {
+.list-group,
+#map {
     margin-bottom: 20px;
 }
 
@@ -56,4 +57,88 @@ button[data-action="job-close"],
 button[data-action="shipment-close"],
 button[data-action="vehicle-close"] {
     float: right;
+}
+
+.timelines-container {
+    position: relative;
+    height: calc(100% - 70px);
+    margin-bottom: 20px;
+    padding-right: 20px;
+    /* overflow-y: auto; */
+}
+
+.timeline-item.even {
+    background-color: #fff;
+}
+
+.timeline-item {
+    padding-right: 20px;
+    margin-right: -20px;
+}
+
+.timeline {
+    margin-left: 10px;
+    position: relative;
+    height: 100%;
+    min-height: 45px;
+}
+
+.timeline .line {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    height: 1px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.timeline .value-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 8px;
+    margin-top: -4px;
+    z-index: 10;
+    border-radius: 4px;
+}
+
+.flex-container.items-center {
+    align-items: center;
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.flex-container .flex-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.task-item {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+}
+
+.task-item .task-item-full {
+    height: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+}
+
+.task-item-tooltip {
+    white-space: pre-line;
+    font-size: 14px;
+    line-height: 1.4em;
+}
+
+.label-vertical-line {
+    position: absolute;
+    border-left: 1px solid rgba(0, 0, 0, 0.2);
+    width: 1px;
+    top: 0;
+    bottom: 0;
 }
