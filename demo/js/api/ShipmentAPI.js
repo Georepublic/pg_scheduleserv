@@ -41,6 +41,10 @@ export default class ShipmentAPI {
     }
   }
 
+  listShipments(projectID) {
+    return this.baseAPI.get(`/projects/${projectID}/shipments`);
+  }
+
   getShipment(shipmentID) {
     return this.baseAPI.get(`/shipments/${shipmentID}`);
   }

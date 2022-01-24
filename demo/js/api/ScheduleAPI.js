@@ -6,7 +6,7 @@ export default class ScheduleAPI {
   }
 
   createSchedule(projectID) {
-    return this.baseAPI.post(`/projects/${projectID}/schedule`, data);
+    return this.baseAPI.post(`/projects/${projectID}/schedule`);
   }
 
   getSchedule(projectID) {

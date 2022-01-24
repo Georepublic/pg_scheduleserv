@@ -8,13 +8,12 @@ export default class AbstractView {
 
   initHtml() {
     let html = `
-    <div class="row" id="main">
       <div class="col-md-3" id="app-left"></div>
       <div class="col-md-6" id="app"></div>
       <div class="col-md-3" id="app-right"></div>
-    </div>
     `;
-    document.querySelector("#main").outerHTML = html;
+    document.querySelector("#main").innerHTML = html;
+    document.querySelector("#schedule").innerHTML = "";
   }
 
   setTitle(title) {

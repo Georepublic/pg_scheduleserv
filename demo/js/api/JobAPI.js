@@ -35,6 +35,10 @@ export default class JobAPI {
     }
   }
 
+  listJobs(projectID) {
+    return this.baseAPI.get(`/projects/${projectID}/jobs`);
+  }
+
   getJob(jobID) {
     return this.baseAPI.get(`/jobs/${jobID}`);
   }
