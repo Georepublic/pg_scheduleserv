@@ -123,6 +123,10 @@ button[data-action="vehicle-close"] {
     z-index: 100;
 }
 
+.task-item:hover {
+    cursor: pointer;
+}
+
 .task-item .task-item-full {
     height: 10px;
     border: 1px solid rgba(0, 0, 0, 0.3);
@@ -141,4 +145,46 @@ button[data-action="vehicle-close"] {
     width: 1px;
     top: 0;
     bottom: 0;
+}
+
+.tooltip {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1.42857143;
+    text-align: left;
+    text-align: start;
+    text-decoration: none;
+    text-shadow: none;
+    text-transform: none;
+    letter-spacing: normal;
+    word-break: normal;
+    word-spacing: normal;
+    word-wrap: normal;
+    white-space: normal;
+}
+.tooltip-inner {
+    max-width: 200px;
+    padding: 3px 8px;
+    color: #fff;
+    text-align: center;
+    background-color: #000;
+    border-radius: 4px;
+}
+
+.label-item {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.circle-icon {
+    width: 20px !important;
+    height: 20px !important;
+    margin-left: -10px;
+    margin-top: -10px;
+    border-radius: 18px;
+    text-align: center;
+    font-size: 12px;
 }

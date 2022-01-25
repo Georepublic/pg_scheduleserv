@@ -19,6 +19,7 @@ export default class JobHandler {
     this.jobAPI = new JobAPI();
 
     this.main = document.querySelector("#main");
+    this.schedule = document.querySelector("#schedule");
 
     this.handleJobView(onJobView);
     this.handleJobCreateClick(onJobCreateClick);
@@ -26,6 +27,7 @@ export default class JobHandler {
     this.handleJobDelete(onJobDelete);
     this.handleJobSave(onJobSave);
     this.handleJobClose(onJobClose);
+    this.handleJobScheduleClick(onJobView);
   }
 
   // get job from id
@@ -40,6 +42,16 @@ export default class JobHandler {
 
   handleJobView(onJobView) {
     this.main.addEventListener("click", (event) => {
+      const el = event.target.closest(`[data-action="job-view"]`);
+      if (el) {
+        let jobID = el.dataset.id;
+        onJobView(this.getJob(jobID));
+      }
+    });
+  }
+
+  handleJobScheduleClick(onJobView) {
+    this.schedule.addEventListener("click", (event) => {
       const el = event.target.closest(`[data-action="job-view"]`);
       if (el) {
         let jobID = el.dataset.id;

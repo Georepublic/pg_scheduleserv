@@ -13,6 +13,10 @@ export default class ScheduleAPI {
     return this.baseAPI.get(`/projects/${projectID}/schedule`);
   }
 
+  getScheduleIcal(projectID) {
+    return this.baseAPI.getIcal(`/projects/${projectID}/schedule`);
+  }
+
   getJobSchedule(jobID) {
     return this.baseAPI.get(`/jobs/${jobID}/schedule`);
   }
