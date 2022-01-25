@@ -5,10 +5,12 @@ import Random from "../utils/Random.js";
 export default class MapView {
   constructor() {
     this.locationAPI = new LocationAPI();
+    this.numberPointers = {};
     this.mapPointers = [];
     this.jobMarkers = [];
     this.shipmentMarkers = [];
     this.vehicleMarkers = [];
+    this.routeLayers = [];
     this.handler = new MapHandler(this.handlers());
   }
 
@@ -86,6 +88,88 @@ export default class MapView {
     });
 
     this.mapPointers.push(marker);
+  }
+
+  // set style of circle-icon-vehicleID to
+  setStyle(vehicleID) {
+    let color = Random.getRandomColor(vehicleID);
+    let contrastColor = invert(color, true);
+    const circleIcon = document.querySelectorAll(`.circle-icon-${vehicleID}`);
+    circleIcon.forEach((circle) => {
+      circle.style.border = `2px solid ${contrastColor}`;
+      circle.style.color = contrastColor;
+      circle.style.backgroundColor = color;
+    });
+  }
+
+  addNumberPointer(vehicleID, latitude, longitude, number) {
+    const marker = L.marker([latitude, longitude + 0.0004], {
+      icon: L.divIcon({
+        className: `circle-icon circle-icon-${vehicleID}`,
+        html: number,
+      }),
+    }).addTo(this.map);
+
+    // append marker to vehicleID in this.numberPointers
+    if (!this.numberPointers[vehicleID]) {
+      this.numberPointers[vehicleID] = [];
+    }
+    this.numberPointers[vehicleID].push(marker);
+  }
+
+  deleteAllNumberPointers() {
+    Object.keys(this.numberPointers).forEach((vehicleID) => {
+      this.numberPointers[vehicleID].forEach((pointer) => {
+        this.map.removeLayer(pointer);
+      });
+    });
+    this.numberPointers = {};
+  }
+
+  playRoute(vehicleID) {
+    // set markers as hard copy of this.numberPointers[vehicleID]
+    const markers = this.numberPointers[vehicleID].slice();
+
+    // if interval is set, clear it
+    if (this.interval) {
+      clearInterval(this.interval);
+    }
+
+    // every one second, zoom map to the next point, get the points from the vehicleID in this.numberPointers
+    // if there is no point, stop the interval
+    this.interval = setInterval(() => {
+      console.log(markers);
+      if (markers.length === 0) {
+        clearInterval(this.interval);
+        this.fitAllMarkers();
+      } else {
+        const nextMarker = markers.shift();
+        this.setCenter(nextMarker._latlng.lat, nextMarker._latlng.lng);
+      }
+    }, 1000);
+  }
+
+  // stop playing route
+  stopPlayRoute() {
+    console.log("stopped");
+    clearInterval(this.interval);
+    this.fitAllMarkers();
+  }
+
+  // add geometry (geojson) to the map
+  addRouteLayer(geometry, style) {
+    const layer = L.geoJSON(geometry, {
+      style: style,
+    }).addTo(this.map);
+    this.routeLayers.push(layer);
+    this.map.fitBounds(layer.getBounds());
+  }
+
+  deleteAllRouteLayers() {
+    this.routeLayers.forEach((layer) => {
+      this.map.removeLayer(layer);
+    });
+    this.routeLayers = [];
   }
 
   addJobMapPointer(latitude, longitude) {

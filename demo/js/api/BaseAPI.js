@@ -43,7 +43,7 @@ export default class BaseAPI {
         },
       })
       .then((response) => {
-        return response.data.data;
+        return response;
       })
       .catch((error) => {
         this.showError(error);
