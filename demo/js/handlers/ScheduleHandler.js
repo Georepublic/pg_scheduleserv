@@ -1,4 +1,5 @@
 import ScheduleAPI from "../api/ScheduleAPI.js";
+import Toast from "../utils/Toast.js";
 
 export default class ScheduleHandler {
   constructor(
@@ -15,9 +16,20 @@ export default class ScheduleHandler {
 
     this.handleScheduleCreate(onScheduleCreate);
     this.handleScheduleDownload();
+    this.handleVehicleScheduleDownload();
     this.handleScheduleDelete(onScheduleDelete);
     this.handlePlayRoute(onPlayRoute);
     this.handleStopPlayRoute(onStopPlayRoute);
+  }
+
+  downloadIcal(data, filename) {
+    const url = window.URL.createObjectURL(new Blob([data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", filename);
+    document.body.appendChild(link);
+    link.click();
+    Toast.success("Schedule downloaded");
   }
 
   handleScheduleCreate(onScheduleCreate) {
@@ -25,7 +37,6 @@ export default class ScheduleHandler {
       const el = event.target.closest(`[data-action="schedule-create"]`);
       if (el) {
         this.scheduleAPI.createSchedule(this.projectID).then((data) => {
-          console.log(data);
           onScheduleCreate(data);
         });
       }
@@ -37,12 +48,23 @@ export default class ScheduleHandler {
       const el = event.target.closest(`[data-action="schedule-download"]`);
       if (el) {
         this.scheduleAPI.getScheduleIcal(this.projectID).then((data) => {
-          const url = window.URL.createObjectURL(new Blob([data]));
-          const link = document.createElement("a");
-          link.href = url;
-          link.setAttribute("download", "schedule.ical");
-          document.body.appendChild(link);
-          link.click();
+          let filename = `schedule-${this.projectID}.ical`;
+          this.downloadIcal(data, filename);
+        });
+      }
+    });
+  }
+
+  handleVehicleScheduleDownload() {
+    this.schedule.addEventListener("click", (event) => {
+      const el = event.target.closest(
+        `[data-action="vehicle-schedule-download"]`
+      );
+      if (el) {
+        let vehicleID = el.dataset.id;
+        this.scheduleAPI.getVehicleScheduleIcal(vehicleID).then((data) => {
+          let filename = `schedule-vehicle-${vehicleID}.ical`;
+          this.downloadIcal(data, filename);
         });
       }
     });

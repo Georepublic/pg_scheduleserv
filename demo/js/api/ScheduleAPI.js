@@ -17,16 +17,16 @@ export default class ScheduleAPI {
     return this.baseAPI.getIcal(`/projects/${projectID}/schedule`);
   }
 
-  getJobSchedule(jobID) {
-    return this.baseAPI.get(`/jobs/${jobID}/schedule`);
+  getJobScheduleIcal(jobID) {
+    return this.baseAPI.getIcal(`/jobs/${jobID}/schedule`);
   }
 
-  getShipmentSchedule(shipmentID) {
-    return this.baseAPI.get(`/shipments/${shipmentID}/schedule`);
+  getShipmentScheduleIcal(shipmentID) {
+    return this.baseAPI.getIcal(`/shipments/${shipmentID}/schedule`);
   }
 
-  getVehicleSchedule(vehicleID) {
-    return this.baseAPI.get(`/vehicles/${vehicleID}/schedule`);
+  getVehicleScheduleIcal(vehicleID) {
+    return this.baseAPI.getIcal(`/vehicles/${vehicleID}/schedule`);
   }
 
   deleteSchedule(projectID) {
