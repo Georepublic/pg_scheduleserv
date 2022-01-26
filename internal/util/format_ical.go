@@ -236,8 +236,12 @@ func (r *Formatter) GetScheduleICal(scheduleData ScheduleData) ([]ICal, string) 
 		route := schedule[i].Route
 		vehicleID := schedule[i].VehicleID
 		for j := 0; j < len(route); j++ {
+			id := route[j].TaskID
+			if id == -1 {
+				id = vehicleID
+			}
 			entry := ICal{
-				ID:          fmt.Sprintf("%s%d@scheduleserv", route[j].Type, route[j].TaskID),
+				ID:          fmt.Sprintf("%s%d@scheduleserv", route[j].Type, id),
 				CreatedTime: parseTime(route[j].CreatedAt),
 				DtStampTime: time.Now(),
 				ModifiedAt:  parseTime(route[j].UpdatedAt),
