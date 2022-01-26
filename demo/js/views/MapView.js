@@ -6,6 +6,7 @@ export default class MapView {
   constructor() {
     this.locationAPI = new LocationAPI();
     this.numberPointers = {};
+    this.unassignedPointers = [];
     this.mapPointers = [];
     this.jobMarkers = [];
     this.shipmentMarkers = [];
@@ -127,6 +128,26 @@ export default class MapView {
     this.numberPointers = {};
   }
 
+  addUnassignedPointer(latitude, longitude) {
+    const marker = L.marker([latitude, longitude + 0.0004], {
+      icon: L.divIcon({
+        html: `<i class="fas fa-times fa-2x" style="color: red;"></i>`,
+        iconSize: [20, 20],
+        className: "myDivIcon",
+      }),
+      zIndexOffset: 1000,
+    }).addTo(this.map);
+
+    this.unassignedPointers.push(marker);
+  }
+
+  deleteAllUnassignedPointers() {
+    this.unassignedPointers.forEach((pointer) => {
+      this.map.removeLayer(pointer);
+    });
+    this.unassignedPointers = [];
+  }
+
   playRoute(vehicleID) {
     // set markers as hard copy of this.numberPointers[vehicleID]
     const markers = this.numberPointers[vehicleID].slice();
@@ -153,16 +174,6 @@ export default class MapView {
   stopPlayRoute() {
     clearInterval(this.interval);
     this.fitAllMarkers();
-  }
-
-  fitAllRouteLayers() {
-    const bounds = [];
-    this.routeLayers.forEach((layer) => {
-      bounds.push(layer.getBounds());
-    });
-    if (bounds.length !== 0) {
-      this.fitBounds(bounds);
-    }
   }
 
   // add geometry (geojson) to the map
