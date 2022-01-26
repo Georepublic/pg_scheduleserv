@@ -8,12 +8,17 @@ export default class AbstractView {
 
   initHtml() {
     let html = `
+    <div class="row" id="main">
       <div class="col-md-3" id="app-left"></div>
       <div class="col-md-6" id="app"></div>
       <div class="col-md-3" id="app-right"></div>
+    </div>
     `;
-    document.querySelector("#main").innerHTML = html;
-    document.querySelector("#schedule").innerHTML = "";
+    // Using outerHTML so that the element is removed along with the handlers
+    document.querySelector("#main").outerHTML = html;
+    document.querySelector(
+      "#schedule"
+    ).outerHTML = `<div class="row" id="schedule"></div>`;
   }
 
   setTitle(title) {
