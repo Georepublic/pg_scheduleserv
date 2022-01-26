@@ -44,13 +44,14 @@ func (q *Queries) DBCreateSchedule(ctx context.Context, projectID int64) error {
 }
 
 func (q *Queries) DBGetSchedule(ctx context.Context, projectID int64) (util.ScheduleData, error) {
+	tableName := "schedules"
 	_, err := q.DBGetProject(ctx, projectID)
 	if err != nil {
 		return util.ScheduleData{}, err
 	}
 	filter := " WHERE project_id = $1"
 	orderBy := " ORDER BY vehicle_id, arrival, type"
-	sql := "SELECT " + util.GetOutputFields(util.ScheduleDB{}) + " FROM schedules" + filter + orderBy
+	sql := "SELECT " + util.GetOutputFields(util.ScheduleDB{}, tableName) + " FROM " + tableName + filter + orderBy
 	rows, err := q.db.Query(ctx, sql, projectID)
 	if err != nil {
 		return util.ScheduleData{}, err
@@ -60,13 +61,14 @@ func (q *Queries) DBGetSchedule(ctx context.Context, projectID int64) (util.Sche
 }
 
 func (q *Queries) DBGetScheduleJob(ctx context.Context, jobID int64) (util.ScheduleData, error) {
+	tableName := "schedules"
 	_, err := q.DBGetJob(ctx, jobID)
 	if err != nil {
 		return util.ScheduleData{}, err
 	}
 	filter := " WHERE task_id = $1 AND type = 'job'"
 	orderBy := " ORDER BY vehicle_id, arrival, type"
-	sql := "SELECT " + util.GetOutputFields(util.ScheduleDB{}) + " FROM schedules" + filter + orderBy
+	sql := "SELECT " + util.GetOutputFields(util.ScheduleDB{}, tableName) + " FROM " + tableName + filter + orderBy
 	rows, err := q.db.Query(ctx, sql, jobID)
 	if err != nil {
 		return util.ScheduleData{}, err
@@ -76,13 +78,14 @@ func (q *Queries) DBGetScheduleJob(ctx context.Context, jobID int64) (util.Sched
 }
 
 func (q *Queries) DBGetScheduleShipment(ctx context.Context, shipmentID int64) (util.ScheduleData, error) {
+	tableName := "schedules"
 	_, err := q.DBGetShipment(ctx, shipmentID)
 	if err != nil {
 		return util.ScheduleData{}, err
 	}
 	filter := " WHERE task_id = $1  AND (type = 'pickup' OR type = 'delivery')"
 	orderBy := " ORDER BY vehicle_id, arrival, type"
-	sql := "SELECT " + util.GetOutputFields(util.ScheduleDB{}) + " FROM schedules" + filter + orderBy
+	sql := "SELECT " + util.GetOutputFields(util.ScheduleDB{}, tableName) + " FROM " + tableName + filter + orderBy
 	rows, err := q.db.Query(ctx, sql, shipmentID)
 	if err != nil {
 		return util.ScheduleData{}, err
@@ -92,13 +95,14 @@ func (q *Queries) DBGetScheduleShipment(ctx context.Context, shipmentID int64) (
 }
 
 func (q *Queries) DBGetScheduleVehicle(ctx context.Context, vehicleID int64) (util.ScheduleData, error) {
+	tableName := "schedules"
 	_, err := q.DBGetVehicle(ctx, vehicleID)
 	if err != nil {
 		return util.ScheduleData{}, err
 	}
 	filter := " WHERE vehicle_id = $1"
 	orderBy := " ORDER BY vehicle_id, arrival, type"
-	sql := "SELECT " + util.GetOutputFields(util.ScheduleDB{}) + " FROM schedules" + filter + orderBy
+	sql := "SELECT " + util.GetOutputFields(util.ScheduleDB{}, tableName) + " FROM " + tableName + filter + orderBy
 	rows, err := q.db.Query(ctx, sql, vehicleID)
 	if err != nil {
 		return util.ScheduleData{}, err

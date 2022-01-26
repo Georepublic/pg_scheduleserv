@@ -50,16 +50,11 @@ type Querier interface {
 	DBDeleteBreakTimeWindow(ctx context.Context, id int64) (BreakTimeWindow, error)
 
 	// Job
-	DBCreateJob(ctx context.Context, arg CreateJobParams) (Job, error)
+	DBCreateJobWithTw(ctx context.Context, arg CreateJobParams) (Job, error)
 	DBListJobs(ctx context.Context, projectID int64) ([]Job, error)
 	DBGetJob(ctx context.Context, id int64) (Job, error)
-	DBUpdateJob(ctx context.Context, arg UpdateJobParams, job_id int64) (Job, error)
+	DBUpdateJobWithTw(ctx context.Context, arg UpdateJobParams, job_id int64) (Job, error)
 	DBDeleteJob(ctx context.Context, id int64) (Job, error)
-
-	// Job Time Window
-	DBCreateJobTimeWindow(ctx context.Context, arg CreateJobTimeWindowParams) (JobTimeWindow, error)
-	DBListJobTimeWindows(ctx context.Context, id int64) ([]JobTimeWindow, error)
-	DBDeleteJobTimeWindow(ctx context.Context, id int64) (JobTimeWindow, error)
 
 	// Project
 	DBCreateProject(ctx context.Context, arg CreateProjectParams) (Project, error)

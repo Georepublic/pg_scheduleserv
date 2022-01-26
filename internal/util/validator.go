@@ -106,7 +106,24 @@ func ValidateInput(jsonStruct map[string]interface{}, originalStruct interface{}
 		if ok && requiredType.Kind() == reflect.Slice {
 			convertible := true
 			for i := 0; i < len(typ2); i++ {
-				if typ2[i] == nil || !reflect.TypeOf(typ2[i]).ConvertibleTo(requiredType.Elem()) {
+				// validation for time_windows field: [][]string
+				if tag == "time_windows" {
+					if typ2[i] == nil {
+						convertible = false
+					} else {
+						if typ3, ok := typ2[i].([]interface{}); !ok {
+							convertible = false
+							if len(typ3) != 2 {
+								convertible = false
+							}
+							for j := 0; j < len(typ3); j++ {
+								if (typ3[j] == nil) || (reflect.TypeOf(typ3[j]).Kind() != reflect.String) {
+									convertible = false
+								}
+							}
+						}
+					}
+				} else if typ2[i] == nil || !reflect.TypeOf(typ2[i]).ConvertibleTo(requiredType.Elem()) {
 					convertible = false
 				}
 			}

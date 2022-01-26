@@ -46,24 +46,25 @@ type UpdateProjectParams struct {
 }
 
 func (q *Queries) DBCreateProject(ctx context.Context, arg CreateProjectParams) (Project, error) {
-	sql, args := createResource("projects", arg)
-	return_sql := " RETURNING " + util.GetOutputFields(Project{})
+	tableName := "projects"
+	sql, args := createResource(tableName, arg)
+	return_sql := " RETURNING " + util.GetOutputFields(Project{}, tableName)
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	return scanProjectRow(row)
 }
 
 func (q *Queries) DBGetProject(ctx context.Context, id int64) (Project, error) {
-	table_name := "projects"
-	additional_query := " WHERE id = $1 AND deleted = FALSE LIMIT 1"
-	sql := "SELECT " + util.GetOutputFields(Project{}) + " FROM " + table_name + additional_query
+	tableName := "projects"
+	additionalQuery := " WHERE id = $1 AND deleted = FALSE LIMIT 1"
+	sql := "SELECT " + util.GetOutputFields(Project{}, tableName) + " FROM " + tableName + additionalQuery
 	row := q.db.QueryRow(ctx, sql, id)
 	return scanProjectRow(row)
 }
 
 func (q *Queries) DBListProjects(ctx context.Context) ([]Project, error) {
-	table_name := "projects"
-	additional_query := " WHERE deleted = FALSE ORDER BY created_at"
-	sql := "SELECT " + util.GetOutputFields(Project{}) + " FROM " + table_name + additional_query
+	tableName := "projects"
+	additionalQuery := " WHERE deleted = FALSE ORDER BY created_at"
+	sql := "SELECT " + util.GetOutputFields(Project{}, tableName) + " FROM " + tableName + additionalQuery
 	rows, err := q.db.Query(ctx, sql)
 	if err != nil {
 		return nil, err
@@ -73,15 +74,17 @@ func (q *Queries) DBListProjects(ctx context.Context) ([]Project, error) {
 }
 
 func (q *Queries) DBUpdateProject(ctx context.Context, arg UpdateProjectParams, project_id int64) (Project, error) {
-	sql, args := updateResource("projects", arg, project_id)
-	return_sql := " RETURNING " + util.GetOutputFields(Project{})
+	tableName := "projects"
+	sql, args := updateResource(tableName, arg, project_id)
+	return_sql := " RETURNING " + util.GetOutputFields(Project{}, tableName)
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	return scanProjectRow(row)
 }
 
 func (q *Queries) DBDeleteProject(ctx context.Context, id int64) (Project, error) {
-	sql := "UPDATE projects SET deleted = TRUE WHERE id = $1"
-	return_sql := " RETURNING " + util.GetOutputFields(Project{})
+	tableName := "projects"
+	sql := "UPDATE " + tableName + " SET deleted = TRUE WHERE id = $1"
+	return_sql := " RETURNING " + util.GetOutputFields(Project{}, tableName)
 	row := q.db.QueryRow(ctx, sql+return_sql, id)
 	return scanProjectRow(row)
 }

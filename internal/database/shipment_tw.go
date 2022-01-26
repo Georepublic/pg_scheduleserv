@@ -43,8 +43,9 @@ type CreateShipmentTimeWindowParams struct {
 }
 
 func (q *Queries) DBCreateShipmentTimeWindow(ctx context.Context, arg CreateShipmentTimeWindowParams) (ShipmentTimeWindow, error) {
-	sql, args := createResource("shipments_time_windows", arg)
-	return_sql := " RETURNING " + util.GetOutputFields(ShipmentTimeWindow{})
+	tableName := "shipments_time_windows"
+	sql, args := createResource(tableName, arg)
+	return_sql := " RETURNING " + util.GetOutputFields(ShipmentTimeWindow{}, tableName)
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	return scanShipmentTimeWindowRow(row)
 }
@@ -54,9 +55,9 @@ func (q *Queries) DBListShipmentTimeWindows(ctx context.Context, id int64) ([]Sh
 	if err != nil {
 		return nil, err
 	}
-	table_name := "shipments_time_windows"
-	additional_query := " WHERE id = $1 ORDER BY created_at"
-	sql := "SELECT " + util.GetOutputFields(ShipmentTimeWindow{}) + " FROM " + table_name + additional_query
+	tableName := "shipments_time_windows"
+	additionalQuery := " WHERE id = $1 ORDER BY created_at"
+	sql := "SELECT " + util.GetOutputFields(ShipmentTimeWindow{}, tableName) + " FROM " + tableName + additionalQuery
 	rows, err := q.db.Query(ctx, sql, id)
 	if err != nil {
 		return nil, err
@@ -66,8 +67,9 @@ func (q *Queries) DBListShipmentTimeWindows(ctx context.Context, id int64) ([]Sh
 }
 
 func (q *Queries) DBDeleteShipmentTimeWindow(ctx context.Context, id int64) (ShipmentTimeWindow, error) {
-	sql := "DELETE FROM shipments_time_windows WHERE id = $1"
-	return_sql := " RETURNING " + util.GetOutputFields(ShipmentTimeWindow{})
+	tableName := "shipments_time_windows"
+	sql := "DELETE FROM " + tableName + " WHERE id = $1"
+	return_sql := " RETURNING " + util.GetOutputFields(ShipmentTimeWindow{}, tableName)
 	row := q.db.QueryRow(ctx, sql+return_sql, id)
 	return scanShipmentTimeWindowRow(row)
 }

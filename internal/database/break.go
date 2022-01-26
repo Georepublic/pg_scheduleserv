@@ -48,16 +48,17 @@ type UpdateBreakParams struct {
 }
 
 func (q *Queries) DBCreateBreak(ctx context.Context, arg CreateBreakParams) (Break, error) {
-	sql, args := createResource("breaks", arg)
-	return_sql := " RETURNING " + util.GetOutputFields(Break{})
+	tableName := "breaks"
+	sql, args := createResource(tableName, arg)
+	return_sql := " RETURNING " + util.GetOutputFields(Break{}, tableName)
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	return scanBreakRow(row)
 }
 
 func (q *Queries) DBGetBreak(ctx context.Context, id int64) (Break, error) {
-	table_name := "breaks"
-	additional_query := " WHERE id = $1 AND deleted = FALSE LIMIT 1"
-	sql := "SELECT " + util.GetOutputFields(Break{}) + " FROM " + table_name + additional_query
+	tableName := "breaks"
+	additionalQuery := " WHERE id = $1 AND deleted = FALSE LIMIT 1"
+	sql := "SELECT " + util.GetOutputFields(Break{}, tableName) + " FROM " + tableName + additionalQuery
 	row := q.db.QueryRow(ctx, sql, id)
 	return scanBreakRow(row)
 }
@@ -67,9 +68,9 @@ func (q *Queries) DBListBreaks(ctx context.Context, vehicleID int64) ([]Break, e
 	if err != nil {
 		return nil, err
 	}
-	table_name := "breaks"
-	additional_query := " WHERE vehicle_id = $1 AND deleted = FALSE ORDER BY created_at"
-	sql := "SELECT " + util.GetOutputFields(Break{}) + " FROM " + table_name + additional_query
+	tableName := "breaks"
+	additionalQuery := " WHERE vehicle_id = $1 AND deleted = FALSE ORDER BY created_at"
+	sql := "SELECT " + util.GetOutputFields(Break{}, tableName) + " FROM " + tableName + additionalQuery
 	rows, err := q.db.Query(ctx, sql, vehicleID)
 	if err != nil {
 		return nil, err
@@ -79,15 +80,17 @@ func (q *Queries) DBListBreaks(ctx context.Context, vehicleID int64) ([]Break, e
 }
 
 func (q *Queries) DBUpdateBreak(ctx context.Context, arg UpdateBreakParams, break_id int64) (Break, error) {
-	sql, args := updateResource("breaks", arg, break_id)
-	return_sql := " RETURNING " + util.GetOutputFields(Break{})
+	tableName := "breaks"
+	sql, args := updateResource(tableName, arg, break_id)
+	return_sql := " RETURNING " + util.GetOutputFields(Break{}, tableName)
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	return scanBreakRow(row)
 }
 
 func (q *Queries) DBDeleteBreak(ctx context.Context, id int64) (Break, error) {
-	sql := "UPDATE breaks SET deleted = TRUE WHERE id = $1"
-	return_sql := " RETURNING " + util.GetOutputFields(Break{})
+	tableName := "breaks"
+	sql := "UPDATE " + tableName + " SET deleted = TRUE WHERE id = $1"
+	return_sql := " RETURNING " + util.GetOutputFields(Break{}, tableName)
 	row := q.db.QueryRow(ctx, sql+return_sql, id)
 	return scanBreakRow(row)
 }

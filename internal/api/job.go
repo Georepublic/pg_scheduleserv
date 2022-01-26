@@ -85,7 +85,7 @@ func (server *Server) CreateJob(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	created_job, err := server.DBCreateJob(ctx, job)
+	created_job, err := server.DBCreateJobWithTw(ctx, job)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
@@ -158,6 +158,7 @@ func (server *Server) GetJob(w http.ResponseWriter, r *http.Request) {
 // @Accept application/json
 // @Produce application/json
 // @Param job_id path int true "Job ID"
+// @Param Job body database.UpdateJobParams true "Job object"
 // @Success 200 {object} util.SuccessResponse{data=database.Job}
 // @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
@@ -200,7 +201,7 @@ func (server *Server) UpdateJob(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	created_job, err := server.DBUpdateJob(ctx, job, job_id)
+	created_job, err := server.DBUpdateJobWithTw(ctx, job, job_id)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
