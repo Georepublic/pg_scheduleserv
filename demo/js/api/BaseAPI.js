@@ -36,6 +36,7 @@ export default class BaseAPI {
   }
 
   getIcal(url) {
+    Toast.info("Processing...");
     return axios
       .get(this.baseURL + url, {
         headers: {
@@ -43,7 +44,7 @@ export default class BaseAPI {
         },
       })
       .then((response) => {
-        return response;
+        return response.data;
       })
       .catch((error) => {
         this.showError(error);

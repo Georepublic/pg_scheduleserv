@@ -9,7 +9,6 @@ export default class ScheduleView extends AbstractView {
     super(params, false);
 
     this.data = params.data;
-    console.log(this.data);
     this.projectID = params.projectID;
     this.mapView = params.mapView;
     this.scheduleAPI = new ScheduleAPI();
@@ -204,6 +203,7 @@ export default class ScheduleView extends AbstractView {
             <h5 class="mb-0">
               Schedules
               <button type="button" class="btn btn-danger mx-2" data-action="schedule-delete" style="float: right">Delete Schedule</button>
+              <button type="button" class="btn btn-info mx-2" data-action="schedule-download" style="float: right;">Download Schedule</button>
               <button type="button" class="btn btn-success mx-2" data-action="schedule-create" style="float: right">Create Schedule</button>
             </h5>
           </div>
@@ -242,9 +242,9 @@ export default class ScheduleView extends AbstractView {
               </div>
               <div class="d-flex w-100 justify-content-between">
                 <p class="mb-1">
-                  <button class="btn btn-primary" data-action="schedule-download" data-id="${
+                  <button class="btn btn-primary" data-action="vehicle-schedule-download" data-id="${
                     schedule.vehicle_id
-                  }">Download Schedule (ical)</button>
+                  }">Download Schedule</button>
                 </p>
               </div>
               <!-- <div class="d-flex w-100 justify-content-between">
