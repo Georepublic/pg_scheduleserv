@@ -108,6 +108,7 @@ export default class MapView {
         className: `circle-icon circle-icon-${vehicleID}`,
         html: number,
       }),
+      zIndexOffset: 1000,
     }).addTo(this.map);
 
     // append marker to vehicleID in this.numberPointers
@@ -138,7 +139,6 @@ export default class MapView {
     // every one second, zoom map to the next point, get the points from the vehicleID in this.numberPointers
     // if there is no point, stop the interval
     this.interval = setInterval(() => {
-      console.log(markers);
       if (markers.length === 0) {
         clearInterval(this.interval);
         this.fitAllMarkers();
@@ -151,9 +151,18 @@ export default class MapView {
 
   // stop playing route
   stopPlayRoute() {
-    console.log("stopped");
     clearInterval(this.interval);
     this.fitAllMarkers();
+  }
+
+  fitAllRouteLayers() {
+    const bounds = [];
+    this.routeLayers.forEach((layer) => {
+      bounds.push(layer.getBounds());
+    });
+    if (bounds.length !== 0) {
+      this.fitBounds(bounds);
+    }
   }
 
   // add geometry (geojson) to the map
@@ -162,7 +171,6 @@ export default class MapView {
       style: style,
     }).addTo(this.map);
     this.routeLayers.push(layer);
-    this.map.fitBounds(layer.getBounds());
   }
 
   deleteAllRouteLayers() {

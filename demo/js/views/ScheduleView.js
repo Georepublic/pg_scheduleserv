@@ -9,6 +9,7 @@ export default class ScheduleView extends AbstractView {
     super(params, false);
 
     this.data = params.data;
+    console.log(this.data);
     this.projectID = params.projectID;
     this.mapView = params.mapView;
     this.scheduleAPI = new ScheduleAPI();
@@ -67,6 +68,7 @@ export default class ScheduleView extends AbstractView {
         };
         this.mapView.addRouteLayer(route.geometry, style);
       });
+      this.mapView.fitAllRouteLayers();
     });
   }
 
@@ -130,9 +132,7 @@ export default class ScheduleView extends AbstractView {
     if (schedulesHtml.length === 0) {
       schedulesHtml = [
         `
-        <div class="list-group-item flex-column align-items-start">
-          <p class="mb-1">No schedules found...</p>
-        </div>
+        <p class="mb-1">No schedules found...</p>
       `,
       ];
     }
@@ -147,8 +147,31 @@ export default class ScheduleView extends AbstractView {
               <button type="button" class="btn btn-success mx-2" data-action="schedule-create" style="float: right">Create Schedule</button>
             </h5>
           </div>
-          <div class="card-body-custom">
-            ${schedulesHtml.join("")}
+          <div class="card-body-schedule">
+            <div class="container-fluid" style="margin: 0; padding: 0">
+              <div class="row g-0">
+                <div class="col-2" style="background-color: #ddd;"></div>
+                <div class="col-10" style="padding: 0">
+                  <div class="header flex-container items-center" style="background-color: #ddd;">
+                    <div class="timeline flex-main" style="margin-right: 0px;">
+                      <div class="labels">
+                        ${labelHtml[0]}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="header flex-container items-center" style="background-color: #ddd;">
+                    <div class="timeline flex-main" style="margin-right: 0px;">
+                      <div class="labels">
+                        ${labelHtml[1]}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="list-group-item flex-column align-items-start" style="padding-right: 55px">
+                ${schedulesHtml.join("")}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -156,7 +179,7 @@ export default class ScheduleView extends AbstractView {
   }
 
   // get the html for the schedule
-  getScheduleHtml(schedule, minHours, maxHours, verticalLinesHtml, labelHtml) {
+  getScheduleHtml(schedule, minHours, maxHours, verticalLinesHtml) {
     let color = Random.getRandomColor(schedule.vehicle_id);
 
     let width = (maxHours - minHours) * 10;
@@ -174,31 +197,7 @@ export default class ScheduleView extends AbstractView {
     );
 
     let html = `
-      <div style="background-color: ${color};">
-      <div class="list-group-item flex-column align-items-start" data-id="${
-        schedule.vehicle_id
-      }">
-        <div class="container-fluid" style="margin: 0; padding: 0">
-          <div class="row">
-            <div class="col-2" style="background-color: #ddd;"></div>
-            <div class="col-10" style="padding: 0">
-              <div class="header flex-container items-center" style="background-color: #ddd;">
-                <div class="timeline flex-main" style="margin-right: 0px;">
-                  <div class="labels">
-                    ${labelHtml[0]}
-                  </div>
-                </div>
-              </div>
-              <div class="header flex-container items-center" style="background-color: #ddd;">
-                <div class="timeline flex-main" style="margin-right: 0px;">
-                  <div class="labels">
-                    ${labelHtml[1]}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="row">
+          <div class="row my-3">
             <div class="col-2">
               <div class="d-flex w-100 justify-content-between">
                 <p class="mb-1">${schedule.vehicle_id}</p>
@@ -224,23 +223,19 @@ export default class ScheduleView extends AbstractView {
             <div class="col-10">
               <div class="timelines-container" style="padding-bottom: 20px;>
                 <div class="timeline-item flex-container items-center even">
-                    <div class="timeline flex-main">
-                      <div class="line"></div>
-                      <div class="value-line" style="background-color: ${color}; width: ${
+                  <div class="timeline flex-main">
+                    <div class="line"></div>
+                    <div class="value-line" style="background-color: ${color}; width: ${
       width * widthFactor
     }%; left: 0%;"></div>
-                      ${tasksHtml}
-                      <div class="label-vertical-lines">
-                        ${verticalLinesHtml}
-                      </div>
+                    ${tasksHtml}
+                    <div class="label-vertical-lines">
+                      ${verticalLinesHtml}
                     </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-      </div>
     `;
 
     // return the html for the schedule
@@ -255,7 +250,7 @@ export default class ScheduleView extends AbstractView {
       widthFactor = 100 / width;
     }
 
-    let tasksHtml = route.map((task) => {
+    let tasksHtml = route.map((task, index) => {
       let color =
         task.task_id === "-1"
           ? defaultColor
@@ -272,9 +267,12 @@ export default class ScheduleView extends AbstractView {
       // duration is the difference between the start time and the end time
       let duration = (departureHours - arrivalHours) * 10;
 
+      // It is displayed centred from left position, so we need to add half the duration
+      left = left + duration / 2;
+
       let widthString = `${duration * widthFactor}%;`;
       if (widthString === "0%;") {
-        widthString = "10px;";
+        widthString = "10px";
       }
 
       let taskType = task.type.charAt(0).toUpperCase() + task.type.slice(1);
@@ -290,11 +288,13 @@ export default class ScheduleView extends AbstractView {
         Service time: ${task.service_time}<br/>
       `;
 
+      let zIndex = 10 + route.length - index;
+
       // get the html for the task
       let html = `
         <div class="task-item" style="left: ${
           left * widthFactor
-        }%; width: ${widthString}">
+        }%; width: ${widthString}; z-index: ${zIndex}">
           <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="${tooltipText}">
             <div class="task-item-full" style="background-color: ${color};"></div>
           </a>
@@ -364,15 +364,15 @@ export default class ScheduleView extends AbstractView {
 
       let offset = 10 * i * widthFactor;
       if (i === numberOfLines) {
-        offset -= 6;
+        offset -= 7;
       }
 
       dateHtml += `
-        <div class="label-item" style="left: ${offset}%;">${date}</div>
+        <div class="label-item" style="left: ${offset + 1}%;">${date}</div>
       `;
 
       timeHtml += `
-        <div class="label-item" style="left: ${offset}%;">${time}</div>
+        <div class="label-item" style="left: ${offset + 1}%;">${time}</div>
       `;
     }
 
@@ -427,6 +427,8 @@ export default class ScheduleView extends AbstractView {
     return {
       onScheduleCreate: (data) => {
         this.data = data;
+        this.mapView.deleteAllNumberPointers();
+        this.mapView.deleteAllRouteLayers();
         this.render();
       },
       onScheduleDelete: () => {

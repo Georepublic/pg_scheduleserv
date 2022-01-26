@@ -35,6 +35,11 @@
     overflow-y: scroll;
 }
 
+.card-body-schedule {
+    max-height: 50vh;
+    overflow-y: scroll;
+}
+
 .list-group,
 #map {
     margin-bottom: 20px;
@@ -120,7 +125,6 @@ button[data-action="vehicle-close"] {
     position: absolute;
     top: 50%;
     transform: translate(-50%, -50%);
-    z-index: 100;
 }
 
 .task-item:hover {

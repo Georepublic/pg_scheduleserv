@@ -25,6 +25,7 @@ export default class ScheduleHandler {
       const el = event.target.closest(`[data-action="schedule-create"]`);
       if (el) {
         this.scheduleAPI.createSchedule(this.projectID).then((data) => {
+          console.log(data);
           onScheduleCreate(data);
         });
       }
