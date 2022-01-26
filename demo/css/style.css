@@ -72,10 +72,6 @@ button[data-action="vehicle-close"] {
     /* overflow-y: auto; */
 }
 
-.timeline-item.even {
-    background-color: #fff;
-}
-
 .timeline-item {
     padding-right: 20px;
     margin-right: -20px;

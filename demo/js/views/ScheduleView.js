@@ -33,6 +33,8 @@ export default class ScheduleView extends AbstractView {
     // set the html for the schedules
     this.scheduleDiv.innerHTML = schedulesHtml;
 
+    this.adjustTaskItemWidth();
+
     var tooltipTriggerList = [].slice.call(
       document.querySelectorAll('[data-bs-toggle="tooltip"]')
     );
@@ -42,6 +44,17 @@ export default class ScheduleView extends AbstractView {
 
     this.renderGeometry();
     this.renderNumberPointers();
+    this.renderUnassignedPointers();
+  }
+
+  // if the width of any circle is less than 10px, then make it 10px
+  adjustTaskItemWidth() {
+    let taskItems = document.querySelectorAll(".task-item");
+    taskItems.forEach((taskItem) => {
+      if (taskItem.offsetWidth < 10) {
+        taskItem.style.width = "10px";
+      }
+    });
   }
 
   // render the geometry on the map
@@ -68,7 +81,7 @@ export default class ScheduleView extends AbstractView {
         };
         this.mapView.addRouteLayer(route.geometry, style);
       });
-      this.mapView.fitAllRouteLayers();
+      this.mapView.fitAllMarkers();
     });
   }
 
@@ -91,6 +104,20 @@ export default class ScheduleView extends AbstractView {
         number++;
       });
       this.mapView.setStyle(vehicleID);
+    });
+  }
+
+  // render the unassigned cross pointers on the map
+  renderUnassignedPointers() {
+    // get the unassigned
+    let unassigned = this.data.metadata.unassigned;
+
+    // iterate through schedules array, for each route add a number pointer to the map
+    unassigned.map((task) => {
+      this.mapView.addUnassignedPointer(
+        task.location.latitude,
+        task.location.longitude
+      );
     });
   }
 
@@ -148,29 +175,29 @@ export default class ScheduleView extends AbstractView {
             </h5>
           </div>
           <div class="card-body-schedule">
-            <div class="container-fluid" style="margin: 0; padding: 0">
-              <div class="row g-0">
-                <div class="col-2" style="background-color: #ddd;"></div>
-                <div class="col-10" style="padding: 0">
-                  <div class="header flex-container items-center" style="background-color: #ddd;">
-                    <div class="timeline flex-main" style="margin-right: 0px;">
-                      <div class="labels">
-                        ${labelHtml[0]}
+            <div class="container-fluid">
+              <div class="row">
+                <div class="col-2"></div>
+                <div class="col-10">
+                  <div class="timelines-container">
+                    <div class="timeline-item flex-container items-center">
+                      <div class="timeline flex-main">
+                        <div>
+                          ${labelHtml[0]}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="header flex-container items-center" style="background-color: #ddd;">
-                    <div class="timeline flex-main" style="margin-right: 0px;">
-                      <div class="labels">
-                        ${labelHtml[1]}
+                    <div class="timeline-item flex-container items-center">
+                      <div class="timeline flex-main">
+                        <div>
+                          ${labelHtml[1]}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="list-group-item flex-column align-items-start" style="padding-right: 55px">
-                ${schedulesHtml.join("")}
-              </div>
+              ${schedulesHtml.join("")}
             </div>
           </div>
         </div>
@@ -207,35 +234,36 @@ export default class ScheduleView extends AbstractView {
               </div>
               <div class="d-flex w-100 justify-content-between">
                 <p class="mb-1">
-                  <button class="btn btn-primary mx-2" data-action="schedule-download" data-id="${
+                  <button class="btn btn-primary" data-action="schedule-download" data-id="${
                     schedule.vehicle_id
                   }">Download Schedule (ical)</button>
                 </p>
               </div>
               <!-- <div class="d-flex w-100 justify-content-between">
                 <p class="mb-1">
-                <button class="btn btn-primary mx-2" data-action="play-route" data-id="${
+                <button class="btn btn-primary" data-action="play-route" data-id="${
                   schedule.vehicle_id
                 }">Play Route</button>
                 </p>
               </div> -->
             </div>
             <div class="col-10">
-              <div class="timelines-container" style="padding-bottom: 20px;>
-                <div class="timeline-item flex-container items-center even">
+              <div class="timelines-container" style="padding-bottom: 20px;">
+                <div class="timeline-item flex-container items-center">
                   <div class="timeline flex-main">
                     <div class="line"></div>
                     <div class="value-line" style="background-color: ${color}; width: ${
       width * widthFactor
     }%; left: 0%;"></div>
                     ${tasksHtml}
-                    <div class="label-vertical-lines">
+                    <div>
                       ${verticalLinesHtml}
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
     `;
 
     // return the html for the schedule
@@ -363,16 +391,13 @@ export default class ScheduleView extends AbstractView {
       time = time[0] + ":" + time[1];
 
       let offset = 10 * i * widthFactor;
-      if (i === numberOfLines) {
-        offset -= 7;
-      }
 
       dateHtml += `
-        <div class="label-item" style="left: ${offset + 1}%;">${date}</div>
+        <div class="label-item" style="left: ${offset}%; white-space: nowrap;">${date}</div>
       `;
 
       timeHtml += `
-        <div class="label-item" style="left: ${offset + 1}%;">${time}</div>
+        <div class="label-item" style="left: ${offset}%; white-space: nowrap;">${time}</div>
       `;
     }
 
@@ -428,6 +453,7 @@ export default class ScheduleView extends AbstractView {
       onScheduleCreate: (data) => {
         this.data = data;
         this.mapView.deleteAllNumberPointers();
+        this.mapView.deleteAllUnassignedPointers();
         this.mapView.deleteAllRouteLayers();
         this.render();
       },
@@ -435,6 +461,7 @@ export default class ScheduleView extends AbstractView {
         this.data = this.getEmptySchedule();
         this.render();
         this.mapView.deleteAllNumberPointers();
+        this.mapView.deleteAllUnassignedPointers();
         this.mapView.deleteAllRouteLayers();
       },
       onPlayRoute: (vehicleID) => {
