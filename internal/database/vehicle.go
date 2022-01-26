@@ -62,16 +62,17 @@ type UpdateVehicleParams struct {
 }
 
 func (q *Queries) DBCreateVehicle(ctx context.Context, arg CreateVehicleParams) (Vehicle, error) {
-	sql, args := createResource("vehicles", arg)
-	return_sql := " RETURNING " + util.GetOutputFields(Vehicle{})
+	tableName := "vehicles"
+	sql, args := createResource(tableName, arg)
+	return_sql := " RETURNING " + util.GetOutputFields(Vehicle{}, tableName)
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	return scanVehicleRow(row)
 }
 
 func (q *Queries) DBGetVehicle(ctx context.Context, id int64) (Vehicle, error) {
-	table_name := "vehicles"
-	additional_query := " WHERE id = $1 AND deleted = FALSE LIMIT 1"
-	sql := "SELECT " + util.GetOutputFields(Vehicle{}) + " FROM " + table_name + additional_query
+	tableName := "vehicles"
+	additionalQuery := " WHERE id = $1 AND deleted = FALSE LIMIT 1"
+	sql := "SELECT " + util.GetOutputFields(Vehicle{}, tableName) + " FROM " + tableName + additionalQuery
 	row := q.db.QueryRow(ctx, sql, id)
 	return scanVehicleRow(row)
 }
@@ -81,9 +82,9 @@ func (q *Queries) DBListVehicles(ctx context.Context, projectID int64) ([]Vehicl
 	if err != nil {
 		return nil, err
 	}
-	table_name := "vehicles"
-	additional_query := " WHERE project_id = $1 AND deleted = FALSE ORDER BY created_at"
-	sql := "SELECT " + util.GetOutputFields(Vehicle{}) + " FROM " + table_name + additional_query
+	tableName := "vehicles"
+	additionalQuery := " WHERE project_id = $1 AND deleted = FALSE ORDER BY created_at"
+	sql := "SELECT " + util.GetOutputFields(Vehicle{}, tableName) + " FROM " + tableName + additionalQuery
 	rows, err := q.db.Query(ctx, sql, projectID)
 	if err != nil {
 		return nil, err
@@ -93,15 +94,17 @@ func (q *Queries) DBListVehicles(ctx context.Context, projectID int64) ([]Vehicl
 }
 
 func (q *Queries) DBUpdateVehicle(ctx context.Context, arg UpdateVehicleParams, vehicle_id int64) (Vehicle, error) {
-	sql, args := updateResource("vehicles", arg, vehicle_id)
-	return_sql := " RETURNING " + util.GetOutputFields(Vehicle{})
+	tableName := "vehicles"
+	sql, args := updateResource(tableName, arg, vehicle_id)
+	return_sql := " RETURNING " + util.GetOutputFields(Vehicle{}, tableName)
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	return scanVehicleRow(row)
 }
 
 func (q *Queries) DBDeleteVehicle(ctx context.Context, id int64) (Vehicle, error) {
-	sql := "UPDATE vehicles SET deleted = TRUE WHERE id = $1"
-	return_sql := " RETURNING " + util.GetOutputFields(Vehicle{})
+	tableName := "vehicles"
+	sql := "UPDATE " + tableName + " SET deleted = TRUE WHERE id = $1"
+	return_sql := " RETURNING " + util.GetOutputFields(Vehicle{}, tableName)
 	row := q.db.QueryRow(ctx, sql+return_sql, id)
 	return scanVehicleRow(row)
 }

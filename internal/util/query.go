@@ -69,6 +69,11 @@ func GetPartialSQL(resource interface{}) PartialSQL {
 			continue
 		}
 
+		// skip time_windows field, because it does not exist in the database
+		if tag == "time_windows" {
+			continue
+		}
+
 		// Change any alias fields
 		alias, aliasFound := AliasFields[tag]
 		if aliasFound {
@@ -117,26 +122,41 @@ func GetPartialSQL(resource interface{}) PartialSQL {
 	return partialSQL
 }
 
-func GetOutputFields(resourceStruct interface{}) (sql string) {
+func GetFormattedInterval(fieldName string) string {
+	return fmt.Sprintf("to_char(%s, 'HH24:MI:SS')", fieldName)
+}
+
+func GetFormattedTimestamp(fieldName string) string {
+	return fmt.Sprintf("to_char(%s, 'YYYY-MM-DD') || 'T' || to_char(%s, 'HH24:MI:SS')", fieldName, fieldName)
+}
+
+func GetOutputFields(resourceStruct interface{}, tableName string) (sql string) {
 	val := reflect.ValueOf(resourceStruct)
 	for i := 0; i < val.Type().NumField(); i++ {
-		if i != 0 {
-			sql += ","
-		}
 		field := val.Type().Field(i)
 		fieldName := jsonTag(field)
+
+		// skip fieldName == "time_windows" because it is not a field in the database
+		if fieldName == "time_windows" {
+			continue
+		}
 
 		if aliasField, aliasFieldFound := AliasFields[fieldName]; aliasFieldFound {
 			fieldName = aliasField
 		}
 
+		fullFieldName := tableName + "." + fieldName
+
 		if _, intervalFieldFound := IntervalFields[fieldName]; intervalFieldFound {
-			fieldName = fmt.Sprintf("to_char(%s, 'HH24:MI:SS')", fieldName)
+			fullFieldName = GetFormattedInterval(fullFieldName)
 		}
 		if _, timestampFieldFound := TimestampFields[fieldName]; timestampFieldFound {
-			fieldName = fmt.Sprintf("to_char(%s, 'YYYY-MM-DD') || 'T' || to_char(%s, 'HH24:MI:SS')", fieldName, fieldName)
+			fullFieldName = GetFormattedTimestamp(fullFieldName)
 		}
-		sql += " " + fieldName
+		if i != 0 {
+			sql += ","
+		}
+		sql += " " + fullFieldName
 	}
 	return sql
 }

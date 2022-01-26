@@ -94,11 +94,6 @@ func (server *Server) handleRoutes(router *mux.Router) {
 	router.HandleFunc("/jobs/{job_id}", server.DeleteJob).Methods("DELETE")
 	router.HandleFunc("/jobs/{job_id}/schedule", server.GetJobSchedule).Methods("GET")
 
-	// Job time windows endpoints
-	router.HandleFunc("/jobs/{job_id}/time_windows", server.CreateJobTimeWindow).Methods("POST")
-	router.HandleFunc("/jobs/{job_id}/time_windows", server.ListJobTimeWindows).Methods("GET")
-	router.HandleFunc("/jobs/{job_id}/time_windows", server.DeleteJobTimeWindow).Methods("DELETE")
-
 	// Shipment endpoints
 	router.HandleFunc("/projects/{project_id}/shipments", server.CreateShipment).Methods("POST")
 	router.HandleFunc("/projects/{project_id}/shipments", server.ListShipments).Methods("GET")

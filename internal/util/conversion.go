@@ -36,6 +36,17 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+func GetTimeWindows(timeWindows [][]*string) [][]string {
+	// If no time windows exist, then [[NULL, NULL]] is stored in timeWindows when LEFT JOIN is performed
+	parsedTimeWindows := make([][]string, 0)
+	for _, tw := range timeWindows {
+		if tw[0] != nil && tw[1] != nil {
+			parsedTimeWindows = append(parsedTimeWindows, []string{*tw[0], *tw[1]})
+		}
+	}
+	return parsedTimeWindows
+}
+
 func GetLocationId(latitude float64, longitude float64) int64 {
 	lat_prefix := '0'
 	lon_prefix := '0'

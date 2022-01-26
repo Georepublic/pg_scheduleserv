@@ -42,8 +42,9 @@ type CreateBreakTimeWindowParams struct {
 }
 
 func (q *Queries) DBCreateBreakTimeWindow(ctx context.Context, arg CreateBreakTimeWindowParams) (BreakTimeWindow, error) {
-	sql, args := createResource("breaks_time_windows", arg)
-	return_sql := " RETURNING " + util.GetOutputFields(BreakTimeWindow{})
+	tableName := "breaks_time_windows"
+	sql, args := createResource(tableName, arg)
+	return_sql := " RETURNING " + util.GetOutputFields(BreakTimeWindow{}, tableName)
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	return scanBreakTimeWindowRow(row)
 }
@@ -53,9 +54,9 @@ func (q *Queries) DBListBreakTimeWindows(ctx context.Context, id int64) ([]Break
 	if err != nil {
 		return nil, err
 	}
-	table_name := "breaks_time_windows"
-	additional_query := " WHERE id = $1 ORDER BY created_at"
-	sql := "SELECT " + util.GetOutputFields(BreakTimeWindow{}) + " FROM " + table_name + additional_query
+	tableName := "breaks_time_windows"
+	additionalQuery := " WHERE id = $1 ORDER BY created_at"
+	sql := "SELECT " + util.GetOutputFields(BreakTimeWindow{}, tableName) + " FROM " + tableName + additionalQuery
 	rows, err := q.db.Query(ctx, sql, id)
 	if err != nil {
 		return nil, err
@@ -65,8 +66,9 @@ func (q *Queries) DBListBreakTimeWindows(ctx context.Context, id int64) ([]Break
 }
 
 func (q *Queries) DBDeleteBreakTimeWindow(ctx context.Context, id int64) (BreakTimeWindow, error) {
-	sql := "DELETE FROM breaks_time_windows WHERE id = $1"
-	return_sql := " RETURNING " + util.GetOutputFields(BreakTimeWindow{})
+	tableName := "breaks_time_windows"
+	sql := "DELETE FROM " + tableName + " WHERE id = $1"
+	return_sql := " RETURNING " + util.GetOutputFields(BreakTimeWindow{}, tableName)
 	row := q.db.QueryRow(ctx, sql+return_sql, id)
 	return scanBreakTimeWindowRow(row)
 }

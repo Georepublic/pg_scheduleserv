@@ -64,16 +64,17 @@ type UpdateShipmentParams struct {
 }
 
 func (q *Queries) DBCreateShipment(ctx context.Context, arg CreateShipmentParams) (Shipment, error) {
-	sql, args := createResource("shipments", arg)
-	return_sql := " RETURNING " + util.GetOutputFields(Shipment{})
+	tableName := "shipments"
+	sql, args := createResource(tableName, arg)
+	return_sql := " RETURNING " + util.GetOutputFields(Shipment{}, tableName)
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	return scanShipmentRow(row)
 }
 
 func (q *Queries) DBGetShipment(ctx context.Context, id int64) (Shipment, error) {
-	table_name := "shipments"
-	additional_query := " WHERE id = $1 AND deleted = FALSE LIMIT 1"
-	sql := "SELECT " + util.GetOutputFields(Shipment{}) + " FROM " + table_name + additional_query
+	tableName := "shipments"
+	additionalQuery := " WHERE id = $1 AND deleted = FALSE LIMIT 1"
+	sql := "SELECT " + util.GetOutputFields(Shipment{}, tableName) + " FROM " + tableName + additionalQuery
 	row := q.db.QueryRow(ctx, sql, id)
 	return scanShipmentRow(row)
 }
@@ -83,9 +84,9 @@ func (q *Queries) DBListShipments(ctx context.Context, projectID int64) ([]Shipm
 	if err != nil {
 		return nil, err
 	}
-	table_name := "shipments"
-	additional_query := " WHERE project_id = $1 AND deleted = FALSE ORDER BY created_at"
-	sql := "SELECT " + util.GetOutputFields(Shipment{}) + " FROM " + table_name + additional_query
+	tableName := "shipments"
+	additionalQuery := " WHERE project_id = $1 AND deleted = FALSE ORDER BY created_at"
+	sql := "SELECT " + util.GetOutputFields(Shipment{}, tableName) + " FROM " + tableName + additionalQuery
 	rows, err := q.db.Query(ctx, sql, projectID)
 	if err != nil {
 		return nil, err
@@ -95,15 +96,17 @@ func (q *Queries) DBListShipments(ctx context.Context, projectID int64) ([]Shipm
 }
 
 func (q *Queries) DBUpdateShipment(ctx context.Context, arg UpdateShipmentParams, shipment_id int64) (Shipment, error) {
-	sql, args := updateResource("shipments", arg, shipment_id)
-	return_sql := " RETURNING " + util.GetOutputFields(Shipment{})
+	tableName := "shipments"
+	sql, args := updateResource(tableName, arg, shipment_id)
+	return_sql := " RETURNING " + util.GetOutputFields(Shipment{}, tableName)
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	return scanShipmentRow(row)
 }
 
 func (q *Queries) DBDeleteShipment(ctx context.Context, id int64) (Shipment, error) {
-	sql := "UPDATE shipments SET deleted = TRUE WHERE id = $1"
-	return_sql := " RETURNING " + util.GetOutputFields(Shipment{})
+	tableName := "shipments"
+	sql := "UPDATE " + tableName + " SET deleted = TRUE WHERE id = $1"
+	return_sql := " RETURNING " + util.GetOutputFields(Shipment{}, tableName)
 	row := q.db.QueryRow(ctx, sql+return_sql, id)
 	return scanShipmentRow(row)
 }
