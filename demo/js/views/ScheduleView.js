@@ -156,10 +156,43 @@ export default class ScheduleView extends AbstractView {
       );
     });
 
+    let timelineBodyHtml = `
+        <div class="card-body-schedule">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-2"></div>
+              <div class="col-10">
+                <div class="timelines-container">
+                  <div class="timeline-item flex-container items-center">
+                    <div class="timeline flex-main">
+                      <div>
+                        ${labelHtml[0]}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="timeline-item flex-container items-center">
+                    <div class="timeline flex-main">
+                      <div>
+                        ${labelHtml[1]}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            ${schedulesHtml.join("")}
+          </div>
+        </div>
+    `;
+
     if (schedulesHtml.length === 0) {
-      schedulesHtml = [
+      timelineBodyHtml = [
         `
-        <p class="mb-1">No schedules found...</p>
+        <div class="card-body-schedule">
+          <div class="container-fluid">
+            <p class="my-4">No schedules found...</p>
+          </div>
+        </div>
       `,
       ];
     }
@@ -174,32 +207,7 @@ export default class ScheduleView extends AbstractView {
               <button type="button" class="btn btn-success mx-2" data-action="schedule-create" style="float: right">Create Schedule</button>
             </h5>
           </div>
-          <div class="card-body-schedule">
-            <div class="container-fluid">
-              <div class="row">
-                <div class="col-2"></div>
-                <div class="col-10">
-                  <div class="timelines-container">
-                    <div class="timeline-item flex-container items-center">
-                      <div class="timeline flex-main">
-                        <div>
-                          ${labelHtml[0]}
-                        </div>
-                      </div>
-                    </div>
-                    <div class="timeline-item flex-container items-center">
-                      <div class="timeline flex-main">
-                        <div>
-                          ${labelHtml[1]}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              ${schedulesHtml.join("")}
-            </div>
-          </div>
+          ${timelineBodyHtml}
         </div>
       </div>
     `;
