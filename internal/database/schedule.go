@@ -195,6 +195,7 @@ func scanScheduleRows(rows pgx.Rows) (util.ScheduleData, error) {
 				}
 				route = append(route, currentRoute)
 			}
+			prevI = i
 		} else if i.VehicleID > 0 {
 			// Schedule summary for a vehicle
 			summary = append(summary, util.ScheduleSummary{
@@ -226,7 +227,6 @@ func scanScheduleRows(rows pgx.Rows) (util.ScheduleData, error) {
 			logrus.Error("Got Invalid Schedule Response")
 		}
 		projectID = i.ProjectID
-		prevI = i
 	}
 	if err := rows.Err(); err != nil {
 		return util.ScheduleData{}, err
