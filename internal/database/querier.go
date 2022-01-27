@@ -38,16 +38,11 @@ import (
 
 type Querier interface {
 	// Break
-	DBCreateBreak(ctx context.Context, arg CreateBreakParams) (Break, error)
+	DBCreateBreakWithTw(ctx context.Context, arg CreateBreakParams) (Break, error)
 	DBListBreaks(ctx context.Context, vehicleID int64) ([]Break, error)
 	DBGetBreak(ctx context.Context, id int64) (Break, error)
-	DBUpdateBreak(ctx context.Context, arg UpdateBreakParams, break_id int64) (Break, error)
-	DBDeleteBreak(ctx context.Context, id int64) (Break, error)
-
-	// Break Time Window
-	DBCreateBreakTimeWindow(ctx context.Context, arg CreateBreakTimeWindowParams) (BreakTimeWindow, error)
-	DBListBreakTimeWindows(ctx context.Context, id int64) ([]BreakTimeWindow, error)
-	DBDeleteBreakTimeWindow(ctx context.Context, id int64) (BreakTimeWindow, error)
+	DBUpdateBreakWithTw(ctx context.Context, arg UpdateBreakParams, break_id int64) (Break, error)
+	DBDeleteBreakWithTw(ctx context.Context, id int64) error
 
 	// Job
 	DBCreateJobWithTw(ctx context.Context, arg CreateJobParams) (Job, error)

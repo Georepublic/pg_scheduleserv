@@ -85,7 +85,7 @@ func (server *Server) CreateBreak(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	created_break, err := server.DBCreateBreak(ctx, v_break)
+	created_break, err := server.DBCreateBreakWithTw(ctx, v_break)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
@@ -201,7 +201,7 @@ func (server *Server) UpdateBreak(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	created_break, err := server.DBUpdateBreak(ctx, v_break, break_id)
+	created_break, err := server.DBUpdateBreakWithTw(ctx, v_break, break_id)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
@@ -230,7 +230,7 @@ func (server *Server) DeleteBreak(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	_, err = server.DBDeleteBreak(ctx, break_id)
+	err = server.DBDeleteBreakWithTw(ctx, break_id)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
