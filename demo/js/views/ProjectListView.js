@@ -68,7 +68,6 @@ export default class ProjectListView extends AbstractView {
             <small class="text-muted">Created: ${project.created_at}</small>
           </div>
           <small>
-            Exploration Level: ..., Timeout: ...
             <p style="float: right">
             <a style="margin-right:5px;" type="button" class="btn btn-outline-info" href="/projects/${project.id}" data-link>
               <i class="fas fa-folder-open"></i>
@@ -148,14 +147,6 @@ export default class ProjectListView extends AbstractView {
           <label for="name">Name</label>
           <input type="hidden" id="id" name="id" value="${project.id}">
           <input type="text" class="form-control" id="name" name="name" value="${project.name}">
-        </div>
-        <div class="form-group">
-          <label for="explorationLevel">Exploration Level</label>
-          <input type="text" class="form-control" id="explorationLevel" name="explorationLevel" value="${project.exploration_level}">
-        </div>
-        <div class="form-group">
-          <label for="timeout">Timeout</label>
-          <input type="text" class="form-control" id="timeout" name="timeout" value="${project.timeout}">
         </div>
         <button type="button" class="btn btn-outline-success project__save">Save</button>
         <button type="button" class="btn btn-outline-success project__reset">Reset</button>
