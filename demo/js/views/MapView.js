@@ -389,7 +389,7 @@ export default class MapView {
   }
 
   fitBounds(bounds) {
-    if (bounds) {
+    if (bounds && bounds.length > 0) {
       this.map.flyToBounds(bounds, {
         animate: true,
         maxZoom: 15,
@@ -400,9 +400,11 @@ export default class MapView {
 
   fitMarkers(markers) {
     // for each marker in markers list, add to bounds
-    var bounds = L.latLngBounds([]);
+    var bounds = [];
     markers.forEach((marker) => {
-      bounds.extend(marker.getLatLng());
+      var latitude = marker.getLatLng().lat;
+      var longitude = marker.getLatLng().lng;
+      bounds.push([latitude, longitude]);
     });
     this.fitBounds(bounds);
   }

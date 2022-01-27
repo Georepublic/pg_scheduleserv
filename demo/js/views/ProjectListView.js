@@ -84,6 +84,21 @@ export default class ProjectListView extends AbstractView {
         </div>
       `;
     });
+
+    // if html is empty, return empty project
+    if (html === "") {
+      html = `
+        <div class="list-group-item flex-column align-items-start" data-attribute="empty">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-3">No projects found</h5>
+          </div>
+          <div class="d-flex w-100 justify-content-between">
+            <p class="mb-1">Click below to create a new project</p>
+          </div>
+        </div>
+      `;
+    }
+
     return html;
   }
 
@@ -168,6 +183,12 @@ export default class ProjectListView extends AbstractView {
           } else {
             // append the new project to the list
             const projects = document.querySelector(".list-group");
+
+            // if the first element of projects has empty data attribute, then remove it
+            if (projects.firstElementChild.dataset.attribute === "empty") {
+              projects.firstElementChild.outerHTML = "";
+            }
+
             projects.innerHTML += this.getProjectHtml([project]);
 
             // replace the div with create button and handler
@@ -215,6 +236,11 @@ export default class ProjectListView extends AbstractView {
         const id = div.id.split("-")[1];
         this.projectAPI.deleteProject(id).then(() => {
           div.remove();
+          // if nothing is left, append empty project
+          if (document.querySelectorAll(".list-group-item").length === 0) {
+            const projects = document.querySelector(".list-group");
+            projects.innerHTML += this.getProjectHtml([]);
+          }
         });
       });
     });
