@@ -116,11 +116,6 @@ func (server *Server) handleRoutes(router *mux.Router) {
 	router.HandleFunc("/breaks/{break_id}", server.GetBreak).Methods("GET")
 	router.HandleFunc("/breaks/{break_id}", server.UpdateBreak).Methods("PATCH")
 	router.HandleFunc("/breaks/{break_id}", server.DeleteBreak).Methods("DELETE")
-
-	// Break time windows endpoints
-	router.HandleFunc("/breaks/{break_id}/time_windows", server.CreateBreakTimeWindow).Methods("POST")
-	router.HandleFunc("/breaks/{break_id}/time_windows", server.ListBreakTimeWindows).Methods("GET")
-	router.HandleFunc("/breaks/{break_id}/time_windows", server.DeleteBreakTimeWindow).Methods("DELETE")
 }
 
 func serveSwagger(router *mux.Router) {

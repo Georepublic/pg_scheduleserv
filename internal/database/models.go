@@ -33,26 +33,19 @@ import (
 )
 
 type Break struct {
-	ID        int64       `json:"id,string" example:"1234567812345678"`
-	VehicleID int64       `json:"vehicle_id,string" example:"1234567812345678"`
-	Service   string      `json:"service" example:"00:02:00"`
-	Data      interface{} `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
-	CreatedAt string      `json:"created_at" example:"2021-12-01T13:00:00"`
-	UpdatedAt string      `json:"updated_at" example:"2021-12-01T13:00:00"`
+	ID          int64       `json:"id,string" example:"1234567812345678"`
+	VehicleID   int64       `json:"vehicle_id,string" example:"1234567812345678"`
+	Service     string      `json:"service" example:"00:02:00"`
+	Data        interface{} `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
+	CreatedAt   string      `json:"created_at" example:"2021-12-01T13:00:00"`
+	UpdatedAt   string      `json:"updated_at" example:"2021-12-01T13:00:00"`
+	TimeWindows [][]string  `json:"time_windows"`
 }
 
 // add description to all fields and name, so that it can be displayed in the frontend
 // only one data field is present in shipment, instead of p_ and d_
 
 // change timezone example (add T)
-
-type BreakTimeWindow struct {
-	ID        int64  `json:"id,string" example:"1234567812345678"`
-	TwOpen    string `json:"tw_open" example:"2021-12-31T23:00:00"`
-	TwClose   string `json:"tw_close" example:"2021-12-31T23:59:00"`
-	CreatedAt string `json:"created_at" example:"2021-12-01T13:00:00"`
-	UpdatedAt string `json:"updated_at" example:"2021-12-01T13:00:00"`
-}
 
 type Job struct {
 	ID          int64               `json:"id,string" example:"1234567812345678"`
