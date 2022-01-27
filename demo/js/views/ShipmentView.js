@@ -105,7 +105,7 @@ export default class ShipmentView extends AbstractView {
     }
     return `
       <div>
-        <ul>
+        <ul class="mb-0">
         ${timeWindows}
         </ul>
       </div>

@@ -188,3 +188,7 @@ button[data-action="vehicle-close"] {
     text-align: center;
     font-size: 12px;
 }
+
+::-webkit-calendar-picker-indicator {
+    margin-left: 0px;
+}
