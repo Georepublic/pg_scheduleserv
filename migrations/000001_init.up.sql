@@ -67,6 +67,25 @@ END;
 $BODY$ LANGUAGE plpgsql IMMUTABLE STRICT;
 
 
+CREATE OR REPLACE FUNCTION get_coordinates_from_id(id BIGINT)
+RETURNS FLOAT[] AS $BODY$
+DECLARE
+  latitude FLOAT;
+  longitude FLOAT;
+BEGIN
+  latitude = (id / 100000000) / 10000.0;
+  IF latitude >= 1000 THEN
+    latitude = -(latitude - 1000);
+  END IF;
+  longitude = (id - id / 100000000 * 100000000) / 10000.0;
+  IF longitude >= 1000 THEN
+    longitude = -(longitude - 1000);
+  END IF;
+  RETURN ARRAY[latitude, longitude];
+END;
+$BODY$ LANGUAGE plpgsql IMMUTABLE STRICT;
+
+
 -- Generate id by concatenating the latitude and longitude upto 4 decimal places
 CREATE OR REPLACE FUNCTION geom_to_id(location geometry)
 RETURNS BIGINT
@@ -407,6 +426,43 @@ AS $BODY$
     timeout => (SELECT timeout FROM projects WHERE id = $1)
   );
 $BODY$ LANGUAGE sql VOLATILE STRICT;
+
+
+
+CREATE OR REPLACE FUNCTION create_schedule_with_matrix(BIGINT, start_ids BIGINT[], end_ids BIGINT[], durations BIGINT[])
+RETURNS void
+AS $BODY$
+  DELETE FROM schedules WHERE project_id = $1;
+  INSERT INTO schedules
+    (type, project_id, vehicle_id, location_id, task_id, vehicle_data, task_data,
+    arrival, travel_time, setup_time, service_time, waiting_time, departure, load)
+  SELECT
+    CASE
+      WHEN step_type = 0 THEN 'summary'::STEP_TYPE
+      WHEN step_type = 1 THEN 'start'::STEP_TYPE
+      WHEN step_type = 2 THEN 'job'::STEP_TYPE
+      WHEN step_type = 3 THEN 'pickup'::STEP_TYPE
+      WHEN step_type = 4 THEN 'delivery'::STEP_TYPE
+      WHEN step_type = 5 THEN 'break'::STEP_TYPE
+      WHEN step_type = 6 THEN 'end'::STEP_TYPE
+    END,
+    $1::BIGINT, vehicle_id, location_id, task_id, vehicle_data, task_data,
+    arrival, travel_time, setup_time, service_time, waiting_time, departure, load
+  FROM vrp_vroom(
+    'SELECT * FROM jobs WHERE deleted = FALSE AND project_id = ' || $1,
+    'SELECT * FROM jobs_time_windows ORDER BY id, tw_open',
+    'SELECT * FROM shipments WHERE deleted = FALSE AND project_id = ' || $1,
+    'SELECT * FROM shipments_time_windows ORDER BY id, tw_open',
+    'SELECT * FROM vehicles WHERE deleted = FALSE AND project_id = ' || $1,
+    'SELECT * FROM breaks WHERE deleted = FALSE',
+    'SELECT * FROM breaks_time_windows ORDER BY id, tw_open',
+    'SELECT unnest(ARRAY[' || array_to_string(start_ids, ',') || ']::BIGINT[]) AS start_id,
+     unnest(ARRAY[' || array_to_string(end_ids, ',') || ']::BIGINT[]) AS end_id,
+     make_interval(secs => unnest(ARRAY[' || array_to_string(durations, ',') || ']::BIGINT[])) AS duration',
+    exploration_level => (SELECT exploration_level FROM projects WHERE id = $1),
+    timeout => (SELECT timeout FROM projects WHERE id = $1)
+  );
+$BODY$ LANGUAGE sql VOLATILE;
 
 
 
