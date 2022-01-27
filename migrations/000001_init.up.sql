@@ -157,7 +157,9 @@ CREATE TABLE IF NOT EXISTS project_locations (
   location_id BIGINT    NOT NULL REFERENCES locations(id),
 
   created_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  updated_at  TIMESTAMP NOT NULL DEFAULT current_timestamp
+  updated_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
+
+  PRIMARY KEY (project_id, location_id)
 );
 -- PROJECT LOCATIONS TABLE end
 
@@ -500,6 +502,7 @@ BEGIN
       id_to_geom(PL.location_id)::geography)
     ))
     FROM project_locations AS PL
+    WHERE NEW.project_id = PL.project_id
   ON CONFLICT DO NOTHING;
 
   RETURN NEW;
