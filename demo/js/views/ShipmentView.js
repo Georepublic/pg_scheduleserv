@@ -92,7 +92,29 @@ export default class ShipmentView extends AbstractView {
     return html;
   }
 
+  // get the time windows html for the shipment, time windows is a 2D array of start and end times
+  getTimeWindowsHtml(time_windows) {
+    let timeWindowsHtml = time_windows.map((timeWindow) => {
+      return `
+          <li>${timeWindow[0]} - ${timeWindow[1]}</li>
+      `;
+    });
+    let timeWindows = timeWindowsHtml.join("");
+    if (timeWindows == "") {
+      timeWindows = "<li>No time windows</li>";
+    }
+    return `
+      <div>
+        <ul>
+        ${timeWindows}
+        </ul>
+      </div>
+    `;
+  }
+
   getCompleteShipmentHtml(shipment) {
+    let p_timeWindowsHtml = this.getTimeWindowsHtml(shipment.p_time_windows);
+    let d_timeWindowsHtml = this.getTimeWindowsHtml(shipment.d_time_windows);
     let html = `
       <div class="card">
         <div class="card-header shipment-view-heading">
@@ -139,6 +161,14 @@ export default class ShipmentView extends AbstractView {
             <p class="mb-1">Priority: ${shipment.priority}</p>
           </div>
           <div class="d-flex w-100 justify-content-between">
+            <p class="mb-1">Pickup Time Windows:</p>
+          </div>
+          ${p_timeWindowsHtml}
+          <div class="d-flex w-100 justify-content-between">
+            <p class="mb-1">Delivery Time Windows:</p>
+          </div>
+          ${d_timeWindowsHtml}
+          <div class="d-flex w-100 justify-content-between">
             <p class="mb-1">Project ID: ${shipment.project_id}</p>
           </div>
           <div class="d-flex w-100 justify-content-between">
@@ -166,7 +196,43 @@ export default class ShipmentView extends AbstractView {
     return html;
   }
 
+  getTimeWindowsFormHtml(time_windows, value) {
+    let timeWindowsHtml = time_windows.map((timeWindow) => {
+      return `
+        <div class="input-group">
+          <input type="datetime-local" class="form-control" name="${value}_tw_open[]" value="${timeWindow[0]}" step="1" style="font-size: 13px;">
+          <input type="datetime-local" class="form-control" name="${value}_tw_close[]" value="${timeWindow[1]}" step="1" style="font-size: 13px;">
+        </div>
+      `;
+    });
+    let fullValue = value == "p" ? "Pickup" : "Delivery";
+    return `
+      <div class="form-group">
+      <label>${fullValue} Time Window (Open and Close)</label>
+      ${timeWindowsHtml.join("")}
+      <div class="text-center">
+        <button type="button" class="btn btn-outline-primary" data-action="shipment-tw-form-create" data-value="${value}">
+          <i class="fas fa-plus-circle"></i>
+        </button>
+        <button type="button" class="btn btn-outline-danger" data-action="shipment-tw-form-delete">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </div>
+    `;
+  }
+
   getShipmentFormHtml(shipment) {
+    // get time windows html for the shipment
+    let p_timeWindowsHtml = this.getTimeWindowsFormHtml(
+      shipment.p_time_windows,
+      "p"
+    );
+    let d_timeWindowsHtml = this.getTimeWindowsFormHtml(
+      shipment.d_time_windows,
+      "d"
+    );
+
     let html = `
       <div class="card">
         <div class="card-header shipment-view-heading">
@@ -243,6 +309,8 @@ export default class ShipmentView extends AbstractView {
                 shipment.priority
               }">
             </div>
+            ${p_timeWindowsHtml}
+            ${d_timeWindowsHtml}
             <div class="form-group">
               <label>Data</label>
               <input type="text" class="form-control" name="data" value='${JSON.stringify(
@@ -293,15 +361,17 @@ export default class ShipmentView extends AbstractView {
   getEmptyShipment() {
     // get map center
     let coordinates = this.mapView.getCenter();
+    let p_longitude = parseFloat(coordinates[1]) - 0.001;
+    let d_longitude = parseFloat(coordinates[1]) + 0.001;
     return {
       id: "",
       p_location: {
         latitude: coordinates[0],
-        longitude: coordinates[1],
+        longitude: p_longitude.toFixed(4),
       },
       d_location: {
         latitude: coordinates[0],
-        longitude: coordinates[1],
+        longitude: d_longitude.toFixed(4),
       },
       p_setup: "00:00:00",
       d_setup: "00:00:00",
@@ -314,6 +384,8 @@ export default class ShipmentView extends AbstractView {
       data: {},
       created_at: "",
       updated_at: "",
+      p_time_windows: [],
+      d_time_windows: [],
     };
   }
 

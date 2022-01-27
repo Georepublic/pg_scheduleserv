@@ -92,7 +92,28 @@ export default class JobView extends AbstractView {
     return html;
   }
 
+  // get the time windows html for the job, time windows is a 2D array of start and end times
+  getTimeWindowsHtml(time_windows) {
+    let timeWindowsHtml = time_windows.map((timeWindow) => {
+      return `
+          <li>${timeWindow[0]} - ${timeWindow[1]}</li>
+      `;
+    });
+    let timeWindows = timeWindowsHtml.join("");
+    if (timeWindows == "") {
+      timeWindows = "<li>No time window</li>";
+    }
+    return `
+      <div>
+        <ul>
+        ${timeWindows}
+        </ul>
+      </div>
+    `;
+  }
+
   getCompleteJobHtml(job) {
+    let timeWindowsHtml = this.getTimeWindowsHtml(job.time_windows);
     let html = `
       <div class="card">
         <div class="card-header job-view-heading">
@@ -131,6 +152,10 @@ export default class JobView extends AbstractView {
             <p class="mb-1">Priority: ${job.priority}</p>
           </div>
           <div class="d-flex w-100 justify-content-between">
+            <p class="mb-1">Time Windows:</p>
+          </div>
+          ${timeWindowsHtml}
+          <div class="d-flex w-100 justify-content-between">
             <p class="mb-1">Project ID: ${job.project_id}</p>
           </div>
           <div class="d-flex w-100 justify-content-between">
@@ -158,7 +183,35 @@ export default class JobView extends AbstractView {
     return html;
   }
 
+  getTimeWindowsFormHtml(time_windows) {
+    let timeWindowsHtml = time_windows.map((timeWindow) => {
+      return `
+        <div class="input-group">
+          <input type="datetime-local" class="form-control" name="tw_open[]" value="${timeWindow[0]}" step="1" style="font-size: 13px;">
+          <input type="datetime-local" class="form-control" name="tw_close[]" value="${timeWindow[1]}" step="1" style="font-size: 13px;">
+        </div>
+      `;
+    });
+    return `
+      <div class="form-group">
+      <label>Time Window (Open and Close)</label>
+      ${timeWindowsHtml.join("")}
+      <div class="text-center">
+        <button type="button" class="btn btn-outline-primary" data-action="job-tw-form-create">
+          <i class="fas fa-plus-circle"></i>
+        </button>
+        <button type="button" class="btn btn-outline-danger" data-action="job-tw-form-delete">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </div>
+    `;
+  }
+
   getJobFormHtml(job) {
+    // get time windows html for the job
+    let timeWindowsHtml = this.getTimeWindowsFormHtml(job.time_windows);
+
     let html = `
       <div class="card">
         <div class="card-header job-view-heading">
@@ -217,6 +270,7 @@ export default class JobView extends AbstractView {
                 job.priority
               }">
             </div>
+            ${timeWindowsHtml}
             <div class="form-group">
               <label>Data</label>
               <input type="text" class="form-control" name="data" value='${JSON.stringify(
@@ -280,6 +334,7 @@ export default class JobView extends AbstractView {
       data: {},
       created_at: "",
       updated_at: "",
+      time_windows: [],
     };
   }
 

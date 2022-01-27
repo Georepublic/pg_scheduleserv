@@ -21,6 +21,14 @@ export default class ShipmentAPI {
       priority: Parser.parsePriority(data.priority),
       project_id: data.project_id,
       data: Parser.parseJSON(data.data),
+      p_time_windows: Parser.parseTimeWindows(
+        data["p_tw_open[]"],
+        data["p_tw_close[]"]
+      ),
+      d_time_windows: Parser.parseTimeWindows(
+        data["d_tw_open[]"],
+        data["d_tw_close[]"]
+      ),
     };
   }
 

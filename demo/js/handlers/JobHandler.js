@@ -28,6 +28,7 @@ export default class JobHandler {
     this.handleJobSave(onJobSave);
     this.handleJobClose(onJobClose);
     this.handleJobScheduleClick(onJobView);
+    this.handleJobTwForm();
   }
 
   // get job from id
@@ -105,7 +106,15 @@ export default class JobHandler {
         const formData = new FormData(form);
         const job = {};
         for (const [key, value] of formData.entries()) {
-          job[key] = value;
+          // if key contains [] then it is an array
+          if (key.includes("[]")) {
+            if (!job[key]) {
+              job[key] = [];
+            }
+            job[key].push(value);
+          } else {
+            job[key] = value;
+          }
         }
         const id = job["id"];
 
@@ -134,6 +143,35 @@ export default class JobHandler {
       const el = event.target.closest(`[data-action="job-close"]`);
       if (el) {
         onJobClose();
+      }
+    });
+  }
+
+  handleJobTwForm() {
+    this.main.addEventListener("click", (event) => {
+      let el = event.target.closest(`[data-action="job-tw-form-create"]`);
+      if (el) {
+        // select the parent element of el, and just before it append the html
+        const parent = el.parentElement;
+        const html = `
+        <div class="input-group">
+          <input type="datetime-local" class="form-control" name="tw_open[]" step="1" style="font-size: 13px;">
+          <input type="datetime-local" class="form-control" name="tw_close[]" step="1" style="font-size: 13px;">
+        </div>`;
+
+        parent.insertAdjacentHTML("beforebegin", html);
+      }
+      el = event.target.closest(`[data-action="job-tw-form-delete"]`);
+      if (el) {
+        const parent = el.parentElement;
+
+        // select the adjacent element of parent and remove it
+        const sibling = parent.previousElementSibling;
+
+        // if sibling has the class input-group, remove it
+        if (sibling.classList.contains("input-group")) {
+          sibling.remove();
+        }
       }
     });
   }

@@ -18,6 +18,10 @@ export default class JobAPI {
       priority: Parser.parsePriority(data.priority),
       project_id: data.project_id,
       data: Parser.parseJSON(data.data),
+      time_windows: Parser.parseTimeWindows(
+        data["tw_open[]"],
+        data["tw_close[]"]
+      ),
     };
   }
 
