@@ -312,7 +312,7 @@ export default class VehicleView extends AbstractView {
       skills: "",
       tw_open: `${date}T07:00:00`,
       tw_close: `${date}T19:00:00`,
-      speed_factor: "12.00",
+      speed_factor: "1.00",
       max_tasks: "2147483647",
       project_id: this.projectID,
       data: {},
