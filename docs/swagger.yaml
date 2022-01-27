@@ -18,29 +18,17 @@ definitions:
       service:
         example: "00:02:00"
         type: string
+      time_windows:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
       updated_at:
         example: 2021-12-01T13:00:00
         type: string
       vehicle_id:
         example: "1234567812345678"
-        type: string
-    type: object
-  database.BreakTimeWindow:
-    properties:
-      created_at:
-        example: 2021-12-01T13:00:00
-        type: string
-      id:
-        example: "1234567812345678"
-        type: string
-      tw_close:
-        example: 2021-12-31T23:59:00
-        type: string
-      tw_open:
-        example: 2021-12-31T23:00:00
-        type: string
-      updated_at:
-        example: 2021-12-01T13:00:00
         type: string
     type: object
   database.CreateBreakParams:
@@ -55,18 +43,12 @@ definitions:
       service:
         example: "00:02:00"
         type: string
-    type: object
-  database.CreateBreakTimeWindowParams:
-    properties:
-      tw_close:
-        example: 2021-12-31T23:59:00
-        type: string
-      tw_open:
-        example: 2021-12-31T23:00:00
-        type: string
-    required:
-    - tw_close
-    - tw_open
+      time_windows:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
     type: object
   database.CreateJobParams:
     properties:
@@ -109,20 +91,14 @@ definitions:
         items:
           type: integer
         type: array
+      time_windows:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
     required:
     - location
-    type: object
-  database.CreateJobTimeWindowParams:
-    properties:
-      tw_close:
-        example: 2021-12-31T23:59:00
-        type: string
-      tw_open:
-        example: 2021-12-31T23:00:00
-        type: string
-    required:
-    - tw_close
-    - tw_open
     type: object
   database.CreateProjectParams:
     properties:
@@ -156,6 +132,12 @@ definitions:
       d_setup:
         example: "00:00:00"
         type: string
+      d_time_windows:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
       data:
         additionalProperties:
           type: string
@@ -171,6 +153,12 @@ definitions:
       p_setup:
         example: "00:00:00"
         type: string
+      p_time_windows:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
       priority:
         example: 10
         type: integer
@@ -184,22 +172,6 @@ definitions:
     required:
     - d_location
     - p_location
-    type: object
-  database.CreateShipmentTimeWindowParams:
-    properties:
-      kind:
-        example: p
-        type: string
-      tw_close:
-        example: 2021-12-31T23:59:00
-        type: string
-      tw_open:
-        example: 2021-12-31T23:00:00
-        type: string
-    required:
-    - kind
-    - tw_close
-    - tw_open
     type: object
   database.CreateVehicleParams:
     properties:
@@ -294,24 +266,12 @@ definitions:
         items:
           type: integer
         type: array
-      updated_at:
-        example: 2021-12-01T13:00:00
-        type: string
-    type: object
-  database.JobTimeWindow:
-    properties:
-      created_at:
-        example: 2021-12-01T13:00:00
-        type: string
-      id:
-        example: "1234567812345678"
-        type: string
-      tw_close:
-        example: 2021-12-31T23:59:00
-        type: string
-      tw_open:
-        example: 2021-12-31T23:00:00
-        type: string
+      time_windows:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
       updated_at:
         example: 2021-12-01T13:00:00
         type: string
@@ -358,6 +318,12 @@ definitions:
       d_setup:
         example: "00:00:00"
         type: string
+      d_time_windows:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
       data:
         additionalProperties:
           type: string
@@ -376,6 +342,12 @@ definitions:
       p_setup:
         example: "00:00:00"
         type: string
+      p_time_windows:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
       priority:
         example: 10
         type: integer
@@ -393,26 +365,53 @@ definitions:
         example: 2021-12-01T13:00:00
         type: string
     type: object
-  database.ShipmentTimeWindow:
+  database.UpdateJobParams:
     properties:
-      created_at:
-        example: 2021-12-01T13:00:00
+      data:
+        additionalProperties:
+          type: string
+        example:
+          key1: value1
+          key2: value2
+        type: object
+      delivery:
+        example:
+        - 10
+        - 20
+        items:
+          type: integer
+        type: array
+      location:
+        $ref: '#/definitions/util.LocationParams'
+      pickup:
+        example:
+        - 5
+        - 15
+        items:
+          type: integer
+        type: array
+      priority:
+        example: 10
+        type: integer
+      service:
+        example: "00:02:00"
         type: string
-      id:
-        example: "1234567812345678"
+      setup:
+        example: "00:00:00"
         type: string
-      kind:
-        example: p
-        type: string
-      tw_close:
-        example: 2021-12-31T23:59:00
-        type: string
-      tw_open:
-        example: 2021-12-31T23:00:00
-        type: string
-      updated_at:
-        example: 2021-12-01T13:00:00
-        type: string
+      skills:
+        example:
+        - 1
+        - 5
+        items:
+          type: integer
+        type: array
+      time_windows:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
     type: object
   database.UpdateShipmentParams:
     properties:
@@ -431,6 +430,12 @@ definitions:
       d_setup:
         example: "00:00:00"
         type: string
+      d_time_windows:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
       data:
         additionalProperties:
           type: string
@@ -446,6 +451,12 @@ definitions:
       p_setup:
         example: "00:00:00"
         type: string
+      p_time_windows:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
       priority:
         example: 10
         type: integer
@@ -936,101 +947,6 @@ paths:
       summary: Update a break
       tags:
       - Break
-  /breaks/{break_id}/time_windows:
-    delete:
-      consumes:
-      - application/json
-      description: Delete all break time windows for a break with break_id
-      parameters:
-      - description: Break ID
-        in: path
-        name: break_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/util.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/util.NotFound'
-      summary: Delete break time windows
-      tags:
-      - Break
-    get:
-      consumes:
-      - application/json
-      description: Get a list of break time windows for a break with break_id
-      parameters:
-      - description: Break ID
-        in: path
-        name: break_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/util.SuccessResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/database.BreakTimeWindow'
-                  type: array
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.ErrorResponse'
-      summary: List break time windows for a break
-      tags:
-      - Break
-    post:
-      consumes:
-      - application/json
-      description: Create a new break time window with the input payload
-      parameters:
-      - description: Break ID
-        in: path
-        name: break_id
-        required: true
-        type: integer
-      - description: Create break time window
-        in: body
-        name: BreakTimeWindow
-        required: true
-        schema:
-          $ref: '#/definitions/database.CreateBreakTimeWindowParams'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/util.SuccessResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/database.BreakTimeWindow'
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.ErrorResponse'
-      summary: Create a new break time window
-      tags:
-      - Break
   /jobs/{job_id}:
     delete:
       consumes:
@@ -1103,6 +1019,12 @@ paths:
         name: job_id
         required: true
         type: integer
+      - description: Job object
+        in: body
+        name: Job
+        required: true
+        schema:
+          $ref: '#/definitions/database.UpdateJobParams'
       produces:
       - application/json
       responses:
@@ -1161,101 +1083,6 @@ paths:
           schema:
             $ref: '#/definitions/util.NotFound'
       summary: Get the schedule for a job
-      tags:
-      - Job
-  /jobs/{job_id}/time_windows:
-    delete:
-      consumes:
-      - application/json
-      description: Delete all job time windows for a job with job_id
-      parameters:
-      - description: Job ID
-        in: path
-        name: job_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/util.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/util.NotFound'
-      summary: Delete job time windows
-      tags:
-      - Job
-    get:
-      consumes:
-      - application/json
-      description: Get a list of job time windows for a job with job_id
-      parameters:
-      - description: Job ID
-        in: path
-        name: job_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/util.SuccessResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/database.JobTimeWindow'
-                  type: array
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.ErrorResponse'
-      summary: List job time windows for a job
-      tags:
-      - Job
-    post:
-      consumes:
-      - application/json
-      description: Create a new job time window with the input payload
-      parameters:
-      - description: Job ID
-        in: path
-        name: job_id
-        required: true
-        type: integer
-      - description: Create job time window
-        in: body
-        name: JobTimeWindow
-        required: true
-        schema:
-          $ref: '#/definitions/database.CreateJobTimeWindowParams'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/util.SuccessResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/database.JobTimeWindow'
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.ErrorResponse'
-      summary: Create a new job time window
       tags:
       - Job
   /projects:
@@ -1858,101 +1685,6 @@ paths:
           schema:
             $ref: '#/definitions/util.NotFound'
       summary: Get the schedule for a shipment
-      tags:
-      - Shipment
-  /shipments/{shipment_id}/time_windows:
-    delete:
-      consumes:
-      - application/json
-      description: Delete all shipment time windows for a shipment with shipment_id
-      parameters:
-      - description: Shipment ID
-        in: path
-        name: shipment_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/util.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/util.NotFound'
-      summary: Delete shipment time windows
-      tags:
-      - Shipment
-    get:
-      consumes:
-      - application/json
-      description: Get a list of shipment time windows for a shipment with shipment_id
-      parameters:
-      - description: Shipment ID
-        in: path
-        name: shipment_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/util.SuccessResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/database.ShipmentTimeWindow'
-                  type: array
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.ErrorResponse'
-      summary: List shipment time windows for a shipment
-      tags:
-      - Shipment
-    post:
-      consumes:
-      - application/json
-      description: Create a new shipment time window with the input payload
-      parameters:
-      - description: Shipment ID
-        in: path
-        name: shipment_id
-        required: true
-        type: integer
-      - description: Create shipment time window
-        in: body
-        name: ShipmentTimeWindow
-        required: true
-        schema:
-          $ref: '#/definitions/database.CreateShipmentTimeWindowParams'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/util.SuccessResponse'
-            - properties:
-                data:
-                  $ref: '#/definitions/database.ShipmentTimeWindow'
-              type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.ErrorResponse'
-      summary: Create a new shipment time window
       tags:
       - Shipment
   /vehicles/{vehicle_id}:

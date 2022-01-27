@@ -192,158 +192,6 @@ var doc = `{
                 }
             }
         },
-        "/breaks/{break_id}/time_windows": {
-            "get": {
-                "description": "Get a list of break time windows for a break with break_id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Break"
-                ],
-                "summary": "List break time windows for a break",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Break ID",
-                        "name": "break_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/util.SuccessResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/database.BreakTimeWindow"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create a new break time window with the input payload",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Break"
-                ],
-                "summary": "Create a new break time window",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Break ID",
-                        "name": "break_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Create break time window",
-                        "name": "BreakTimeWindow",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/database.CreateBreakTimeWindowParams"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/util.SuccessResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/database.BreakTimeWindow"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete all break time windows for a break with break_id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Break"
-                ],
-                "summary": "Delete break time windows",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Break ID",
-                        "name": "break_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/util.Success"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/util.NotFound"
-                        }
-                    }
-                }
-            }
-        },
         "/jobs/{job_id}": {
             "get": {
                 "description": "Fetch a job with its job_id",
@@ -460,6 +308,15 @@ var doc = `{
                         "name": "job_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Job object",
+                        "name": "Job",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.UpdateJobParams"
+                        }
                     }
                 ],
                 "responses": {
@@ -539,158 +396,6 @@ var doc = `{
                                     }
                                 }
                             ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/util.NotFound"
-                        }
-                    }
-                }
-            }
-        },
-        "/jobs/{job_id}/time_windows": {
-            "get": {
-                "description": "Get a list of job time windows for a job with job_id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Job"
-                ],
-                "summary": "List job time windows for a job",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Job ID",
-                        "name": "job_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/util.SuccessResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/database.JobTimeWindow"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create a new job time window with the input payload",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Job"
-                ],
-                "summary": "Create a new job time window",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Job ID",
-                        "name": "job_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Create job time window",
-                        "name": "JobTimeWindow",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/database.CreateJobTimeWindowParams"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/util.SuccessResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/database.JobTimeWindow"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete all job time windows for a job with job_id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Job"
-                ],
-                "summary": "Delete job time windows",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Job ID",
-                        "name": "job_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/util.Success"
                         }
                     },
                     "400": {
@@ -1673,158 +1378,6 @@ var doc = `{
                 }
             }
         },
-        "/shipments/{shipment_id}/time_windows": {
-            "get": {
-                "description": "Get a list of shipment time windows for a shipment with shipment_id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Shipment"
-                ],
-                "summary": "List shipment time windows for a shipment",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Shipment ID",
-                        "name": "shipment_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/util.SuccessResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/database.ShipmentTimeWindow"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create a new shipment time window with the input payload",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Shipment"
-                ],
-                "summary": "Create a new shipment time window",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Shipment ID",
-                        "name": "shipment_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Create shipment time window",
-                        "name": "ShipmentTimeWindow",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/database.CreateShipmentTimeWindowParams"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/util.SuccessResponse"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/database.ShipmentTimeWindow"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete all shipment time windows for a shipment with shipment_id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Shipment"
-                ],
-                "summary": "Delete shipment time windows",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Shipment ID",
-                        "name": "shipment_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/util.Success"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/util.NotFound"
-                        }
-                    }
-                }
-            }
-        },
         "/vehicles/{vehicle_id}": {
             "get": {
                 "description": "Fetch a vehicle with its vehicle_id",
@@ -2189,6 +1742,15 @@ var doc = `{
                     "type": "string",
                     "example": "00:02:00"
                 },
+                "time_windows": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
                 "updated_at": {
                     "type": "string",
                     "example": "2021-12-01T13:00:00"
@@ -2196,31 +1758,6 @@ var doc = `{
                 "vehicle_id": {
                     "type": "string",
                     "example": "1234567812345678"
-                }
-            }
-        },
-        "database.BreakTimeWindow": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2021-12-01T13:00:00"
-                },
-                "id": {
-                    "type": "string",
-                    "example": "1234567812345678"
-                },
-                "tw_close": {
-                    "type": "string",
-                    "example": "2021-12-31T23:59:00"
-                },
-                "tw_open": {
-                    "type": "string",
-                    "example": "2021-12-31T23:00:00"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2021-12-01T13:00:00"
                 }
             }
         },
@@ -2240,23 +1777,15 @@ var doc = `{
                 "service": {
                     "type": "string",
                     "example": "00:02:00"
-                }
-            }
-        },
-        "database.CreateBreakTimeWindowParams": {
-            "type": "object",
-            "required": [
-                "tw_close",
-                "tw_open"
-            ],
-            "properties": {
-                "tw_close": {
-                    "type": "string",
-                    "example": "2021-12-31T23:59:00"
                 },
-                "tw_open": {
-                    "type": "string",
-                    "example": "2021-12-31T23:00:00"
+                "time_windows": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
                 }
             }
         },
@@ -2320,23 +1849,15 @@ var doc = `{
                         1,
                         5
                     ]
-                }
-            }
-        },
-        "database.CreateJobTimeWindowParams": {
-            "type": "object",
-            "required": [
-                "tw_close",
-                "tw_open"
-            ],
-            "properties": {
-                "tw_close": {
-                    "type": "string",
-                    "example": "2021-12-31T23:59:00"
                 },
-                "tw_open": {
-                    "type": "string",
-                    "example": "2021-12-31T23:00:00"
+                "time_windows": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
                 }
             }
         },
@@ -2390,6 +1911,15 @@ var doc = `{
                     "type": "string",
                     "example": "00:00:00"
                 },
+                "d_time_windows": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
                 "data": {
                     "type": "object",
                     "additionalProperties": {
@@ -2411,6 +1941,15 @@ var doc = `{
                     "type": "string",
                     "example": "00:00:00"
                 },
+                "p_time_windows": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
                 "priority": {
                     "type": "integer",
                     "example": 10
@@ -2424,28 +1963,6 @@ var doc = `{
                         1,
                         5
                     ]
-                }
-            }
-        },
-        "database.CreateShipmentTimeWindowParams": {
-            "type": "object",
-            "required": [
-                "kind",
-                "tw_close",
-                "tw_open"
-            ],
-            "properties": {
-                "kind": {
-                    "type": "string",
-                    "example": "p"
-                },
-                "tw_close": {
-                    "type": "string",
-                    "example": "2021-12-31T23:59:00"
-                },
-                "tw_open": {
-                    "type": "string",
-                    "example": "2021-12-31T23:00:00"
                 }
             }
         },
@@ -2580,30 +2097,14 @@ var doc = `{
                         5
                     ]
                 },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2021-12-01T13:00:00"
-                }
-            }
-        },
-        "database.JobTimeWindow": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2021-12-01T13:00:00"
-                },
-                "id": {
-                    "type": "string",
-                    "example": "1234567812345678"
-                },
-                "tw_close": {
-                    "type": "string",
-                    "example": "2021-12-31T23:59:00"
-                },
-                "tw_open": {
-                    "type": "string",
-                    "example": "2021-12-31T23:00:00"
+                "time_windows": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
                 },
                 "updated_at": {
                     "type": "string",
@@ -2670,6 +2171,15 @@ var doc = `{
                     "type": "string",
                     "example": "00:00:00"
                 },
+                "d_time_windows": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
                 "data": {
                     "type": "object",
                     "additionalProperties": {
@@ -2695,6 +2205,15 @@ var doc = `{
                     "type": "string",
                     "example": "00:00:00"
                 },
+                "p_time_windows": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
                 "priority": {
                     "type": "integer",
                     "example": 10
@@ -2719,32 +2238,72 @@ var doc = `{
                 }
             }
         },
-        "database.ShipmentTimeWindow": {
+        "database.UpdateJobParams": {
             "type": "object",
             "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2021-12-01T13:00:00"
+                "data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
                 },
-                "id": {
-                    "type": "string",
-                    "example": "1234567812345678"
+                "delivery": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "example": [
+                        10,
+                        20
+                    ]
                 },
-                "kind": {
-                    "type": "string",
-                    "example": "p"
+                "location": {
+                    "$ref": "#/definitions/util.LocationParams"
                 },
-                "tw_close": {
-                    "type": "string",
-                    "example": "2021-12-31T23:59:00"
+                "pickup": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "example": [
+                        5,
+                        15
+                    ]
                 },
-                "tw_open": {
-                    "type": "string",
-                    "example": "2021-12-31T23:00:00"
+                "priority": {
+                    "type": "integer",
+                    "example": 10
                 },
-                "updated_at": {
+                "service": {
                     "type": "string",
-                    "example": "2021-12-01T13:00:00"
+                    "example": "00:02:00"
+                },
+                "setup": {
+                    "type": "string",
+                    "example": "00:00:00"
+                },
+                "skills": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "example": [
+                        1,
+                        5
+                    ]
+                },
+                "time_windows": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
                 }
             }
         },
@@ -2772,6 +2331,15 @@ var doc = `{
                     "type": "string",
                     "example": "00:00:00"
                 },
+                "d_time_windows": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
                 "data": {
                     "type": "object",
                     "additionalProperties": {
@@ -2792,6 +2360,15 @@ var doc = `{
                 "p_setup": {
                     "type": "string",
                     "example": "00:00:00"
+                },
+                "p_time_windows": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
                 },
                 "priority": {
                     "type": "integer",
