@@ -79,6 +79,9 @@ type Querier interface {
 	DBGetVehicle(ctx context.Context, id int64) (Vehicle, error)
 	DBUpdateVehicle(ctx context.Context, arg UpdateVehicleParams, vehicle_id int64) (Vehicle, error)
 	DBDeleteVehicle(ctx context.Context, id int64) (Vehicle, error)
+
+	// Locations
+	DBGetProjectLocations(ctx context.Context, project_id int64) ([]int64, error)
 }
 
 var _ Querier = (*Queries)(nil)
