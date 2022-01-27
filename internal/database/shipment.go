@@ -180,18 +180,18 @@ func (q *Queries) DBUpdateShipmentWithTw(ctx context.Context, arg UpdateShipment
 			for _, tw := range *arg.PTimeWindows {
 				// append time window to timeWindows
 				timeWindows = append(timeWindows, ShipmentTimeWindowParams{
-					Kind:    tw[0],
-					TwOpen:  tw[1],
-					TwClose: tw[2],
+					Kind:    "p",
+					TwOpen:  tw[0],
+					TwClose: tw[1],
 				})
 			}
 		}
 		if arg.DTimeWindows != nil {
 			for _, tw := range *arg.DTimeWindows {
 				timeWindows = append(timeWindows, ShipmentTimeWindowParams{
-					Kind:    tw[0],
-					TwOpen:  tw[1],
-					TwClose: tw[2],
+					Kind:    "d",
+					TwOpen:  tw[0],
+					TwClose: tw[1],
 				})
 			}
 		}
