@@ -79,6 +79,13 @@ Any API client can be used to interact with the API server. The API can also be 
 - RapiDoc: http://localhost:9100/rapidoc
 - Redoc: http://localhost:9100/redoc
 
+### Demo Application
+
+A frontend demo application for the API resides in the `demo` directory. To run the demo application:
+- Change directory to the `demo` directory: `cd demo`
+- Make sure that node is installed. Install the other requirements: `npm install`
+- Run the application: `node server.js`. The application will run at http://localhost:9101 and will use the API running at http://localhost:9100
+
 ## LICENSE
 
 This project is licensed under the GNU Affero General Public License v3.0. View [LICENSE](./LICENSE) for more details.
