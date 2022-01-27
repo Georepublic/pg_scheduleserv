@@ -1,3 +1,4 @@
+import Parser from "../utils/Parser.js";
 import BaseAPI from "./BaseAPI.js";
 
 export default class BreakAPI {
@@ -5,23 +6,42 @@ export default class BreakAPI {
     this.baseAPI = new BaseAPI();
   }
 
-  listBreaks(projectID) {
-    return this.baseAPI.get(`/projects/${projectID}/breaks`);
+  parseBreak(data) {
+    return {
+      id: data.id,
+      service: Parser.parseDuration(data.service),
+      data: Parser.parseJSON(data.data),
+      time_windows: Parser.parseTimeWindows(
+        data["tw_open[]"],
+        data["tw_close[]"]
+      ),
+      vehicle_id: data.vehicle_id,
+    };
   }
 
-  createBreak(projectID, data) {
-    return this.baseAPI.post(`/projects/${projectID}/breaks`, data);
+  saveBreak(data) {
+    try {
+      data = this.parseBreak(data);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+
+    if (data["id"]) {
+      return this.baseAPI.patch(`/breaks/${data["id"]}`, data);
+    } else {
+      return this.baseAPI.post(`/vehicles/${data["vehicle_id"]}/breaks`, data);
+    }
+  }
+
+  listBreaks(vehicleID) {
+    return this.baseAPI.get(`/vehicles/${vehicleID}/breaks`);
   }
 
   getBreak(breakID) {
-    return this.baseAPI.get(`/${breakID}`);
-  }
-
-  updateBreak(breakID, data) {
-    return this.baseAPI.patch(`/${breakID}`, data);
+    return this.baseAPI.get(`/breaks/${breakID}`);
   }
 
   deleteBreak(breakID) {
-    return this.baseAPI.delete(`/${breakID}`);
+    return this.baseAPI.delete(`/breaks/${breakID}`);
   }
 }

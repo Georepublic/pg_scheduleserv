@@ -1,5 +1,7 @@
 import VehicleAPI from "../api/VehicleAPI.js";
+import BreakAPI from "../api/BreakAPI.js";
 import VehicleHandler from "../handlers/VehicleHandler.js";
+import BreakHandler from "../handlers/BreakHandler.js";
 import Random from "../utils/Random.js";
 import AbstractView from "./AbstractView.js";
 
@@ -12,6 +14,7 @@ export default class VehicleView extends AbstractView {
     this.projectID = params.projectID;
     this.mapView = params.mapView;
     this.vehicleAPI = new VehicleAPI();
+    this.breakAPI = new BreakAPI();
 
     this.vehicleLeftDiv = document.createElement("div");
     document.querySelector("#app-left").appendChild(this.vehicleLeftDiv);
@@ -21,6 +24,7 @@ export default class VehicleView extends AbstractView {
       this.getEmptyVehicle(),
       this.handlers()
     );
+    this.breakHandler = new BreakHandler(this.breakHandlers());
   }
 
   // render the vehicles for this project
@@ -261,6 +265,166 @@ export default class VehicleView extends AbstractView {
     return html;
   }
 
+  // ------------------
+  // BREAKS START
+  // -------------------
+
+  // get the time windows html for the break, time windows is a 2D array of start and end times
+  getTimeWindowsHtml(time_windows) {
+    let timeWindowsHtml = time_windows.map((timeWindow) => {
+      return `
+          <li>${timeWindow[0]} - ${timeWindow[1]}</li>
+      `;
+    });
+    let timeWindows = timeWindowsHtml.join("");
+    if (timeWindows == "") {
+      timeWindows = "<li>No time window</li>";
+    }
+    return `
+      <div>
+        <ul class="mb-0">
+        ${timeWindows}
+        </ul>
+      </div>
+    `;
+  }
+
+  getTimeWindowsFormHtml(time_windows) {
+    let timeWindowsHtml = time_windows.map((timeWindow) => {
+      return `
+        <div class="input-group">
+          <input type="datetime-local" class="form-control" name="tw_open[]" value="${timeWindow[0]}" step="1" style="font-size: 12px;">
+          <input type="datetime-local" class="form-control" name="tw_close[]" value="${timeWindow[1]}" step="1" style="font-size: 12px;">
+        </div>
+      `;
+    });
+    return `
+      <div class="form-group">
+      <label>Time Window (Open and Close)</label>
+      ${timeWindowsHtml.join("")}
+      <div class="text-center">
+        <button type="button" class="btn btn-outline-primary" data-action="break-tw-form-create">
+          <i class="fas fa-plus-circle"></i>
+        </button>
+        <button type="button" class="btn btn-outline-danger" data-action="break-tw-form-delete">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </div>
+    `;
+  }
+
+  getBreakHtml(break_) {
+    let timeWindowsHtml = this.getTimeWindowsHtml(break_.time_windows);
+    let html = `
+      <div class="list-group-item flex-column align-items-start" data-id="${
+        break_.id
+      }">
+        <div class="d-flex w-100 justify-content-between">
+          <h5 class="mb-1">${break_.id}</h5>
+        </div>
+        <div>
+          Service Time: ${break_.service}<br/>
+          Data: ${JSON.stringify(break_.data)}<br/>
+          Time Windows: <br/>
+          ${timeWindowsHtml}
+          <div style="text-align: center;">
+            <button style="margin-right:5px;" type="button" class="btn btn-outline-warning" data-action="break-edit" data-id="${
+              break_.id
+            }">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button type="button" class="btn btn-outline-danger" data-action="break-delete" data-id="${
+              break_.id
+            }" data-vehicle-id="${break_.vehicle_id}">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // return the html for the break
+    return html;
+  }
+
+  getBreaksHtml(breaksList, vehicleID) {
+    let breakHtmlList = breaksList.map((break_) => {
+      return this.getBreakHtml(break_);
+    });
+
+    let breakHtml = breakHtmlList.join("");
+    if (breakHtml == "") {
+      breakHtml = `
+        <div class="list-group-item flex-column align-items-start" data-attribute="empty" data-id="">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">No Breaks</h5>
+          </div>
+        </div>
+      `;
+    }
+
+    // return the html for the breaks
+    let html = `
+      <div class="card">
+        <div class="card-header break-view-heading">
+          <h5 class="mb-0">
+            Break
+          </h5>
+        </div>
+        <div class="card-body card-body-custom" style="max-height: 35vh;">
+          ${breakHtml}
+          <div class="text-center">
+            <button type="button" class="btn btn-outline-primary" data-action="break-create" data-id="${vehicleID}">
+              <i class="fas fa-plus-circle"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // return the html for the break
+    return html;
+  }
+
+  getBreakFormHtml(break_) {
+    let timeWindowsHtml = this.getTimeWindowsFormHtml(break_.time_windows);
+    let html = `
+      <form>
+        <input type="hidden" name="id" value="${break_.id}">
+        <input type="hidden" name="vehicle_id" value="${break_.vehicle_id}">
+        <div class="form-group">
+          <label>Service Time</label>
+          <input type="time" class="form-control" name="service" value="${
+            break_.service
+          }" step="1">
+        </div>
+        <div class="form-group">
+          <label>Data</label>
+          <input type="text" class="form-control" name="data" value='${JSON.stringify(
+            break_.data
+          )}'>
+        </div>
+        ${timeWindowsHtml}
+        <div class="d-flex w-100 justify-content-center">
+          <button type="button" class="btn btn-primary mx-2" data-action="break-save" data-id="${
+            break_.id
+          }">Save</button>
+          <button type="button" class="btn btn-danger mx-2" data-action="vehicle-view" data-id="${
+            break_.vehicle_id
+          }">Cancel</button>
+        </div>
+      </form>
+    `;
+
+    // return the html for the break
+    return html;
+  }
+
+  // --------------------
+  // BREAK END
+  // --------------------
+
   selectVehicle(vehicleID) {
     this.deselectAll();
     let vehicleViewElement = document.querySelector(
@@ -280,6 +444,16 @@ export default class VehicleView extends AbstractView {
     document.querySelectorAll(`.list-group-item.active`).forEach((element) => {
       element.classList.remove("active");
     });
+  }
+
+  getEmptyBreak(vehicle_id) {
+    return {
+      id: "",
+      service: "00:00:00",
+      data: {},
+      time_windows: [],
+      vehicle_id: vehicle_id,
+    };
   }
 
   getEmptyVehicle() {
@@ -312,6 +486,41 @@ export default class VehicleView extends AbstractView {
     };
   }
 
+  breakHandlers() {
+    return {
+      onBreakView: (vehicleID) => {
+        // click on vehicle view button
+        let vehicleViewElement = document.querySelector(
+          `[data-action="vehicle-view"][data-id="${vehicleID}"]`
+        );
+        vehicleViewElement.click();
+      },
+      onBreakCreateClick: (vehicleID, sibling) => {
+        // create an empty break form
+        let break_ = this.getEmptyBreak(vehicleID);
+        let breakFormHtml = this.getBreakFormHtml(break_);
+
+        // if sibling has data-attribute=empty, then replace it with the form, else append the form
+        if (sibling.dataset.attribute == "empty") {
+          sibling.removeAttribute("data-attribute");
+          sibling.innerHTML = breakFormHtml;
+        } else {
+          sibling.insertAdjacentHTML("afterend", breakFormHtml);
+        }
+      },
+      onBreakEditClick: (breakID) => {
+        let breakElement = document.querySelector(
+          `.list-group-item[data-id="${breakID}"]`
+        );
+
+        this.breakAPI.getBreak(breakID).then((break_) => {
+          let breakFormHtml = this.getBreakFormHtml(break_);
+          breakElement.innerHTML = breakFormHtml;
+        });
+      },
+    };
+  }
+
   handlers() {
     return {
       onVehicleView: (vehicle) => {
@@ -324,6 +533,13 @@ export default class VehicleView extends AbstractView {
 
         // set the html for the vehicle
         this.setHtmlRight(vehicleHtml);
+
+        // call the break get api to get the break for the vehicle
+        this.breakAPI.listBreaks(vehicle.id).then((breakList) => {
+          let breakHtml = this.getBreaksHtml(breakList, vehicle.id);
+          // append the break html to the vehicle html
+          this.setHtmlRight(vehicleHtml + breakHtml);
+        });
 
         // select the vehicle
         this.selectVehicle(vehicle.id);
