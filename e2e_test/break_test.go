@@ -62,9 +62,10 @@ func TestCreateBreak(t *testing.T) {
 			body:       map[string]interface{}{},
 			resBody: map[string]interface{}{
 				"data": map[string]interface{}{
-					"service":    "00:00:00",
-					"vehicle_id": "2550908592071787332",
-					"data":       map[string]interface{}{},
+					"service":      "00:00:00",
+					"vehicle_id":   "2550908592071787332",
+					"data":         map[string]interface{}{},
+					"time_windows": []interface{}{},
 				},
 				"code":    "201",
 				"message": "Created",
@@ -79,9 +80,10 @@ func TestCreateBreak(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"data": map[string]interface{}{
-					"service":    "00:01:40",
-					"vehicle_id": "2550908592071787332",
-					"data":       map[string]interface{}{},
+					"service":      "00:01:40",
+					"vehicle_id":   "2550908592071787332",
+					"data":         map[string]interface{}{},
+					"time_windows": []interface{}{},
 				},
 				"code":    "201",
 				"message": "Created",
@@ -109,9 +111,10 @@ func TestCreateBreak(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"data": map[string]interface{}{
-					"service":    "00:00:00",
-					"vehicle_id": "2550908592071787332",
-					"data":       map[string]interface{}{"key": "value"},
+					"service":      "00:00:00",
+					"vehicle_id":   "2550908592071787332",
+					"data":         map[string]interface{}{"key": "value"},
+					"time_windows": []interface{}{},
 				},
 				"code":    "201",
 				"message": "Created",
@@ -140,9 +143,10 @@ func TestCreateBreak(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"data": map[string]interface{}{
-					"service":    "00:03:35",
-					"vehicle_id": "2550908592071787332",
-					"data":       map[string]interface{}{"key": "value"},
+					"service":      "00:03:35",
+					"vehicle_id":   "2550908592071787332",
+					"data":         map[string]interface{}{"key": "value"},
+					"time_windows": []interface{}{},
 				},
 				"code":    "201",
 				"message": "Created",
@@ -218,12 +222,13 @@ func TestListBreaks(t *testing.T) {
 			resBody: map[string]interface{}{
 				"data": []interface{}{
 					map[string]interface{}{
-						"id":         "4668767710686035977",
-						"service":    "00:00:01",
-						"vehicle_id": "2550908592071787332",
-						"data":       map[string]interface{}{"key": "value"},
-						"created_at": "2021-10-26T21:24:38",
-						"updated_at": "2021-10-26T21:24:38",
+						"id":           "4668767710686035977",
+						"service":      "00:00:01",
+						"vehicle_id":   "2550908592071787332",
+						"data":         map[string]interface{}{"key": "value"},
+						"created_at":   "2021-10-26T21:24:38",
+						"updated_at":   "2021-10-26T21:24:38",
+						"time_windows": []interface{}{},
 					},
 					map[string]interface{}{
 						"id":         "3990300682121424906",
@@ -232,6 +237,16 @@ func TestListBreaks(t *testing.T) {
 						"data":       map[string]interface{}{"s": float64(1)},
 						"created_at": "2021-10-26T21:24:52",
 						"updated_at": "2021-10-26T21:24:52",
+						"time_windows": []interface{}{
+							[]interface{}{
+								"2020-01-10T00:00:00",
+								"2020-01-10T07:00:10",
+							},
+							[]interface{}{
+								"2020-01-11T00:00:00",
+								"2020-01-12T00:00:00",
+							},
+						},
 					},
 				},
 				"code":    "200",
@@ -303,12 +318,13 @@ func TestGetBreak(t *testing.T) {
 			breakID:    4668767710686035977,
 			resBody: map[string]interface{}{
 				"data": map[string]interface{}{
-					"id":         "4668767710686035977",
-					"service":    "00:00:01",
-					"vehicle_id": "2550908592071787332",
-					"data":       map[string]interface{}{"key": "value"},
-					"created_at": "2021-10-26T21:24:38",
-					"updated_at": "2021-10-26T21:24:38",
+					"id":           "4668767710686035977",
+					"service":      "00:00:01",
+					"vehicle_id":   "2550908592071787332",
+					"data":         map[string]interface{}{"key": "value"},
+					"created_at":   "2021-10-26T21:24:38",
+					"updated_at":   "2021-10-26T21:24:38",
+					"time_windows": []interface{}{},
 				},
 				"code":    "200",
 				"message": "OK",
@@ -363,11 +379,12 @@ func TestUpdateBreak(t *testing.T) {
 			body:       map[string]interface{}{},
 			resBody: map[string]interface{}{
 				"data": map[string]interface{}{
-					"id":         "4668767710686035977",
-					"service":    "00:00:01",
-					"vehicle_id": "2550908592071787332",
-					"data":       map[string]interface{}{"key": "value"},
-					"created_at": "2021-10-26T21:24:38",
+					"id":           "4668767710686035977",
+					"service":      "00:00:01",
+					"vehicle_id":   "2550908592071787332",
+					"data":         map[string]interface{}{"key": "value"},
+					"created_at":   "2021-10-26T21:24:38",
+					"time_windows": []interface{}{},
 				},
 				"code":    "200",
 				"message": "OK",
@@ -392,11 +409,12 @@ func TestUpdateBreak(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"data": map[string]interface{}{
-					"id":         "4668767710686035977",
-					"service":    "00:01:40",
-					"vehicle_id": "2550908592071787332",
-					"data":       map[string]interface{}{"key": "value"},
-					"created_at": "2021-10-26T21:24:38",
+					"id":           "4668767710686035977",
+					"service":      "00:01:40",
+					"vehicle_id":   "2550908592071787332",
+					"data":         map[string]interface{}{"key": "value"},
+					"created_at":   "2021-10-26T21:24:38",
+					"time_windows": []interface{}{},
 				},
 				"code":    "200",
 				"message": "OK",
@@ -424,11 +442,12 @@ func TestUpdateBreak(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"data": map[string]interface{}{
-					"id":         "4668767710686035977",
-					"service":    "00:01:40",
-					"vehicle_id": "2550908592071787332",
-					"data":       map[string]interface{}{},
-					"created_at": "2021-10-26T21:24:38",
+					"id":           "4668767710686035977",
+					"service":      "00:01:40",
+					"vehicle_id":   "2550908592071787332",
+					"data":         map[string]interface{}{},
+					"created_at":   "2021-10-26T21:24:38",
+					"time_windows": []interface{}{},
 				},
 				"code":    "200",
 				"message": "OK",
@@ -445,11 +464,12 @@ func TestUpdateBreak(t *testing.T) {
 			},
 			resBody: map[string]interface{}{
 				"data": map[string]interface{}{
-					"id":         "4668767710686035977",
-					"service":    "00:01:41",
-					"vehicle_id": "2550908592071787332",
-					"data":       map[string]interface{}{"s": float64(1)},
-					"created_at": "2021-10-26T21:24:38",
+					"id":           "4668767710686035977",
+					"service":      "00:01:41",
+					"vehicle_id":   "2550908592071787332",
+					"data":         map[string]interface{}{"s": float64(1)},
+					"created_at":   "2021-10-26T21:24:38",
+					"time_windows": []interface{}{},
 				},
 				"code":    "200",
 				"message": "OK",
@@ -507,13 +527,14 @@ func TestDeleteBreak(t *testing.T) {
 		breakID    int
 		resBody    map[string]interface{}
 	}{
+		// TODO
 		{
 			name:       "Invalid ID",
-			statusCode: 404,
+			statusCode: 200,
 			breakID:    100,
 			resBody: map[string]interface{}{
-				"error": "Not Found",
-				"code":  "404",
+				"code":    "200",
+				"message": "OK",
 			},
 		},
 		{

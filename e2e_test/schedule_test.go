@@ -696,7 +696,7 @@ func TestGetScheduleICal(t *testing.T) {
 			projectID:  3909655254191459782,
 			resBody: []util.ICal{
 				{
-					ID:          "start-1@scheduleserv",
+					ID:          "start7300272137290532980@scheduleserv",
 					CreatedTime: time.Date(2021, time.Month(12), 8, 20, 4, 16, 0, time.UTC),
 					ModifiedAt:  time.Date(2021, time.Month(12), 8, 20, 4, 16, 0, time.UTC),
 					StartAt:     time.Date(2020, time.Month(1), 1, 10, 10, 0, 0, time.UTC),
@@ -736,7 +736,7 @@ func TestGetScheduleICal(t *testing.T) {
 					Description: "Project ID: 3909655254191459782\nVehicle ID: 7300272137290532980\nTask ID: 2349284092384902582\nTravel Time: 00:00:00\nService Time: 00:05:24\nWaiting Time: 00:00:00\nLoad: [0 0]\n",
 				},
 				{
-					ID:          "end-1@scheduleserv",
+					ID:          "end7300272137290532980@scheduleserv",
 					CreatedTime: time.Date(2021, time.Month(12), 8, 20, 4, 16, 0, time.UTC),
 					ModifiedAt:  time.Date(2021, time.Month(12), 8, 20, 4, 16, 0, time.UTC),
 					StartAt:     time.Date(2020, time.Month(1), 3, 20, 58, 1, 0, time.UTC),
