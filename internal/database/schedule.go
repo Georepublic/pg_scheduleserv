@@ -38,8 +38,24 @@ import (
 )
 
 func (q *Queries) DBCreateSchedule(ctx context.Context, projectID int64) error {
-	query := fmt.Sprintf("SELECT create_schedule(%d)", projectID)
-	_, err := q.db.Exec(ctx, query)
+	// get project locations by calling DBGetProjectLocations
+	locationIds, err := q.DBGetProjectLocations(ctx, projectID)
+	if err != nil {
+		return err
+	}
+
+	startIds, endIds, durations, err := util.GetMatrix(locationIds)
+	if err != nil {
+		return err
+	}
+
+	// if either of startIds, endIds, durations is empty, return error
+	if len(startIds) == 0 || len(endIds) == 0 || len(durations) == 0 {
+		return fmt.Errorf("No locations present in the project")
+	}
+
+	query := "SELECT create_schedule_with_matrix($1, $2, $3, $4)"
+	_, err = q.db.Exec(ctx, query, projectID, startIds, endIds, durations)
 	return err
 }
 
