@@ -26,6 +26,7 @@ export default class ShipmentHandler {
     this.handleShipmentDelete(onShipmentDelete);
     this.handleShipmentSave(onShipmentSave);
     this.handleShipmentClose(onShipmentClose);
+    this.handleShipmentTwForm();
   }
 
   // get shipment from id
@@ -93,7 +94,15 @@ export default class ShipmentHandler {
         const formData = new FormData(form);
         const shipment = {};
         for (const [key, value] of formData.entries()) {
-          shipment[key] = value;
+          // if key contains [] then it is an array
+          if (key.includes("[]")) {
+            if (!shipment[key]) {
+              shipment[key] = [];
+            }
+            shipment[key].push(value);
+          } else {
+            shipment[key] = value;
+          }
         }
         const id = shipment["id"];
 
@@ -122,6 +131,38 @@ export default class ShipmentHandler {
       const el = event.target.closest(`[data-action="shipment-close"]`);
       if (el) {
         onShipmentClose();
+      }
+    });
+  }
+
+  handleShipmentTwForm() {
+    this.main.addEventListener("click", (event) => {
+      let el = event.target.closest(`[data-action="shipment-tw-form-create"]`);
+      if (el) {
+        let value = el.dataset.value;
+
+        // select the parent element of el, and just before it append the html
+        const parent = el.parentElement;
+        const html = `
+        <div class="input-group">
+          <input type="datetime-local" class="form-control" name="${value}_tw_open[]" step="1" style="font-size: 13px;">
+          <span class="input-group-addon"></span>
+          <input type="datetime-local" class="form-control" name="${value}_tw_close[]" step="1" style="font-size: 13px;">
+        </div>`;
+
+        parent.insertAdjacentHTML("beforebegin", html);
+      }
+      el = event.target.closest(`[data-action="shipment-tw-form-delete"]`);
+      if (el) {
+        const parent = el.parentElement;
+
+        // select the adjacent element of parent and remove it
+        const sibling = parent.previousElementSibling;
+
+        // if sibling has the class input-group, remove it
+        if (sibling.classList.contains("input-group")) {
+          sibling.remove();
+        }
       }
     });
   }

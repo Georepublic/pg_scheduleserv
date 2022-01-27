@@ -1,5 +1,11 @@
 import Toast from "./Toast.js";
 
+// function to raise error
+function raiseError(error) {
+  Toast.error(error);
+  throw new Error(error);
+}
+
 export default class Parser {
   // parse and validate duration to be of hh:mm:ss format, with proper time
   static parseDuration(duration) {
@@ -12,19 +18,13 @@ export default class Parser {
       isNaN(parseInt(durationArray[1])) ||
       isNaN(parseInt(durationArray[2]))
     ) {
-      Toast.error(
-        "Invalid duration: " + duration + " must be in hh:mm:ss format"
-      );
-      throw new Error(
+      raiseError(
         "Invalid duration: " + duration + " must be in hh:mm:ss format"
       );
     }
     // also check for hours, minutes, seconds
     if (parseInt(durationArray[1]) > 59 || parseInt(durationArray[2]) > 59) {
-      Toast.error(
-        "Invalid duration: " + duration + " must be in hh:mm:ss format"
-      );
-      throw new Error(
+      raiseError(
         "Invalid duration: " + duration + " must be in hh:mm:ss format"
       );
     }
@@ -42,10 +42,7 @@ export default class Parser {
       isNaN(parseInt(dateArray[1])) ||
       isNaN(parseInt(dateArray[2]))
     ) {
-      Toast.error("Invalid date: " + date + " must be in YYYY-MM-DD format");
-      throw new Error(
-        "Invalid date: " + date + " must be in YYYY-MM-DD format"
-      );
+      raiseError("Invalid date: " + date + " must be in YYYY-MM-DD format");
     }
     // also check for year, month, day
     if (
@@ -55,10 +52,7 @@ export default class Parser {
       parseInt(dateArray[2]) < 1 ||
       parseInt(dateArray[2]) > 31
     ) {
-      Toast.error("Invalid date: " + date + " must be in YYYY-MM-DD format");
-      throw new Error(
-        "Invalid date: " + date + " must be in YYYY-MM-DD format"
-      );
+      raiseError("Invalid date: " + date + " must be in YYYY-MM-DD format");
     }
     return dateArray.join("-");
   }
@@ -73,12 +67,7 @@ export default class Parser {
       isNaN(parseInt(datetimeArray[0])) ||
       isNaN(parseInt(datetimeArray[1]))
     ) {
-      Toast.error(
-        "Invalid datetime: " +
-          datetime +
-          " must be in YYYY-MM-DDThh:mm:ss format"
-      );
-      throw new Error(
+      raiseError(
         "Invalid datetime: " +
           datetime +
           " must be in YYYY-MM-DDThh:mm:ss format"
@@ -98,12 +87,7 @@ export default class Parser {
         return item.trim();
       });
     if (locationArray.length !== 2) {
-      Toast.error(
-        "Invalid location: " +
-          location +
-          " must be in (latitude, longitude) format"
-      );
-      throw new Error(
+      raiseError(
         "Invalid location: " +
           location +
           " must be in (latitude, longitude) format"
@@ -124,12 +108,7 @@ export default class Parser {
       parseInt(priority) < 0 ||
       parseInt(priority) > 100
     ) {
-      Toast.error(
-        "Invalid priority: " +
-          priority +
-          " must be an integer between 0 and 100 inclusive"
-      );
-      throw new Error(
+      raiseError(
         "Invalid priority: " +
           priority +
           " must be an integer between 0 and 100 inclusive"
@@ -149,7 +128,7 @@ export default class Parser {
           return null;
         }
         if (isNaN(parseInt(item))) {
-          throw new Error(`Invalid amount: ${item} must be an integer`);
+          raiseError(`Invalid amount: ${item} must be an integer`);
         }
         return parseInt(item.trim());
       })
@@ -164,7 +143,7 @@ export default class Parser {
     try {
       return JSON.parse(json);
     } catch (e) {
-      Toast.error("Invalid Data field: " + e.message);
+      raiseError("Invalid Data field: " + e.message);
       throw e;
     }
   }
@@ -175,12 +154,7 @@ export default class Parser {
       parseInt(max_tasks) < 0 ||
       parseInt(max_tasks) > 2147483647
     ) {
-      Toast.error(
-        "Invalid max_tasks: " +
-          max_tasks +
-          " must be an integer between 0 and 2147483647 inclusive"
-      );
-      throw new Error(
+      raiseError(
         "Invalid max_tasks: " +
           max_tasks +
           " must be an integer between 0 and 2147483647 inclusive"
@@ -195,12 +169,7 @@ export default class Parser {
       parseFloat(speed_factor) < 0.01 ||
       parseFloat(speed_factor) > 200
     ) {
-      Toast.error(
-        "Invalid speed_factor: " +
-          speed_factor +
-          " must be a float between 0.01 and 200 inclusive"
-      );
-      throw new Error(
+      raiseError(
         "Invalid speed_factor: " +
           speed_factor +
           " must be a float between 0.01 and 200 inclusive"
@@ -209,11 +178,38 @@ export default class Parser {
     return Parser._parseFloat(speed_factor);
   }
 
+  static parseTimeWindows(tw_open_array, tw_close_array) {
+    const time_windows = [];
+    if (tw_open_array && tw_close_array) {
+      if (tw_open_array.length !== tw_close_array.length) {
+        raiseError(
+          "Invalid time_windows: open and close array must be of same length"
+        );
+      }
+      for (let i = 0; i < tw_open_array.length; i++) {
+        if (tw_open_array[i] && tw_close_array[i]) {
+          let parsed_tw_open = Parser.parseDateTime(tw_open_array[i]);
+          let parsed_tw_close = Parser.parseDateTime(tw_close_array[i]);
+          if (parsed_tw_open > parsed_tw_close) {
+            raiseError(
+              "Invalid time_windows: open must be less than or equal to close"
+            );
+          }
+          time_windows.push([parsed_tw_open, parsed_tw_close]);
+        } else if (tw_open_array[i] || tw_close_array[i]) {
+          raiseError(
+            "Invalid time_windows: both open and close must be present"
+          );
+        }
+      }
+    }
+    return time_windows;
+  }
+
   // parse and validate float
   static _parseFloat(item) {
     if (isNaN(parseFloat(item))) {
-      Toast.error("Invalid value: " + item + " must be a float");
-      throw new Error("Invalid value: " + item + " must be a float");
+      raiseError("Invalid value: " + item + " must be a float");
     }
     return parseFloat(item.trim());
   }
@@ -221,8 +217,7 @@ export default class Parser {
   // parse and validate integer
   static _parseInteger(item) {
     if (isNaN(parseInt(item))) {
-      Toast.error("Invalid value: " + item + " must be an integer");
-      throw new Error("Invalid value: " + item + " must be an integer");
+      raiseError("Invalid value: " + item + " must be an integer");
     }
     return parseInt(item.trim());
   }

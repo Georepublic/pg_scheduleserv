@@ -210,17 +210,18 @@ export default class VehicleView extends AbstractView {
                 vehicle.skills
               }">
             </div>
+
             <div class="form-group">
-              <label>Time Window open</label>
-              <input type="datetime-local" class="form-control" name="tw_open" value="${
-                vehicle.tw_open
-              }" step="1">
-            </div>
-            <div class="form-group">
-              <label>Time Window close</label>
-              <input type="datetime-local" class="form-control" name="tw_close" value="${
-                vehicle.tw_close
-              }" step="1">
+              <label>Time Window (Open and Close)</label>
+              <div class="input-group">
+                <input type="datetime-local" class="form-control" name="tw_open" value="${
+                  vehicle.tw_open
+                }" step="1" style="font-size: 13px;">
+                <span class="input-group-addon"></span>
+                <input type="datetime-local" class="form-control" name="tw_close" value="${
+                  vehicle.tw_close
+                }" step="1" style="font-size: 13px;">
+              </div>
             </div>
             <div class="form-group">
               <label>Speed Factor</label>
@@ -283,35 +284,25 @@ export default class VehicleView extends AbstractView {
 
   getEmptyVehicle() {
     // get todays date as string in the format YYYY-MM-DD with prepended 0 if required
-    let today = new Date();
-    let dd = today.getDate();
-    let mm = today.getMonth() + 1; //January is 0!
-    let yyyy = today.getFullYear();
-
-    if (dd < 10) {
-      dd = "0" + dd;
-    }
-    if (mm < 10) {
-      mm = "0" + mm;
-    }
-    const date = `${yyyy}-${mm}-${dd}`;
 
     // get map center
     let coordinates = this.mapView.getCenter();
+    let p_longitude = parseFloat(coordinates[1]) - 0.001;
+    let d_longitude = parseFloat(coordinates[1]) + 0.001;
     return {
       id: "",
       start_location: {
         latitude: coordinates[0],
-        longitude: coordinates[1],
+        longitude: p_longitude.toFixed(4),
       },
       end_location: {
         latitude: coordinates[0],
-        longitude: coordinates[1],
+        longitude: d_longitude.toFixed(4),
       },
       capacity: "",
       skills: "",
-      tw_open: `${date}T07:00:00`,
-      tw_close: `${date}T19:00:00`,
+      tw_open: ``,
+      tw_close: ``,
       speed_factor: "1.00",
       max_tasks: "2147483647",
       project_id: this.projectID,
