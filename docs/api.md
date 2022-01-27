@@ -43,12 +43,9 @@ https://swagger.io/terms/
 | Method  | URI     | Name   | Summary |
 |---------|---------|--------|---------|
 | DELETE | /breaks/{break_id} | [delete breaks break ID](#delete-breaks-break-id) | Delete a break |
-| DELETE | /breaks/{break_id}/time_windows | [delete breaks break ID time windows](#delete-breaks-break-id-time-windows) | Delete break time windows |
 | GET | /breaks/{break_id} | [get breaks break ID](#get-breaks-break-id) | Fetch a break |
-| GET | /breaks/{break_id}/time_windows | [get breaks break ID time windows](#get-breaks-break-id-time-windows) | List break time windows for a break |
 | GET | /vehicles/{vehicle_id}/breaks | [get vehicles vehicle ID breaks](#get-vehicles-vehicle-id-breaks) | List breaks |
 | PATCH | /breaks/{break_id} | [patch breaks break ID](#patch-breaks-break-id) | Update a break |
-| POST | /breaks/{break_id}/time_windows | [post breaks break ID time windows](#post-breaks-break-id-time-windows) | Create a new break time window |
 | POST | /vehicles/{vehicle_id}/breaks | [post vehicles vehicle ID breaks](#post-vehicles-vehicle-id-breaks) | Create a new break |
   
 
@@ -58,13 +55,10 @@ https://swagger.io/terms/
 | Method  | URI     | Name   | Summary |
 |---------|---------|--------|---------|
 | DELETE | /jobs/{job_id} | [delete jobs job ID](#delete-jobs-job-id) | Delete a job |
-| DELETE | /jobs/{job_id}/time_windows | [delete jobs job ID time windows](#delete-jobs-job-id-time-windows) | Delete job time windows |
 | GET | /jobs/{job_id} | [get jobs job ID](#get-jobs-job-id) | Fetch a job |
 | GET | /jobs/{job_id}/schedule | [get jobs job ID schedule](#get-jobs-job-id-schedule) | Get the schedule for a job |
-| GET | /jobs/{job_id}/time_windows | [get jobs job ID time windows](#get-jobs-job-id-time-windows) | List job time windows for a job |
 | GET | /projects/{project_id}/jobs | [get projects project ID jobs](#get-projects-project-id-jobs) | List jobs for a project |
 | PATCH | /jobs/{job_id} | [patch jobs job ID](#patch-jobs-job-id) | Update a job |
-| POST | /jobs/{job_id}/time_windows | [post jobs job ID time windows](#post-jobs-job-id-time-windows) | Create a new job time window |
 | POST | /projects/{project_id}/jobs | [post projects project ID jobs](#post-projects-project-id-jobs) | Create a new job |
   
 
@@ -96,14 +90,11 @@ https://swagger.io/terms/
 | Method  | URI     | Name   | Summary |
 |---------|---------|--------|---------|
 | DELETE | /shipments/{shipment_id} | [delete shipments shipment ID](#delete-shipments-shipment-id) | Delete a shipment |
-| DELETE | /shipments/{shipment_id}/time_windows | [delete shipments shipment ID time windows](#delete-shipments-shipment-id-time-windows) | Delete shipment time windows |
 | GET | /projects/{project_id}/shipments | [get projects project ID shipments](#get-projects-project-id-shipments) | List shipments for a project |
 | GET | /shipments/{shipment_id} | [get shipments shipment ID](#get-shipments-shipment-id) | Fetch a shipment |
 | GET | /shipments/{shipment_id}/schedule | [get shipments shipment ID schedule](#get-shipments-shipment-id-schedule) | Get the schedule for a shipment |
-| GET | /shipments/{shipment_id}/time_windows | [get shipments shipment ID time windows](#get-shipments-shipment-id-time-windows) | List shipment time windows for a shipment |
 | PATCH | /shipments/{shipment_id} | [patch shipments shipment ID](#patch-shipments-shipment-id) | Update a shipment |
 | POST | /projects/{project_id}/shipments | [post projects project ID shipments](#post-projects-project-id-shipments) | Create a new shipment |
-| POST | /shipments/{shipment_id}/time_windows | [post shipments shipment ID time windows](#post-shipments-shipment-id-time-windows) | Create a new shipment time window |
   
 
 
@@ -179,63 +170,6 @@ Status: Not Found
 
 [UtilNotFound](#util-not-found)
 
-### <span id="delete-breaks-break-id-time-windows"></span> Delete break time windows (*DeleteBreaksBreakIDTimeWindows*)
-
-```
-DELETE /breaks/{break_id}/time_windows
-```
-
-Delete all break time windows for a break with break_id
-
-#### Consumes
-  * application/json
-
-#### Produces
-  * application/json
-
-#### Parameters
-
-| Name | Source | Type | Go type | Separator | Required | Default | Description |
-|------|--------|------|---------|-----------| :------: |---------|-------------|
-| break_id | `path` | integer | `int64` |  | ✓ |  | Break ID |
-
-#### All responses
-| Code | Status | Description | Has headers | Schema |
-|------|--------|-------------|:-----------:|--------|
-| [200](#delete-breaks-break-id-time-windows-200) | OK | OK |  | [schema](#delete-breaks-break-id-time-windows-200-schema) |
-| [400](#delete-breaks-break-id-time-windows-400) | Bad Request | Bad Request |  | [schema](#delete-breaks-break-id-time-windows-400-schema) |
-| [404](#delete-breaks-break-id-time-windows-404) | Not Found | Not Found |  | [schema](#delete-breaks-break-id-time-windows-404-schema) |
-
-#### Responses
-
-
-##### <span id="delete-breaks-break-id-time-windows-200"></span> 200 - OK
-Status: OK
-
-###### <span id="delete-breaks-break-id-time-windows-200-schema"></span> Schema
-   
-  
-
-[UtilSuccess](#util-success)
-
-##### <span id="delete-breaks-break-id-time-windows-400"></span> 400 - Bad Request
-Status: Bad Request
-
-###### <span id="delete-breaks-break-id-time-windows-400-schema"></span> Schema
-   
-  
-
-[UtilErrorResponse](#util-error-response)
-
-##### <span id="delete-breaks-break-id-time-windows-404"></span> 404 - Not Found
-Status: Not Found
-
-###### <span id="delete-breaks-break-id-time-windows-404-schema"></span> Schema
-   
-  
-
-[UtilNotFound](#util-not-found)
-
 ### <span id="delete-jobs-job-id"></span> Delete a job (*DeleteJobsJobID*)
 
 ```
@@ -288,63 +222,6 @@ Status: Bad Request
 Status: Not Found
 
 ###### <span id="delete-jobs-job-id-404-schema"></span> Schema
-   
-  
-
-[UtilNotFound](#util-not-found)
-
-### <span id="delete-jobs-job-id-time-windows"></span> Delete job time windows (*DeleteJobsJobIDTimeWindows*)
-
-```
-DELETE /jobs/{job_id}/time_windows
-```
-
-Delete all job time windows for a job with job_id
-
-#### Consumes
-  * application/json
-
-#### Produces
-  * application/json
-
-#### Parameters
-
-| Name | Source | Type | Go type | Separator | Required | Default | Description |
-|------|--------|------|---------|-----------| :------: |---------|-------------|
-| job_id | `path` | integer | `int64` |  | ✓ |  | Job ID |
-
-#### All responses
-| Code | Status | Description | Has headers | Schema |
-|------|--------|-------------|:-----------:|--------|
-| [200](#delete-jobs-job-id-time-windows-200) | OK | OK |  | [schema](#delete-jobs-job-id-time-windows-200-schema) |
-| [400](#delete-jobs-job-id-time-windows-400) | Bad Request | Bad Request |  | [schema](#delete-jobs-job-id-time-windows-400-schema) |
-| [404](#delete-jobs-job-id-time-windows-404) | Not Found | Not Found |  | [schema](#delete-jobs-job-id-time-windows-404-schema) |
-
-#### Responses
-
-
-##### <span id="delete-jobs-job-id-time-windows-200"></span> 200 - OK
-Status: OK
-
-###### <span id="delete-jobs-job-id-time-windows-200-schema"></span> Schema
-   
-  
-
-[UtilSuccess](#util-success)
-
-##### <span id="delete-jobs-job-id-time-windows-400"></span> 400 - Bad Request
-Status: Bad Request
-
-###### <span id="delete-jobs-job-id-time-windows-400-schema"></span> Schema
-   
-  
-
-[UtilErrorResponse](#util-error-response)
-
-##### <span id="delete-jobs-job-id-time-windows-404"></span> 404 - Not Found
-Status: Not Found
-
-###### <span id="delete-jobs-job-id-time-windows-404-schema"></span> Schema
    
   
 
@@ -521,63 +398,6 @@ Status: Not Found
 
 [UtilNotFound](#util-not-found)
 
-### <span id="delete-shipments-shipment-id-time-windows"></span> Delete shipment time windows (*DeleteShipmentsShipmentIDTimeWindows*)
-
-```
-DELETE /shipments/{shipment_id}/time_windows
-```
-
-Delete all shipment time windows for a shipment with shipment_id
-
-#### Consumes
-  * application/json
-
-#### Produces
-  * application/json
-
-#### Parameters
-
-| Name | Source | Type | Go type | Separator | Required | Default | Description |
-|------|--------|------|---------|-----------| :------: |---------|-------------|
-| shipment_id | `path` | integer | `int64` |  | ✓ |  | Shipment ID |
-
-#### All responses
-| Code | Status | Description | Has headers | Schema |
-|------|--------|-------------|:-----------:|--------|
-| [200](#delete-shipments-shipment-id-time-windows-200) | OK | OK |  | [schema](#delete-shipments-shipment-id-time-windows-200-schema) |
-| [400](#delete-shipments-shipment-id-time-windows-400) | Bad Request | Bad Request |  | [schema](#delete-shipments-shipment-id-time-windows-400-schema) |
-| [404](#delete-shipments-shipment-id-time-windows-404) | Not Found | Not Found |  | [schema](#delete-shipments-shipment-id-time-windows-404-schema) |
-
-#### Responses
-
-
-##### <span id="delete-shipments-shipment-id-time-windows-200"></span> 200 - OK
-Status: OK
-
-###### <span id="delete-shipments-shipment-id-time-windows-200-schema"></span> Schema
-   
-  
-
-[UtilSuccess](#util-success)
-
-##### <span id="delete-shipments-shipment-id-time-windows-400"></span> 400 - Bad Request
-Status: Bad Request
-
-###### <span id="delete-shipments-shipment-id-time-windows-400-schema"></span> Schema
-   
-  
-
-[UtilErrorResponse](#util-error-response)
-
-##### <span id="delete-shipments-shipment-id-time-windows-404"></span> 404 - Not Found
-Status: Not Found
-
-###### <span id="delete-shipments-shipment-id-time-windows-404-schema"></span> Schema
-   
-  
-
-[UtilNotFound](#util-not-found)
-
 ### <span id="delete-vehicles-vehicle-id"></span> Delete a vehicle (*DeleteVehiclesVehicleID*)
 
 ```
@@ -710,74 +530,6 @@ Status: Not Found
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
 | data | [DatabaseBreak](#database-break)| `models.DatabaseBreak` |  | |  |  |
-
-
-
-### <span id="get-breaks-break-id-time-windows"></span> List break time windows for a break (*GetBreaksBreakIDTimeWindows*)
-
-```
-GET /breaks/{break_id}/time_windows
-```
-
-Get a list of break time windows for a break with break_id
-
-#### Consumes
-  * application/json
-
-#### Produces
-  * application/json
-
-#### Parameters
-
-| Name | Source | Type | Go type | Separator | Required | Default | Description |
-|------|--------|------|---------|-----------| :------: |---------|-------------|
-| break_id | `path` | integer | `int64` |  | ✓ |  | Break ID |
-
-#### All responses
-| Code | Status | Description | Has headers | Schema |
-|------|--------|-------------|:-----------:|--------|
-| [200](#get-breaks-break-id-time-windows-200) | OK | OK |  | [schema](#get-breaks-break-id-time-windows-200-schema) |
-| [400](#get-breaks-break-id-time-windows-400) | Bad Request | Bad Request |  | [schema](#get-breaks-break-id-time-windows-400-schema) |
-
-#### Responses
-
-
-##### <span id="get-breaks-break-id-time-windows-200"></span> 200 - OK
-Status: OK
-
-###### <span id="get-breaks-break-id-time-windows-200-schema"></span> Schema
-   
-  
-
-[GetBreaksBreakIDTimeWindowsOKBody](#get-breaks-break-id-time-windows-o-k-body)
-
-##### <span id="get-breaks-break-id-time-windows-400"></span> 400 - Bad Request
-Status: Bad Request
-
-###### <span id="get-breaks-break-id-time-windows-400-schema"></span> Schema
-   
-  
-
-[UtilErrorResponse](#util-error-response)
-
-###### Inlined models
-
-**<span id="get-breaks-break-id-time-windows-o-k-body"></span> GetBreaksBreakIDTimeWindowsOKBody**
-
-
-  
-
-
-* composed type [UtilSuccessResponse](#util-success-response)
-* inlined member (*getBreaksBreakIdTimeWindowsOKBodyAO1*)
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| data | [][DatabaseBreakTimeWindow](#database-break-time-window)| `[]*models.DatabaseBreakTimeWindow` |  | |  |  |
 
 
 
@@ -935,74 +687,6 @@ Status: Not Found
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
 | data | [][UtilScheduleDataTask](#util-schedule-data-task)| `[]*models.UtilScheduleDataTask` |  | |  |  |
-
-
-
-### <span id="get-jobs-job-id-time-windows"></span> List job time windows for a job (*GetJobsJobIDTimeWindows*)
-
-```
-GET /jobs/{job_id}/time_windows
-```
-
-Get a list of job time windows for a job with job_id
-
-#### Consumes
-  * application/json
-
-#### Produces
-  * application/json
-
-#### Parameters
-
-| Name | Source | Type | Go type | Separator | Required | Default | Description |
-|------|--------|------|---------|-----------| :------: |---------|-------------|
-| job_id | `path` | integer | `int64` |  | ✓ |  | Job ID |
-
-#### All responses
-| Code | Status | Description | Has headers | Schema |
-|------|--------|-------------|:-----------:|--------|
-| [200](#get-jobs-job-id-time-windows-200) | OK | OK |  | [schema](#get-jobs-job-id-time-windows-200-schema) |
-| [400](#get-jobs-job-id-time-windows-400) | Bad Request | Bad Request |  | [schema](#get-jobs-job-id-time-windows-400-schema) |
-
-#### Responses
-
-
-##### <span id="get-jobs-job-id-time-windows-200"></span> 200 - OK
-Status: OK
-
-###### <span id="get-jobs-job-id-time-windows-200-schema"></span> Schema
-   
-  
-
-[GetJobsJobIDTimeWindowsOKBody](#get-jobs-job-id-time-windows-o-k-body)
-
-##### <span id="get-jobs-job-id-time-windows-400"></span> 400 - Bad Request
-Status: Bad Request
-
-###### <span id="get-jobs-job-id-time-windows-400-schema"></span> Schema
-   
-  
-
-[UtilErrorResponse](#util-error-response)
-
-###### Inlined models
-
-**<span id="get-jobs-job-id-time-windows-o-k-body"></span> GetJobsJobIDTimeWindowsOKBody**
-
-
-  
-
-
-* composed type [UtilSuccessResponse](#util-success-response)
-* inlined member (*getJobsJobIdTimeWindowsOKBodyAO1*)
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| data | [][DatabaseJobTimeWindow](#database-job-time-window)| `[]*models.DatabaseJobTimeWindow` |  | |  |  |
 
 
 
@@ -1589,74 +1273,6 @@ Status: Not Found
 
 
 
-### <span id="get-shipments-shipment-id-time-windows"></span> List shipment time windows for a shipment (*GetShipmentsShipmentIDTimeWindows*)
-
-```
-GET /shipments/{shipment_id}/time_windows
-```
-
-Get a list of shipment time windows for a shipment with shipment_id
-
-#### Consumes
-  * application/json
-
-#### Produces
-  * application/json
-
-#### Parameters
-
-| Name | Source | Type | Go type | Separator | Required | Default | Description |
-|------|--------|------|---------|-----------| :------: |---------|-------------|
-| shipment_id | `path` | integer | `int64` |  | ✓ |  | Shipment ID |
-
-#### All responses
-| Code | Status | Description | Has headers | Schema |
-|------|--------|-------------|:-----------:|--------|
-| [200](#get-shipments-shipment-id-time-windows-200) | OK | OK |  | [schema](#get-shipments-shipment-id-time-windows-200-schema) |
-| [400](#get-shipments-shipment-id-time-windows-400) | Bad Request | Bad Request |  | [schema](#get-shipments-shipment-id-time-windows-400-schema) |
-
-#### Responses
-
-
-##### <span id="get-shipments-shipment-id-time-windows-200"></span> 200 - OK
-Status: OK
-
-###### <span id="get-shipments-shipment-id-time-windows-200-schema"></span> Schema
-   
-  
-
-[GetShipmentsShipmentIDTimeWindowsOKBody](#get-shipments-shipment-id-time-windows-o-k-body)
-
-##### <span id="get-shipments-shipment-id-time-windows-400"></span> 400 - Bad Request
-Status: Bad Request
-
-###### <span id="get-shipments-shipment-id-time-windows-400-schema"></span> Schema
-   
-  
-
-[UtilErrorResponse](#util-error-response)
-
-###### Inlined models
-
-**<span id="get-shipments-shipment-id-time-windows-o-k-body"></span> GetShipmentsShipmentIDTimeWindowsOKBody**
-
-
-  
-
-
-* composed type [UtilSuccessResponse](#util-success-response)
-* inlined member (*getShipmentsShipmentIdTimeWindowsOKBodyAO1*)
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| data | [][DatabaseShipmentTimeWindow](#database-shipment-time-window)| `[]*models.DatabaseShipmentTimeWindow` |  | |  |  |
-
-
-
 ### <span id="get-vehicles-vehicle-id"></span> Fetch a vehicle (*GetVehiclesVehicleID*)
 
 ```
@@ -1983,6 +1599,7 @@ Update a job (partial update) with its job_id
 | Name | Source | Type | Go type | Separator | Required | Default | Description |
 |------|--------|------|---------|-----------| :------: |---------|-------------|
 | job_id | `path` | integer | `int64` |  | ✓ |  | Job ID |
+| Job | `body` | [DatabaseUpdateJobParams](#database-update-job-params) | `models.DatabaseUpdateJobParams` | | ✓ | | Job object |
 
 #### All responses
 | Code | Status | Description | Has headers | Schema |
@@ -2276,144 +1893,6 @@ Status: Not Found
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
 | data | [DatabaseVehicle](#database-vehicle)| `models.DatabaseVehicle` |  | |  |  |
-
-
-
-### <span id="post-breaks-break-id-time-windows"></span> Create a new break time window (*PostBreaksBreakIDTimeWindows*)
-
-```
-POST /breaks/{break_id}/time_windows
-```
-
-Create a new break time window with the input payload
-
-#### Consumes
-  * application/json
-
-#### Produces
-  * application/json
-
-#### Parameters
-
-| Name | Source | Type | Go type | Separator | Required | Default | Description |
-|------|--------|------|---------|-----------| :------: |---------|-------------|
-| break_id | `path` | integer | `int64` |  | ✓ |  | Break ID |
-| BreakTimeWindow | `body` | [DatabaseCreateBreakTimeWindowParams](#database-create-break-time-window-params) | `models.DatabaseCreateBreakTimeWindowParams` | | ✓ | | Create break time window |
-
-#### All responses
-| Code | Status | Description | Has headers | Schema |
-|------|--------|-------------|:-----------:|--------|
-| [200](#post-breaks-break-id-time-windows-200) | OK | OK |  | [schema](#post-breaks-break-id-time-windows-200-schema) |
-| [400](#post-breaks-break-id-time-windows-400) | Bad Request | Bad Request |  | [schema](#post-breaks-break-id-time-windows-400-schema) |
-
-#### Responses
-
-
-##### <span id="post-breaks-break-id-time-windows-200"></span> 200 - OK
-Status: OK
-
-###### <span id="post-breaks-break-id-time-windows-200-schema"></span> Schema
-   
-  
-
-[PostBreaksBreakIDTimeWindowsOKBody](#post-breaks-break-id-time-windows-o-k-body)
-
-##### <span id="post-breaks-break-id-time-windows-400"></span> 400 - Bad Request
-Status: Bad Request
-
-###### <span id="post-breaks-break-id-time-windows-400-schema"></span> Schema
-   
-  
-
-[UtilErrorResponse](#util-error-response)
-
-###### Inlined models
-
-**<span id="post-breaks-break-id-time-windows-o-k-body"></span> PostBreaksBreakIDTimeWindowsOKBody**
-
-
-  
-
-
-* composed type [UtilSuccessResponse](#util-success-response)
-* inlined member (*postBreaksBreakIdTimeWindowsOKBodyAO1*)
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| data | [DatabaseBreakTimeWindow](#database-break-time-window)| `models.DatabaseBreakTimeWindow` |  | |  |  |
-
-
-
-### <span id="post-jobs-job-id-time-windows"></span> Create a new job time window (*PostJobsJobIDTimeWindows*)
-
-```
-POST /jobs/{job_id}/time_windows
-```
-
-Create a new job time window with the input payload
-
-#### Consumes
-  * application/json
-
-#### Produces
-  * application/json
-
-#### Parameters
-
-| Name | Source | Type | Go type | Separator | Required | Default | Description |
-|------|--------|------|---------|-----------| :------: |---------|-------------|
-| job_id | `path` | integer | `int64` |  | ✓ |  | Job ID |
-| JobTimeWindow | `body` | [DatabaseCreateJobTimeWindowParams](#database-create-job-time-window-params) | `models.DatabaseCreateJobTimeWindowParams` | | ✓ | | Create job time window |
-
-#### All responses
-| Code | Status | Description | Has headers | Schema |
-|------|--------|-------------|:-----------:|--------|
-| [200](#post-jobs-job-id-time-windows-200) | OK | OK |  | [schema](#post-jobs-job-id-time-windows-200-schema) |
-| [400](#post-jobs-job-id-time-windows-400) | Bad Request | Bad Request |  | [schema](#post-jobs-job-id-time-windows-400-schema) |
-
-#### Responses
-
-
-##### <span id="post-jobs-job-id-time-windows-200"></span> 200 - OK
-Status: OK
-
-###### <span id="post-jobs-job-id-time-windows-200-schema"></span> Schema
-   
-  
-
-[PostJobsJobIDTimeWindowsOKBody](#post-jobs-job-id-time-windows-o-k-body)
-
-##### <span id="post-jobs-job-id-time-windows-400"></span> 400 - Bad Request
-Status: Bad Request
-
-###### <span id="post-jobs-job-id-time-windows-400-schema"></span> Schema
-   
-  
-
-[UtilErrorResponse](#util-error-response)
-
-###### Inlined models
-
-**<span id="post-jobs-job-id-time-windows-o-k-body"></span> PostJobsJobIDTimeWindowsOKBody**
-
-
-  
-
-
-* composed type [UtilSuccessResponse](#util-success-response)
-* inlined member (*postJobsJobIdTimeWindowsOKBodyAO1*)
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| data | [DatabaseJobTimeWindow](#database-job-time-window)| `models.DatabaseJobTimeWindow` |  | |  |  |
 
 
 
@@ -2763,75 +2242,6 @@ Status: Bad Request
 
 
 
-### <span id="post-shipments-shipment-id-time-windows"></span> Create a new shipment time window (*PostShipmentsShipmentIDTimeWindows*)
-
-```
-POST /shipments/{shipment_id}/time_windows
-```
-
-Create a new shipment time window with the input payload
-
-#### Consumes
-  * application/json
-
-#### Produces
-  * application/json
-
-#### Parameters
-
-| Name | Source | Type | Go type | Separator | Required | Default | Description |
-|------|--------|------|---------|-----------| :------: |---------|-------------|
-| shipment_id | `path` | integer | `int64` |  | ✓ |  | Shipment ID |
-| ShipmentTimeWindow | `body` | [DatabaseCreateShipmentTimeWindowParams](#database-create-shipment-time-window-params) | `models.DatabaseCreateShipmentTimeWindowParams` | | ✓ | | Create shipment time window |
-
-#### All responses
-| Code | Status | Description | Has headers | Schema |
-|------|--------|-------------|:-----------:|--------|
-| [200](#post-shipments-shipment-id-time-windows-200) | OK | OK |  | [schema](#post-shipments-shipment-id-time-windows-200-schema) |
-| [400](#post-shipments-shipment-id-time-windows-400) | Bad Request | Bad Request |  | [schema](#post-shipments-shipment-id-time-windows-400-schema) |
-
-#### Responses
-
-
-##### <span id="post-shipments-shipment-id-time-windows-200"></span> 200 - OK
-Status: OK
-
-###### <span id="post-shipments-shipment-id-time-windows-200-schema"></span> Schema
-   
-  
-
-[PostShipmentsShipmentIDTimeWindowsOKBody](#post-shipments-shipment-id-time-windows-o-k-body)
-
-##### <span id="post-shipments-shipment-id-time-windows-400"></span> 400 - Bad Request
-Status: Bad Request
-
-###### <span id="post-shipments-shipment-id-time-windows-400-schema"></span> Schema
-   
-  
-
-[UtilErrorResponse](#util-error-response)
-
-###### Inlined models
-
-**<span id="post-shipments-shipment-id-time-windows-o-k-body"></span> PostShipmentsShipmentIDTimeWindowsOKBody**
-
-
-  
-
-
-* composed type [UtilSuccessResponse](#util-success-response)
-* inlined member (*postShipmentsShipmentIdTimeWindowsOKBodyAO1*)
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| data | [DatabaseShipmentTimeWindow](#database-shipment-time-window)| `models.DatabaseShipmentTimeWindow` |  | |  |  |
-
-
-
 ### <span id="post-vehicles-vehicle-id-breaks"></span> Create a new break (*PostVehiclesVehicleIDBreaks*)
 
 ```
@@ -2918,27 +2328,9 @@ Status: Bad Request
 | data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | id | string| `string` |  | |  | `1234567812345678` |
 | service | string| `string` |  | |  | `00:02:00` |
+| time_windows | [][[]string](#string)| `[][]string` |  | |  |  |
 | updated_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 | vehicle_id | string| `string` |  | |  | `1234567812345678` |
-
-
-
-### <span id="database-break-time-window"></span> database.BreakTimeWindow
-
-
-  
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| created_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
-| id | string| `string` |  | |  | `1234567812345678` |
-| tw_close | string| `string` |  | |  | `2021-12-31T23:59:00` |
-| tw_open | string| `string` |  | |  | `2021-12-31T23:00:00` |
-| updated_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 
 
 
@@ -2955,22 +2347,7 @@ Status: Bad Request
 |------|------|---------|:--------:| ------- |-------------|---------|
 | data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | service | string| `string` |  | |  | `00:02:00` |
-
-
-
-### <span id="database-create-break-time-window-params"></span> database.CreateBreakTimeWindowParams
-
-
-  
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| tw_close | string| `string` | ✓ | |  | `2021-12-31T23:59:00` |
-| tw_open | string| `string` | ✓ | |  | `2021-12-31T23:00:00` |
+| time_windows | [][[]string](#string)| `[][]string` |  | |  |  |
 
 
 
@@ -2993,22 +2370,7 @@ Status: Bad Request
 | service | string| `string` |  | |  | `00:02:00` |
 | setup | string| `string` |  | |  | `00:00:00` |
 | skills | []integer| `[]int64` |  | |  | `[1,5]` |
-
-
-
-### <span id="database-create-job-time-window-params"></span> database.CreateJobTimeWindowParams
-
-
-  
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| tw_close | string| `string` | ✓ | |  | `2021-12-31T23:59:00` |
-| tw_open | string| `string` | ✓ | |  | `2021-12-31T23:00:00` |
+| time_windows | [][[]string](#string)| `[][]string` |  | |  |  |
 
 
 
@@ -3043,29 +2405,14 @@ Status: Bad Request
 | d_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` | ✓ | |  |  |
 | d_service | string| `string` |  | |  | `00:02:00` |
 | d_setup | string| `string` |  | |  | `00:00:00` |
+| d_time_windows | [][[]string](#string)| `[][]string` |  | |  |  |
 | data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | p_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` | ✓ | |  |  |
 | p_service | string| `string` |  | |  | `00:02:00` |
 | p_setup | string| `string` |  | |  | `00:00:00` |
+| p_time_windows | [][[]string](#string)| `[][]string` |  | |  |  |
 | priority | integer| `int64` |  | |  | `10` |
 | skills | []integer| `[]int64` |  | |  | `[1,5]` |
-
-
-
-### <span id="database-create-shipment-time-window-params"></span> database.CreateShipmentTimeWindowParams
-
-
-  
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| kind | string| `string` | ✓ | |  | `p` |
-| tw_close | string| `string` | ✓ | |  | `2021-12-31T23:59:00` |
-| tw_open | string| `string` | ✓ | |  | `2021-12-31T23:00:00` |
 
 
 
@@ -3114,25 +2461,7 @@ Status: Bad Request
 | service | string| `string` |  | |  | `00:02:00` |
 | setup | string| `string` |  | |  | `00:00:00` |
 | skills | []integer| `[]int64` |  | |  | `[1,5]` |
-| updated_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
-
-
-
-### <span id="database-job-time-window"></span> database.JobTimeWindow
-
-
-  
-
-
-
-**Properties**
-
-| Name | Type | Go type | Required | Default | Description | Example |
-|------|------|---------|:--------:| ------- |-------------|---------|
-| created_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
-| id | string| `string` |  | |  | `1234567812345678` |
-| tw_close | string| `string` |  | |  | `2021-12-31T23:59:00` |
-| tw_open | string| `string` |  | |  | `2021-12-31T23:00:00` |
+| time_windows | [][[]string](#string)| `[][]string` |  | |  |  |
 | updated_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 
 
@@ -3172,11 +2501,13 @@ Status: Bad Request
 | d_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
 | d_service | string| `string` |  | |  | `00:02:00` |
 | d_setup | string| `string` |  | |  | `00:00:00` |
+| d_time_windows | [][[]string](#string)| `[][]string` |  | |  |  |
 | data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | id | string| `string` |  | |  | `1234567812345678` |
 | p_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
 | p_service | string| `string` |  | |  | `00:02:00` |
 | p_setup | string| `string` |  | |  | `00:00:00` |
+| p_time_windows | [][[]string](#string)| `[][]string` |  | |  |  |
 | priority | integer| `int64` |  | |  | `10` |
 | project_id | string| `string` |  | |  | `1234567812345678` |
 | skills | []integer| `[]int64` |  | |  | `[1,5]` |
@@ -3184,7 +2515,7 @@ Status: Bad Request
 
 
 
-### <span id="database-shipment-time-window"></span> database.ShipmentTimeWindow
+### <span id="database-update-job-params"></span> database.UpdateJobParams
 
 
   
@@ -3195,12 +2526,15 @@ Status: Bad Request
 
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
-| created_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
-| id | string| `string` |  | |  | `1234567812345678` |
-| kind | string| `string` |  | |  | `p` |
-| tw_close | string| `string` |  | |  | `2021-12-31T23:59:00` |
-| tw_open | string| `string` |  | |  | `2021-12-31T23:00:00` |
-| updated_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
+| data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
+| delivery | []integer| `[]int64` |  | |  | `[10,20]` |
+| location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
+| pickup | []integer| `[]int64` |  | |  | `[5,15]` |
+| priority | integer| `int64` |  | |  | `10` |
+| service | string| `string` |  | |  | `00:02:00` |
+| setup | string| `string` |  | |  | `00:00:00` |
+| skills | []integer| `[]int64` |  | |  | `[1,5]` |
+| time_windows | [][[]string](#string)| `[][]string` |  | |  |  |
 
 
 
@@ -3219,10 +2553,12 @@ Status: Bad Request
 | d_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
 | d_service | string| `string` |  | |  | `00:02:00` |
 | d_setup | string| `string` |  | |  | `00:00:00` |
+| d_time_windows | [][[]string](#string)| `[][]string` |  | |  |  |
 | data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | p_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
 | p_service | string| `string` |  | |  | `00:02:00` |
 | p_setup | string| `string` |  | |  | `00:00:00` |
+| p_time_windows | [][[]string](#string)| `[][]string` |  | |  |  |
 | priority | integer| `int64` |  | |  | `10` |
 | skills | []integer| `[]int64` |  | |  | `[1,5]` |
 
