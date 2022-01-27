@@ -36,24 +36,20 @@ import (
 )
 
 // make get request to an url with content-type, and return the response body as json
-func Get(url string, contentType string, target interface{}) error {
+func Get(url string, contentType string, target interface{}) (int, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	req.Header.Set("Content-Type", contentType)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return err
+		return 0, err
 	}
 	defer res.Body.Close()
 
-	if res.StatusCode != http.StatusOK {
-		return fmt.Errorf("HTTP error: %s", res.Status)
-	}
-
-	return json.NewDecoder(res.Body).Decode(target)
+	return res.StatusCode, json.NewDecoder(res.Body).Decode(target)
 }
 
 func GetMatrix(locationIds []int64) (startIds []int64, endIds []int64, durations []int64, err error) {
@@ -97,9 +93,13 @@ func GetMatrixFromOSRM(coordinates [][]float64) ([][]int64, error) {
 
 	// decode the response body as json, pass json in Get() function
 	response := make(map[string]interface{})
-	err := Get(url, "application/json", &response)
+	statusCode, err := Get(url, "application/json", &response)
 	if err != nil {
 		return nil, err
+	}
+
+	if statusCode != http.StatusOK {
+		return nil, fmt.Errorf("Error: %s", response["message"])
 	}
 
 	// get the matrix from the response
@@ -110,7 +110,12 @@ func GetMatrixFromOSRM(coordinates [][]float64) ([][]int64, error) {
 	for _, row := range matrix {
 		rowInt64 := make([]int64, 0)
 		for _, value := range row.([]interface{}) {
-			rowInt64 = append(rowInt64, int64(value.(float64)))
+			if value == nil {
+				// append max 16 bytes integer value
+				rowInt64 = append(rowInt64, int64(1<<16-1))
+			} else {
+				rowInt64 = append(rowInt64, int64(value.(float64)))
+			}
 		}
 		matrixInt64 = append(matrixInt64, rowInt64)
 	}

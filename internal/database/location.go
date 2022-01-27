@@ -36,9 +36,9 @@ import (
 
 func (q *Queries) DBGetProjectLocations(ctx context.Context, project_id int64) ([]int64, error) {
 	sql := `
-	SELECT unnest(ARRAY[location_id]) AS location_id FROM jobs WHERE project_id = $1 UNION
-	SELECT unnest(ARRAY[p_location_id, d_location_id]) FROM shipments WHERE project_id = $1 UNION
-	SELECT unnest(ARRAY[start_id, end_id]) FROM vehicles WHERE project_id = $1`
+	SELECT unnest(ARRAY[location_id]) AS location_id FROM jobs WHERE project_id = $1 AND deleted=FALSE UNION
+	SELECT unnest(ARRAY[p_location_id, d_location_id]) FROM shipments WHERE project_id = $1 AND deleted=FALSE UNION
+	SELECT unnest(ARRAY[start_id, end_id]) FROM vehicles WHERE project_id = $1 AND deleted=FALSE`
 
 	rows, err := q.db.Query(ctx, sql, project_id)
 	if err != nil {
