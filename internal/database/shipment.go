@@ -116,6 +116,7 @@ func (q *Queries) DBUpdateShipment(ctx context.Context, arg UpdateShipmentParams
 	tableName := "shipments"
 	sql, args := updateResource(tableName, arg, shipment_id)
 	_, err := q.db.Exec(ctx, sql, args...)
+	err = util.HandleDBError(err)
 	return err
 }
 

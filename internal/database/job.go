@@ -110,6 +110,7 @@ func (q *Queries) DBUpdateJob(ctx context.Context, arg UpdateJobParams, job_id i
 	tableName := "jobs"
 	sql, args := updateResource(tableName, arg, job_id)
 	_, err := q.db.Exec(ctx, sql, args...)
+	err = util.HandleDBError(err)
 	return err
 }
 
@@ -192,6 +193,7 @@ func (q *Queries) DBDeleteJobWithTw(ctx context.Context, job_id int64) error {
 func scanID(row pgx.Row) (int64, error) {
 	var id int64
 	err := row.Scan(&id)
+	err = util.HandleDBError(err)
 	return id, err
 }
 
