@@ -230,7 +230,7 @@ func (server *Server) DeleteJob(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	_, err = server.DBDeleteJob(ctx, job_id)
+	err = server.DBDeleteJobWithTw(ctx, job_id)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return

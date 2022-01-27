@@ -30,82 +30,46 @@ package database
 
 import (
 	"context"
-
-	"github.com/Georepublic/pg_scheduleserv/internal/util"
-	"github.com/jackc/pgx/v4"
+	"fmt"
 )
 
-type CreateShipmentTimeWindowParams struct {
-	ID      *int64  `json:"id,string" example:"1234567812345678" validate:"required" swaggerignore:"true"`
-	Kind    *string `json:"kind" validate:"required,oneof=p d" example:"p"`
-	TwOpen  *string `json:"tw_open" validate:"required,datetime=2006-01-02T15:04:05" example:"2021-12-31T23:00:00"`
-	TwClose *string `json:"tw_close" validate:"required,datetime=2006-01-02T15:04:05" example:"2021-12-31T23:59:00"`
+type ShipmentTimeWindowParams struct {
+	Kind    string `json:"kind" validate:"required,oneof=p d" example:"p"`
+	TwOpen  string `json:"tw_open" validate:"required,datetime=2006-01-02T15:04:05" example:"2021-12-31T23:00:00"`
+	TwClose string `json:"tw_close" validate:"required,datetime=2006-01-02T15:04:05" example:"2021-12-31T23:59:00"`
 }
 
-func (q *Queries) DBCreateShipmentTimeWindow(ctx context.Context, arg CreateShipmentTimeWindowParams) (ShipmentTimeWindow, error) {
-	tableName := "shipments_time_windows"
-	sql, args := createResource(tableName, arg)
-	return_sql := " RETURNING " + util.GetOutputFields(ShipmentTimeWindow{}, tableName)
-	row := q.db.QueryRow(ctx, sql+return_sql, args...)
-	return scanShipmentTimeWindowRow(row)
-}
-
-func (q *Queries) DBListShipmentTimeWindows(ctx context.Context, id int64) ([]ShipmentTimeWindow, error) {
-	_, err := q.DBGetShipment(ctx, id)
-	if err != nil {
-		return nil, err
+func (q *Queries) DBCreateShipmentTimeWindows(ctx context.Context, id int64, arg []ShipmentTimeWindowParams) error {
+	if len(arg) == 0 {
+		return nil
 	}
-	tableName := "shipments_time_windows"
-	additionalQuery := " WHERE id = $1 ORDER BY created_at"
-	sql := "SELECT " + util.GetOutputFields(ShipmentTimeWindow{}, tableName) + " FROM " + tableName + additionalQuery
-	rows, err := q.db.Query(ctx, sql, id)
-	if err != nil {
-		return nil, err
+
+	// create an sql query to insert multiple rows
+	sql := "INSERT INTO shipments_time_windows (id, kind, tw_open, tw_close) VALUES "
+	for i := range arg {
+		if i > 0 {
+			sql += ","
+		}
+		sql += fmt.Sprintf("($%d, $%d, $%d, $%d)", i*4+1, i*4+2, i*4+3, i*4+4)
 	}
-	defer rows.Close()
-	return scanShipmentTimeWindowRows(rows)
+
+	// create a slice of arguments for the query
+	args := make([]interface{}, len(arg)*4)
+	for i, v := range arg {
+		args[i*4] = id
+		args[i*4+1] = v.Kind
+		args[i*4+2] = v.TwOpen
+		args[i*4+3] = v.TwClose
+	}
+
+	// execute the query
+	_, err := q.db.Exec(ctx, sql, args...)
+	return err
 }
 
-func (q *Queries) DBDeleteShipmentTimeWindow(ctx context.Context, id int64) (ShipmentTimeWindow, error) {
+func (q *Queries) DBDeleteShipmentTimeWindows(ctx context.Context, id int64) error {
 	tableName := "shipments_time_windows"
 	sql := "DELETE FROM " + tableName + " WHERE id = $1"
-	return_sql := " RETURNING " + util.GetOutputFields(ShipmentTimeWindow{}, tableName)
-	row := q.db.QueryRow(ctx, sql+return_sql, id)
-	return scanShipmentTimeWindowRow(row)
-}
-
-func scanShipmentTimeWindowRow(row pgx.Row) (ShipmentTimeWindow, error) {
-	var i ShipmentTimeWindow
-	err := row.Scan(
-		&i.ID,
-		&i.Kind,
-		&i.TwOpen,
-		&i.TwClose,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	err = util.HandleDBError(err)
-	return i, err
-}
-
-func scanShipmentTimeWindowRows(rows pgx.Rows) ([]ShipmentTimeWindow, error) {
-	items := []ShipmentTimeWindow{}
-	var i ShipmentTimeWindow
-	for rows.Next() {
-		if err := rows.Scan(
-			&i.ID,
-			&i.Kind,
-			&i.TwOpen,
-			&i.TwClose,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+	_, err := q.db.Exec(ctx, sql, id)
+	return err
 }

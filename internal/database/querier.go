@@ -54,7 +54,7 @@ type Querier interface {
 	DBListJobs(ctx context.Context, projectID int64) ([]Job, error)
 	DBGetJob(ctx context.Context, id int64) (Job, error)
 	DBUpdateJobWithTw(ctx context.Context, arg UpdateJobParams, job_id int64) (Job, error)
-	DBDeleteJob(ctx context.Context, id int64) (Job, error)
+	DBDeleteJobWithTw(ctx context.Context, id int64) error
 
 	// Project
 	DBCreateProject(ctx context.Context, arg CreateProjectParams) (Project, error)
@@ -72,16 +72,11 @@ type Querier interface {
 	DBDeleteSchedule(ctx context.Context, id int64) error
 
 	// Shipment
-	DBCreateShipment(ctx context.Context, arg CreateShipmentParams) (Shipment, error)
+	DBCreateShipmentWithTw(ctx context.Context, arg CreateShipmentParams) (Shipment, error)
 	DBListShipments(ctx context.Context, projectID int64) ([]Shipment, error)
 	DBGetShipment(ctx context.Context, id int64) (Shipment, error)
-	DBUpdateShipment(ctx context.Context, arg UpdateShipmentParams, shipment_id int64) (Shipment, error)
-	DBDeleteShipment(ctx context.Context, id int64) (Shipment, error)
-
-	// Shipment Time Window
-	DBCreateShipmentTimeWindow(ctx context.Context, arg CreateShipmentTimeWindowParams) (ShipmentTimeWindow, error)
-	DBListShipmentTimeWindows(ctx context.Context, id int64) ([]ShipmentTimeWindow, error)
-	DBDeleteShipmentTimeWindow(ctx context.Context, id int64) (ShipmentTimeWindow, error)
+	DBUpdateShipmentWithTw(ctx context.Context, arg UpdateShipmentParams, shipment_id int64) (Shipment, error)
+	DBDeleteShipmentWithTw(ctx context.Context, id int64) error
 
 	// Vehicle
 	DBCreateVehicle(ctx context.Context, arg CreateVehicleParams) (Vehicle, error)

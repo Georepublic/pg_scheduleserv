@@ -113,12 +113,11 @@ func (q *Queries) DBUpdateJob(ctx context.Context, arg UpdateJobParams, job_id i
 	return err
 }
 
-func (q *Queries) DBDeleteJob(ctx context.Context, id int64) (Job, error) {
+func (q *Queries) DBDeleteJob(ctx context.Context, id int64) error {
 	tableName := "jobs"
 	sql := "UPDATE " + tableName + " SET deleted = TRUE WHERE id = $1"
-	return_sql := " RETURNING " + util.GetOutputFields(Job{}, tableName)
-	row := q.db.QueryRow(ctx, sql+return_sql, id)
-	return scanJobRow(row)
+	_, err := q.db.Exec(ctx, sql, id)
+	return err
 }
 
 func (q *Queries) DBCreateJobWithTw(ctx context.Context, arg CreateJobParams) (Job, error) {
@@ -176,6 +175,18 @@ func (q *Queries) DBUpdateJobWithTw(ctx context.Context, arg UpdateJobParams, jo
 		return Job{}, err
 	}
 	return q.DBGetJob(ctx, job_id)
+}
+
+func (q *Queries) DBDeleteJobWithTw(ctx context.Context, job_id int64) error {
+	err := q.execUpdateTx(ctx, func(q *Queries) error {
+		// delete all time windows
+		if err := q.DBDeleteJobTimeWindows(ctx, job_id); err != nil {
+			return err
+		}
+		err := q.DBDeleteJob(ctx, job_id)
+		return err
+	})
+	return err
 }
 
 func scanID(row pgx.Row) (int64, error) {

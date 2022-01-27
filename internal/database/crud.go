@@ -76,7 +76,7 @@ func updateResource(resource string, resourceStruct interface{}, id int64) (sql 
 	i := 0
 	for _, field := range partialSQL.Fields {
 		// skip fieldName == "time_windows" because it is not a field in the database
-		if field == "time_windows" {
+		if field == "time_windows" || field == "p_time_windows" || field == "d_time_windows" {
 			continue
 		}
 		val := fmt.Sprintf("$%d", i+1)

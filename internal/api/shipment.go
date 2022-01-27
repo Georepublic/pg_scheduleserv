@@ -85,7 +85,7 @@ func (server *Server) CreateShipment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	created_shipment, err := server.DBCreateShipment(ctx, shipment)
+	created_shipment, err := server.DBCreateShipmentWithTw(ctx, shipment)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
@@ -201,7 +201,7 @@ func (server *Server) UpdateShipment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	created_shipment, err := server.DBUpdateShipment(ctx, shipment, shipment_id)
+	created_shipment, err := server.DBUpdateShipmentWithTw(ctx, shipment, shipment_id)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
@@ -230,7 +230,7 @@ func (server *Server) DeleteShipment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	_, err = server.DBDeleteShipment(ctx, shipment_id)
+	err = server.DBDeleteShipmentWithTw(ctx, shipment_id)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return

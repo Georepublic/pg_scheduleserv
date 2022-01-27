@@ -102,11 +102,6 @@ func (server *Server) handleRoutes(router *mux.Router) {
 	router.HandleFunc("/shipments/{shipment_id}", server.DeleteShipment).Methods("DELETE")
 	router.HandleFunc("/shipments/{shipment_id}/schedule", server.GetShipmentSchedule).Methods("GET")
 
-	// Shipment time windows endpoints
-	router.HandleFunc("/shipments/{shipment_id}/time_windows", server.CreateShipmentTimeWindow).Methods("POST")
-	router.HandleFunc("/shipments/{shipment_id}/time_windows", server.ListShipmentTimeWindows).Methods("GET")
-	router.HandleFunc("/shipments/{shipment_id}/time_windows", server.DeleteShipmentTimeWindow).Methods("DELETE")
-
 	// Vehicle endpoints
 	router.HandleFunc("/projects/{project_id}/vehicles", server.CreateVehicle).Methods("POST")
 	router.HandleFunc("/projects/{project_id}/vehicles", server.ListVehicles).Methods("GET")

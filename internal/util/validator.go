@@ -107,7 +107,7 @@ func ValidateInput(jsonStruct map[string]interface{}, originalStruct interface{}
 			convertible := true
 			for i := 0; i < len(typ2); i++ {
 				// validation for time_windows field: [][]string
-				if tag == "time_windows" {
+				if tag == "time_windows" || tag == "p_time_windows" || tag == "d_time_windows" {
 					if typ2[i] == nil {
 						convertible = false
 					} else {
