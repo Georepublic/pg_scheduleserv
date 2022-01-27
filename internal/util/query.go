@@ -70,7 +70,7 @@ func GetPartialSQL(resource interface{}) PartialSQL {
 		}
 
 		// skip time_windows field, because it does not exist in the database
-		if tag == "time_windows" {
+		if tag == "time_windows" || tag == "p_time_windows" || tag == "d_time_windows" {
 			continue
 		}
 
@@ -137,7 +137,7 @@ func GetOutputFields(resourceStruct interface{}, tableName string) (sql string) 
 		fieldName := jsonTag(field)
 
 		// skip fieldName == "time_windows" because it is not a field in the database
-		if fieldName == "time_windows" {
+		if fieldName == "time_windows" || fieldName == "p_time_windows" || fieldName == "d_time_windows" {
 			continue
 		}
 

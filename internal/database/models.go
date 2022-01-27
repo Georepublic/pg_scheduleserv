@@ -70,14 +70,6 @@ type Job struct {
 	TimeWindows [][]string          `json:"time_windows"`
 }
 
-type JobTimeWindow struct {
-	ID        int64  `json:"id,string" example:"1234567812345678"`
-	TwOpen    string `json:"tw_open" example:"2021-12-31T23:00:00"`
-	TwClose   string `json:"tw_close" example:"2021-12-31T23:59:00"`
-	CreatedAt string `json:"created_at" example:"2021-12-01T13:00:00"`
-	UpdatedAt string `json:"updated_at" example:"2021-12-01T13:00:00"`
-}
-
 type Project struct {
 	ID        int64       `json:"id,string" example:"1234567812345678"`
 	Name      string      `json:"name" example:"Sample Project"`
@@ -87,29 +79,22 @@ type Project struct {
 }
 
 type Shipment struct {
-	ID        int64               `json:"id,string" example:"1234567812345678"`
-	PLocation util.LocationParams `json:"p_location" `
-	PSetup    string              `json:"p_setup" example:"00:00:00"`
-	PService  string              `json:"p_service" example:"00:02:00"`
-	DLocation util.LocationParams `json:"d_location"`
-	DSetup    string              `json:"d_setup" example:"00:00:00"`
-	DService  string              `json:"d_service" example:"00:02:00"`
-	Amount    []int64             `json:"amount" example:"5,15"`
-	Skills    []int32             `json:"skills" example:"1,5"`
-	Priority  int32               `json:"priority" example:"10"`
-	ProjectID int64               `json:"project_id,string" example:"1234567812345678"`
-	Data      interface{}         `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
-	CreatedAt string              `json:"created_at" example:"2021-12-01T13:00:00"`
-	UpdatedAt string              `json:"updated_at" example:"2021-12-01T13:00:00"`
-}
-
-type ShipmentTimeWindow struct {
-	ID        int64  `json:"id,string" example:"1234567812345678"`
-	Kind      string `json:"kind" example:"p"`
-	TwOpen    string `json:"tw_open" example:"2021-12-31T23:00:00"`
-	TwClose   string `json:"tw_close" example:"2021-12-31T23:59:00"`
-	CreatedAt string `json:"created_at" example:"2021-12-01T13:00:00"`
-	UpdatedAt string `json:"updated_at" example:"2021-12-01T13:00:00"`
+	ID           int64               `json:"id,string" example:"1234567812345678"`
+	PLocation    util.LocationParams `json:"p_location" `
+	PSetup       string              `json:"p_setup" example:"00:00:00"`
+	PService     string              `json:"p_service" example:"00:02:00"`
+	DLocation    util.LocationParams `json:"d_location"`
+	DSetup       string              `json:"d_setup" example:"00:00:00"`
+	DService     string              `json:"d_service" example:"00:02:00"`
+	Amount       []int64             `json:"amount" example:"5,15"`
+	Skills       []int32             `json:"skills" example:"1,5"`
+	Priority     int32               `json:"priority" example:"10"`
+	ProjectID    int64               `json:"project_id,string" example:"1234567812345678"`
+	Data         interface{}         `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
+	CreatedAt    string              `json:"created_at" example:"2021-12-01T13:00:00"`
+	UpdatedAt    string              `json:"updated_at" example:"2021-12-01T13:00:00"`
+	PTimeWindows [][]string          `json:"p_time_windows"`
+	DTimeWindows [][]string          `json:"d_time_windows"`
 }
 
 type Vehicle struct {
