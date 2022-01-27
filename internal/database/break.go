@@ -73,7 +73,7 @@ func (q *Queries) DBGetBreak(ctx context.Context, id int64) (Break, error) {
 }
 
 func (q *Queries) DBListBreaks(ctx context.Context, vehicleID int64) ([]Break, error) {
-	_, err := q.DBGetProject(ctx, vehicleID)
+	_, err := q.DBGetVehicle(ctx, vehicleID)
 	if err != nil {
 		return nil, err
 	}
@@ -98,6 +98,7 @@ func (q *Queries) DBUpdateBreak(ctx context.Context, arg UpdateBreakParams, brea
 	tableName := "breaks"
 	sql, args := updateResource(tableName, arg, break_id)
 	_, err := q.db.Exec(ctx, sql, args...)
+	err = util.HandleDBError(err)
 	return err
 }
 
