@@ -86,7 +86,7 @@ func GetMatrixFromOSRM(coordinates [][]float64) ([][]int64, error) {
 		coordinatesString = append(coordinatesString, fmt.Sprintf("%.4f,%.4f", coordinate[0], coordinate[1]))
 	}
 
-	baseUrl := "http://router.project-osrm.org"
+	baseUrl := "https://router.project-osrm.org"
 
 	// call the osrm api function to get the matrix
 	url := fmt.Sprintf("%s/table/v1/driving/%s", baseUrl, strings.Join(coordinatesString, ";"))
@@ -116,6 +116,56 @@ func GetMatrixFromOSRM(coordinates [][]float64) ([][]int64, error) {
 			} else {
 				rowInt64 = append(rowInt64, int64(value.(float64)))
 			}
+		}
+		matrixInt64 = append(matrixInt64, rowInt64)
+	}
+
+	return matrixInt64, nil
+}
+
+func GetMatrixFromValhalla(coordinates [][]float64) ([][]int64, error) {
+	baseUrl := "https://valhalla1.openstreetmap.de"
+
+	// call the osrm api function to get the matrix
+	url := fmt.Sprintf("%s/sources_to_targets", baseUrl)
+
+	// join coordinates as {"lon": longitude, "lat": latitude}
+	coordinatesJson := make([]map[string]float64, 0)
+	for _, coordinate := range coordinates {
+		coordinatesJson = append(coordinatesJson, map[string]float64{"lon": coordinate[0], "lat": coordinate[1]})
+	}
+
+	jsonBody := map[string]interface{}{"sources": coordinatesJson, "targets": coordinatesJson, "costing": "auto"}
+
+	// encode the json body
+	jsonBodyBytes, err := json.Marshal(jsonBody)
+	if err != nil {
+		return nil, err
+	}
+
+	// change the url to url + "?json=" + jsonBodyBytes
+	url = fmt.Sprintf("%s?json=%s", url, string(jsonBodyBytes))
+
+	// decode the response body as json, pass json in Get() function
+	response := make(map[string]interface{})
+	statusCode, err := Get(url, "application/json", &response)
+	if err != nil {
+		return nil, err
+	}
+
+	if statusCode != http.StatusOK {
+		return nil, fmt.Errorf("Error: %s", response["message"])
+	}
+
+	// get the matrix from the response
+	matrix := response["sources_to_targets"].([]interface{})
+
+	// convert the matrix to int64
+	matrixInt64 := make([][]int64, 0)
+	for _, row := range matrix {
+		rowInt64 := make([]int64, 0)
+		for _, value := range row.([]interface{}) {
+			rowInt64 = append(rowInt64, int64(value.(map[string]interface{})["time"].(float64)))
 		}
 		matrixInt64 = append(matrixInt64, rowInt64)
 	}
