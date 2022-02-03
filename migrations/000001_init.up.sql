@@ -403,14 +403,19 @@ AS $BODY$
      SELECT id, location_id, setup, service, delivery, pickup, skills, 100 AS priority
      FROM jobs WHERE project_id = ' || project_id_param || ' AND status = ''scheduled'' AND deleted = FALSE',
 
-    -- jobs_time_windows (For unscheduled, select original time windows. For scheduled, alter the time window with a delta interval)
+    -- jobs_time_windows (For unscheduled, select original time windows. For scheduled, alter the time window with a delta interval from the arrival time)
     'SELECT J.id AS id, tw_open, tw_close
      FROM jobs_time_windows TW LEFT JOIN jobs J ON(TW.id = J.id)
      WHERE status = ''unscheduled'' AND project_id = ' || project_id_param || '
     UNION
-     SELECT J.id AS id, GREATEST(tw_open, arrival - $$' || (SELECT * FROM delta) || '$$::INTERVAL) AS tw_open, LEAST(tw_close, arrival + $$' || (SELECT * FROM delta) || '$$::INTERVAL) AS tw_close
-     FROM jobs_time_windows TW LEFT JOIN jobs J ON(TW.id = J.id) JOIN schedules S ON (J.id = S.task_id)
-     WHERE status = ''scheduled'' AND type = ''job'' AND J.project_id = ' || project_id_param || ' ORDER BY id, tw_open', -- TODO (IF tw_open > tw_close)
+     SELECT
+      J.id AS id,
+      GREATEST(tw_open, arrival - $$' || (SELECT * FROM delta) || '$$::INTERVAL) AS tw_open,
+      LEAST(tw_close, arrival + $$' || (SELECT * FROM delta) || '$$::INTERVAL) AS tw_close
+     FROM jobs_time_windows TW RIGHT JOIN jobs J ON(TW.id = J.id) JOIN schedules S ON (J.id = S.task_id)
+     WHERE
+      GREATEST(tw_open, arrival - $$' || (SELECT * FROM delta) || '$$::INTERVAL) <= LEAST(tw_close, arrival + $$' || (SELECT * FROM delta) || '$$::INTERVAL)
+      AND status = ''scheduled'' AND type = ''job'' AND J.project_id = ' || project_id_param || ' ORDER BY id, tw_open',
 
     -- shipments (Unscheduled shipments + Scheduled shipments with 100 priority)
     'SELECT id, p_location_id, p_setup, p_service, d_location_id, d_setup, d_service, amount, skills, priority
@@ -419,8 +424,23 @@ AS $BODY$
      SELECT id, p_location_id, p_setup, p_service, d_location_id, d_setup, d_service, amount, skills, 100 AS priority
      FROM shipments WHERE project_id = ' || project_id_param || ' AND status = ''scheduled'' AND deleted = FALSE',
 
-    -- shipments_time_windows (TODO)
-    'SELECT id, kind, tw_open, tw_close FROM shipments_time_windows ORDER BY id, tw_open',
+    -- shipments_time_windows
+    -- For unscheduled, select original time windows.
+    -- For scheduled, alter the time window with a delta interval from the arrival time
+    'SELECT S.id AS id, kind, tw_open, tw_close
+     FROM shipments_time_windows TW LEFT JOIN shipments S ON(TW.id = S.id)
+     WHERE status = ''unscheduled'' AND project_id = ' || project_id_param || '
+    UNION
+     SELECT
+      S.id AS id,
+      kind,
+      GREATEST(tw_open, arrival - $$' || (SELECT * FROM delta) || '$$::INTERVAL) AS tw_open,
+      LEAST(tw_close, arrival + $$' || (SELECT * FROM delta) || '$$::INTERVAL) AS tw_close
+     FROM shipments_time_windows TW RIGHT JOIN shipments S ON(TW.id = S.id) JOIN schedules S2 ON (S.id = S2.task_id)
+     WHERE
+      GREATEST(tw_open, arrival - $$' || (SELECT * FROM delta) || '$$::INTERVAL) <= LEAST(tw_close, arrival + $$' || (SELECT * FROM delta) || '$$::INTERVAL)
+      AND status = ''scheduled'' AND ((type = ''pickup'' AND kind = ''p'') OR (type = ''delivery'' AND kind = ''d''))
+      AND S.project_id = ' || project_id_param || ' ORDER BY id, tw_open',
 
     -- vehicles
     'SELECT * FROM vehicles WHERE deleted = FALSE AND project_id = ' || project_id_param || '',
@@ -433,6 +453,7 @@ AS $BODY$
     'SELECT unnest(ARRAY[' || array_to_string(start_ids, ',') || ']::BIGINT[]) AS start_id,
      unnest(ARRAY[' || array_to_string(end_ids, ',') || ']::BIGINT[]) AS end_id,
      make_interval(secs => unnest(ARRAY[' || array_to_string(durations, ',') || ']::BIGINT[])) AS duration',
+
     exploration_level => (SELECT exploration_level FROM projects WHERE id = project_id_param),
     timeout => (SELECT timeout FROM projects WHERE id = project_id_param)
   );
@@ -465,7 +486,7 @@ AS $BODY$
       WHERE project_id = project_id_param AND type = 'pickup'::STEP_TYPE AND vehicle_id = -1
     );
 
-$BODY$ LANGUAGE sql VOLATILE STRICT;
+$BODY$ LANGUAGE sql VOLATILE;
 
 
 -- Create schedule for a project (fresh scheduling, deleting any previous schedule)
