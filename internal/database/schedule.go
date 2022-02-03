@@ -59,7 +59,7 @@ func (q *Queries) DBCreateSchedule(ctx context.Context, projectID int64) error {
 		return fmt.Errorf("No locations present in the project")
 	}
 
-	query := "SELECT create_schedule_with_matrix($1, $2, $3, $4)"
+	query := "SELECT create_schedule($1, $2, $3, $4)"
 	_, err = q.db.Exec(ctx, query, projectID, startIds, endIds, durations)
 	// query := fmt.Sprintf("SELECT create_schedule_forced(%d)", projectID)
 	// _, err := q.db.Exec(ctx, query)
