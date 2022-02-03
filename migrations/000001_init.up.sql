@@ -170,20 +170,6 @@ CREATE TABLE IF NOT EXISTS projects (
 -- PROJECTS TABLE end
 
 
--- PROJECT LOCATIONS TABLE start
--- Aggregates all the locations in a project, eases inserting rows in the matrix
-CREATE TABLE IF NOT EXISTS project_locations (
-  project_id  BIGINT    NOT NULL REFERENCES projects(id),
-  location_id BIGINT    NOT NULL REFERENCES locations(id),
-
-  created_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  updated_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
-
-  PRIMARY KEY (project_id, location_id)
-);
--- PROJECT LOCATIONS TABLE end
-
-
 -- JOBS TABLE start
 CREATE TABLE IF NOT EXISTS jobs (
   id              BIGINT    DEFAULT random_bigint() PRIMARY KEY,
@@ -339,22 +325,6 @@ CREATE TABLE IF NOT EXISTS breaks_time_windows (
   CHECK(tw_open <= tw_close)
 );
 -- BREAKS TIME WINDOWS TABLE end
-
-
--- MATRIX TABLE start
-CREATE TABLE IF NOT EXISTS matrix (
-  start_id    BIGINT    NOT NULL REFERENCES locations(id),
-  end_id      BIGINT    NOT NULL REFERENCES locations(id),
-  duration    INTERVAL  NOT NULL,
-
-  created_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  updated_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
-
-  PRIMARY KEY (start_id, end_id),
-
-  CHECK(duration >= '00:00:00'::INTERVAL)
-);
--- MATRIX TABLE end
 
 
 DO $$ BEGIN
@@ -593,17 +563,13 @@ $BODY$ LANGUAGE sql VOLATILE;
 -- TRIGGERS
 -------------------------------------------------------------------------------
 
--- BEFORE INSERT OR UPDATE Trigger for jobs, inserts rows into locations and project_locations
+-- BEFORE INSERT OR UPDATE Trigger for jobs, inserts rows into locations
 CREATE OR REPLACE FUNCTION tgr_jobs_insert_update_func()
 RETURNS TRIGGER
 AS $trig$
 BEGIN
   INSERT INTO locations (id)
   SELECT NEW.location_id
-  ON CONFLICT DO NOTHING;
-
-  INSERT INTO project_locations (project_id, location_id)
-  SELECT NEW.project_id, NEW.location_id
   ON CONFLICT DO NOTHING;
 
   RETURN NEW;
@@ -615,7 +581,7 @@ BEFORE INSERT OR UPDATE ON jobs
 FOR EACH ROW EXECUTE PROCEDURE tgr_jobs_insert_update_func();
 
 
--- BEFORE INSERT OR UPDATE Trigger for shipments, inserts rows into locations and project_locations
+-- BEFORE INSERT OR UPDATE Trigger for shipments, inserts rows into locations
 CREATE OR REPLACE FUNCTION tgr_shipments_insert_update_func()
 RETURNS TRIGGER
 AS $trig$
@@ -624,12 +590,6 @@ BEGIN
   SELECT NEW.p_location_id
   UNION
   SELECT NEW.d_location_id
-  ON CONFLICT DO NOTHING;
-
-  INSERT INTO project_locations (project_id, location_id)
-  SELECT NEW.project_id, NEW.p_location_id
-  UNION
-  SELECT NEW.project_id, NEW.d_location_id
   ON CONFLICT DO NOTHING;
 
   RETURN NEW;
@@ -641,7 +601,7 @@ BEFORE INSERT OR UPDATE ON shipments
 FOR EACH ROW EXECUTE PROCEDURE tgr_shipments_insert_update_func();
 
 
--- BEFORE INSERT OR UPDATE Trigger for vehicles, inserts rows into locations and project_locations
+-- BEFORE INSERT OR UPDATE Trigger for vehicles, inserts rows into locations
 CREATE OR REPLACE FUNCTION tgr_vehicles_insert_update_func()
 RETURNS TRIGGER
 AS $trig$
@@ -650,12 +610,6 @@ BEGIN
   SELECT NEW.start_id
   UNION
   SELECT NEW.end_id
-  ON CONFLICT DO NOTHING;
-
-  INSERT INTO project_locations (project_id, location_id)
-  SELECT NEW.project_id, NEW.start_id
-  UNION
-  SELECT NEW.project_id, NEW.end_id
   ON CONFLICT DO NOTHING;
 
   RETURN NEW;
@@ -667,48 +621,6 @@ BEFORE INSERT OR UPDATE ON vehicles
 FOR EACH ROW EXECUTE PROCEDURE tgr_vehicles_insert_update_func();
 
 
--- AFTER INSERT Trigger for project locations, inserts rows into matrix
-CREATE OR REPLACE FUNCTION tgr_project_locations_insert_func()
-RETURNS TRIGGER
-AS $trig$
-BEGIN
-  INSERT INTO matrix(start_id, end_id, duration)
-  SELECT
-    NEW.location_id,
-    PL.location_id,
-    make_interval(secs => ROUND(ST_distance(
-      id_to_geom(NEW.location_id)::geography,
-      id_to_geom(PL.location_id)::geography)
-    ))
-    FROM project_locations AS PL
-    WHERE NEW.project_id = PL.project_id
-  ON CONFLICT DO NOTHING;
-
-  RETURN NEW;
-END;
-$trig$ LANGUAGE plpgsql;
-
-CREATE TRIGGER tgr_project_locations_insert
-AFTER INSERT ON project_locations
-FOR EACH ROW EXECUTE PROCEDURE tgr_project_locations_insert_func();
-
-
--- AFTER INSERT Trigger for matrix, inserts reverse direction cost
-CREATE OR REPLACE FUNCTION tgr_matrix_insert_func()
-RETURNS TRIGGER
-AS $trig$
-BEGIN
-  INSERT INTO matrix(start_id, end_id, duration)
-  SELECT NEW.end_id, NEW.start_id, NEW.duration
-  ON CONFLICT DO NOTHING;
-
-  RETURN NEW;
-END;
-$trig$ LANGUAGE plpgsql;
-
-CREATE TRIGGER tgr_matrix_insert
-AFTER INSERT ON matrix
-FOR EACH ROW EXECUTE PROCEDURE tgr_matrix_insert_func();
 
 
 -- BEFORE UPDATE TRIGGER for all tables, auto-update updated_at field
@@ -728,9 +640,9 @@ BEGIN
   SELECT string_agg('CREATE TRIGGER tgr_updated_at_field
     BEFORE UPDATE ON ' || quote_ident(T) || '
     FOR EACH ROW EXECUTE PROCEDURE tgr_updated_at_field_func();', E'\n')
-  FROM unnest('{locations, projects, project_locations, jobs,
+  FROM unnest('{locations, projects, jobs,
     jobs_time_windows, shipments, shipments_time_windows, vehicles,
-    breaks, breaks_time_windows, matrix, schedules}'::text[]) T
+    breaks, breaks_time_windows, schedules}'::text[]) T
   );
 END
 $$;

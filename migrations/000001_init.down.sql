@@ -34,19 +34,13 @@ BEGIN
   EXECUTE (
   SELECT string_agg('DROP TRIGGER IF EXISTS tgr_updated_at_field
     ON ' || quote_ident(T) || ';', E'\n')
-  FROM unnest('{locations, projects, project_locations, jobs,
+  FROM unnest('{locations, projects, jobs,
     jobs_time_windows, shipments, shipments_time_windows, vehicles,
-    breaks, breaks_time_windows, matrix, schedules}'::text[]) T
+    breaks, breaks_time_windows, schedules}'::text[]) T
   );
 END
 $$;
 DROP FUNCTION IF EXISTS tgr_updated_at_field_func;
-
-DROP TRIGGER IF EXISTS tgr_matrix_insert ON matrix;
-DROP FUNCTION IF EXISTS tgr_matrix_insert_func;
-
-DROP TRIGGER IF EXISTS tgr_project_locations_insert ON project_locations;
-DROP FUNCTION IF EXISTS tgr_project_locations_insert_func;
 
 DROP TRIGGER IF EXISTS tgr_vehicles_insert_update ON vehicles;
 DROP FUNCTION IF EXISTS tgr_vehicles_insert_update_func;
@@ -58,7 +52,6 @@ DROP TRIGGER IF EXISTS tgr_jobs_insert_update ON jobs;
 DROP FUNCTION IF EXISTS tgr_jobs_insert_update_func;
 
 DROP TABLE IF EXISTS schedules;
-DROP TABLE IF EXISTS matrix;
 DROP TABLE IF EXISTS breaks_time_windows;
 DROP TABLE IF EXISTS breaks;
 DROP TABLE IF EXISTS vehicles;
@@ -66,7 +59,6 @@ DROP TABLE IF EXISTS shipments_time_windows;
 DROP TABLE IF EXISTS shipments;
 DROP TABLE IF EXISTS jobs_time_windows;
 DROP TABLE IF EXISTS jobs;
-DROP TABLE IF EXISTS project_locations;
 DROP TABLE IF EXISTS projects;
 DROP TABLE IF EXISTS locations;
 
