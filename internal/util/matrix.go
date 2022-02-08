@@ -31,6 +31,7 @@ package util
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"net/http"
 	"strings"
 )
@@ -52,7 +53,7 @@ func Get(url string, contentType string, target interface{}) (int, error) {
 	return res.StatusCode, json.NewDecoder(res.Body).Decode(target)
 }
 
-func GetMatrix(locationIds []int64) (startIds []int64, endIds []int64, durations []int64, err error) {
+func GetMatrix(locationIds []int64, distanceCalc string) (startIds []int64, endIds []int64, durations []int64, err error) {
 	// iterate through locationIds, convert all the ids to latitude and longitude, and append [longitude, latitude] in an array
 	coordinates := make([][]float64, 0)
 	for _, id := range locationIds {
@@ -60,8 +61,19 @@ func GetMatrix(locationIds []int64) (startIds []int64, endIds []int64, durations
 		coordinates = append(coordinates, []float64{longitude, latitude})
 	}
 
-	// call the osrm api function to get the matrix
-	matrix, err := GetMatrixFromOSRM(coordinates)
+	var matrix [][]int64
+
+	// call the appropriate function to get the matrix
+	switch distanceCalc {
+	case "euclidean":
+		matrix, err = GetEuclideanMatrix(coordinates)
+	case "valhalla":
+		matrix, err = GetMatrixFromValhalla(coordinates)
+	case "osrm":
+		matrix, err = GetMatrixFromOSRM(coordinates)
+	default:
+		err = fmt.Errorf("Invalid distance calculation method")
+	}
 
 	if err != nil {
 		return nil, nil, nil, err
@@ -119,7 +131,6 @@ func GetMatrixFromOSRM(coordinates [][]float64) ([][]int64, error) {
 		}
 		matrixInt64 = append(matrixInt64, rowInt64)
 	}
-
 	return matrixInt64, nil
 }
 
@@ -169,6 +180,36 @@ func GetMatrixFromValhalla(coordinates [][]float64) ([][]int64, error) {
 		}
 		matrixInt64 = append(matrixInt64, rowInt64)
 	}
-
 	return matrixInt64, nil
+}
+
+func haversine(point1 []float64, point2 []float64) float64 {
+	// convert to radians
+	lat1 := point1[1] * math.Pi / 180
+	lat2 := point2[1] * math.Pi / 180
+	lon1 := point1[0] * math.Pi / 180
+	lon2 := point2[0] * math.Pi / 180
+
+	// haversine formula
+	dLat := lat2 - lat1
+	dLon := lon2 - lon1
+	a := math.Sin(dLat/2)*math.Sin(dLat/2) + math.Cos(lat1)*math.Cos(lat2)*math.Sin(dLon/2)*math.Sin(dLon/2)
+	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
+	R := 6371e3 // radius of earth in meters
+	return c * R
+}
+
+func GetEuclideanMatrix(coordinates [][]float64) ([][]int64, error) {
+	speed := 9.0 // m/sec
+
+	// get distance between each pair of coordinates using haversine formula
+	matrix := make([][]int64, 0)
+	for i := 0; i < len(coordinates); i++ {
+		row := make([]int64, 0)
+		for j := 0; j < len(coordinates); j++ {
+			row = append(row, int64(haversine(coordinates[i], coordinates[j])/speed))
+		}
+		matrix = append(matrix, row)
+	}
+	return matrix, nil
 }
