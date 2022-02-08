@@ -58,12 +58,11 @@ func TestCreateSchedule(t *testing.T) {
 	}{
 		{
 			name:       "Invalid ID",
-			statusCode: 400,
+			statusCode: 404,
 			projectID:  123,
 			resBody: map[string]interface{}{
-				"code":    "400",
-				"message": "Bad Request",
-				"errors":  []interface{}{"No locations present in the project"},
+				"code":  "404",
+				"error": "Not Found",
 			},
 		},
 		{
