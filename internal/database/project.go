@@ -36,13 +36,15 @@ import (
 )
 
 type CreateProjectParams struct {
-	Name *string      `json:"name" example:"Sample Project" validate:"required"`
-	Data *interface{} `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
+	Name         *string      `json:"name" example:"Sample Project" validate:"required"`
+	DistanceCalc *string      `json:"distance_calc" example:"euclidean" validate:"omitempty,oneof=euclidean valhalla osrm"`
+	Data         *interface{} `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 }
 
 type UpdateProjectParams struct {
-	Name *string      `json:"name" example:"Sample Project"`
-	Data *interface{} `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
+	Name         *string      `json:"name" example:"Sample Project"`
+	DistanceCalc *string      `json:"distance_calc" example:"euclidean" validate:"omitempty,oneof=euclidean valhalla osrm"`
+	Data         *interface{} `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 }
 
 func (q *Queries) DBCreateProject(ctx context.Context, arg CreateProjectParams) (Project, error) {
@@ -94,6 +96,7 @@ func scanProjectRow(row pgx.Row) (Project, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
+		&i.DistanceCalc,
 		&i.Data,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -109,6 +112,7 @@ func scanProjectRows(rows pgx.Rows) ([]Project, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
+			&i.DistanceCalc,
 			&i.Data,
 			&i.CreatedAt,
 			&i.UpdatedAt,
