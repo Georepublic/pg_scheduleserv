@@ -38,6 +38,12 @@ import (
 )
 
 func (q *Queries) DBCreateSchedule(ctx context.Context, projectID int64) error {
+	// get the project
+	project, err := q.DBGetProject(ctx, projectID)
+	if err != nil {
+		return err
+	}
+
 	// get project locations by calling DBGetProjectLocations
 	locationIds, err := q.DBGetProjectLocations(ctx, projectID)
 	if err != nil {

@@ -151,12 +151,19 @@ CREATE TABLE IF NOT EXISTS locations (
 -- LOCATIONS TABLE end
 
 
+DO $$ BEGIN
+  CREATE TYPE distance_calc_type AS ENUM ('euclidean', 'valhalla', 'osrm');
+EXCEPTION
+  WHEN duplicate_object THEN null;
+END $$;
+
 -- PROJECTS TABLE start
 CREATE TABLE IF NOT EXISTS projects (
-  id                BIGINT    DEFAULT random_bigint() PRIMARY KEY,
-  name              VARCHAR   NOT NULL,
-  exploration_level INTEGER   NOT NULL DEFAULT 5,
-  timeout           INTERVAL  NOT NULL DEFAULT '-00:00:01'::INTERVAL,
+  id                BIGINT                DEFAULT random_bigint() PRIMARY KEY,
+  name              VARCHAR               NOT NULL,
+  distance_calc     DISTANCE_CALC_TYPE    NOT NULL DEFAULT 'euclidean',
+  exploration_level INTEGER               NOT NULL DEFAULT 5,
+  timeout           INTERVAL              NOT NULL DEFAULT '-00:00:01'::INTERVAL,
 
   data        JSONB     NOT NULL DEFAULT '{}'::JSONB,
   created_at  TIMESTAMP NOT NULL DEFAULT current_timestamp,
