@@ -1666,6 +1666,7 @@ PATCH /projects/{project_id}
 ```
 
 Update a project with its project_id
+The "distance_calc" parameter must be either "euclidean", "valhalla" or "osrm"
 
 #### Consumes
   * application/json
@@ -1903,6 +1904,7 @@ POST /projects
 ```
 
 Create a new project with the input payload
+The "distance_calc" parameter must be either "euclidean", "valhalla" or "osrm"
 
 #### Consumes
   * application/json
@@ -2041,6 +2043,7 @@ POST /projects/{project_id}/schedule
 
 Schedule the tasks present in a project, deleting any previous schedule and return the new schedule.
 
+When fresh = true, the old schedule is ignored and a fresh schedule is created. Otherwise, the old schedule of each task is altered such that it remains in the "max_shift" interval. Default value is false.
 **For JSON content type**: When overview = true, only the metadata is returned. Default value is false, which also returns the summary object.
 
 #### Consumes
@@ -2054,6 +2057,7 @@ Schedule the tasks present in a project, deleting any previous schedule and retu
 | Name | Source | Type | Go type | Separator | Required | Default | Description |
 |------|--------|------|---------|-----------| :------: |---------|-------------|
 | project_id | `path` | integer | `int64` |  | ✓ |  | Project ID |
+| fresh | `query` | boolean | `bool` |  |  |  | Fresh |
 | overview | `query` | boolean | `bool` |  |  |  | Overview |
 
 #### All responses
@@ -2386,6 +2390,8 @@ Status: Bad Request
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
 | data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
+| distance_calc | string| `string` |  | |  | `euclidean` |
+| max_shift | string| `string` |  | |  | `00:30:00` |
 | name | string| `string` | ✓ | |  | `Sample Project` |
 
 
@@ -2479,7 +2485,9 @@ Status: Bad Request
 |------|------|---------|:--------:| ------- |-------------|---------|
 | created_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 | data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
+| distance_calc | string| `string` |  | |  | `euclidean` |
 | id | string| `string` |  | |  | `1234567812345678` |
+| max_shift | string| `string` |  | |  | `00:30:00` |
 | name | string| `string` |  | |  | `Sample Project` |
 | updated_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 
