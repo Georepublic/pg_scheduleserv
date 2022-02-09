@@ -40,12 +40,14 @@ import (
 // @Summary Schedule the tasks
 // @Description Schedule the tasks present in a project, deleting any previous schedule and return the new schedule.
 // @Description
+// @Description When fresh = true, the old schedule is ignored and a fresh schedule is created. Otherwise, the old schedule of each task is altered such that it remains in the "max_shift" interval. Default value is false.
 // @Description **For JSON content type**: When overview = true, only the metadata is returned. Default value is false, which also returns the summary object.
 // @Tags Schedule
 // @Accept application/json
 // @Produce application/json
 // @Param project_id path int true "Project ID"
-// @Param overview query bool false "Overview" comment here is there
+// @Param fresh query bool false "Fresh"
+// @Param overview query bool false "Overview"
 // @Success 201 {object} util.SuccessResponse{data=util.ScheduleData}
 // @Failure 400 {object} util.ErrorResponse
 // @Router /projects/{project_id}/schedule [post]
@@ -59,7 +61,8 @@ func (server *Server) CreateSchedule(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	err = server.DBCreateSchedule(ctx, projectID)
+	fresh := r.URL.Query().Get("fresh")
+	err = server.DBCreateSchedule(ctx, projectID, fresh)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return

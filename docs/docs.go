@@ -457,7 +457,7 @@ var doc = `{
                 }
             },
             "post": {
-                "description": "Create a new project with the input payload",
+                "description": "Create a new project with the input payload\nThe \"distance_calc\" parameter must be either \"euclidean\", \"valhalla\" or \"osrm\"",
                 "consumes": [
                     "application/json"
                 ],
@@ -605,7 +605,7 @@ var doc = `{
                 }
             },
             "patch": {
-                "description": "Update a project with its project_id",
+                "description": "Update a project with its project_id\nThe \"distance_calc\" parameter must be either \"euclidean\", \"valhalla\" or \"osrm\"",
                 "consumes": [
                     "application/json"
                 ],
@@ -841,7 +841,7 @@ var doc = `{
                 }
             },
             "post": {
-                "description": "Schedule the tasks present in a project, deleting any previous schedule and return the new schedule.\n\n**For JSON content type**: When overview = true, only the metadata is returned. Default value is false, which also returns the summary object.",
+                "description": "Schedule the tasks present in a project, deleting any previous schedule and return the new schedule.\n\nWhen fresh = true, the old schedule is ignored and a fresh schedule is created. Otherwise, the old schedule of each task is altered such that it remains in the \"max_shift\" interval. Default value is false.\n**For JSON content type**: When overview = true, only the metadata is returned. Default value is false, which also returns the summary object.",
                 "consumes": [
                     "application/json"
                 ],
@@ -859,6 +859,12 @@ var doc = `{
                         "name": "project_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Fresh",
+                        "name": "fresh",
+                        "in": "query"
                     },
                     {
                         "type": "boolean",
@@ -1877,6 +1883,14 @@ var doc = `{
                         "key2": "value2"
                     }
                 },
+                "distance_calc": {
+                    "type": "string",
+                    "example": "euclidean"
+                },
+                "max_shift": {
+                    "type": "string",
+                    "example": "00:30:00"
+                },
                 "name": {
                     "type": "string",
                     "example": "Sample Project"
@@ -2129,9 +2143,17 @@ var doc = `{
                         "key2": "value2"
                     }
                 },
+                "distance_calc": {
+                    "type": "string",
+                    "example": "euclidean"
+                },
                 "id": {
                     "type": "string",
                     "example": "1234567812345678"
+                },
+                "max_shift": {
+                    "type": "string",
+                    "example": "00:30:00"
                 },
                 "name": {
                     "type": "string",

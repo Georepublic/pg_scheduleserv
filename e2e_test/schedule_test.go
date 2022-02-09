@@ -397,7 +397,7 @@ func TestCreateSchedule(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			url := fmt.Sprintf("/projects/%d/schedule", tc.projectID)
+			url := fmt.Sprintf("/projects/%d/schedule?fresh=true", tc.projectID)
 			request, err := http.NewRequest("POST", url, nil)
 			require.NoError(t, err)
 

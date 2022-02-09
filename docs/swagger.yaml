@@ -109,6 +109,12 @@ definitions:
           key1: value1
           key2: value2
         type: object
+      distance_calc:
+        example: euclidean
+        type: string
+      max_shift:
+        example: "00:30:00"
+        type: string
       name:
         example: Sample Project
         type: string
@@ -288,8 +294,14 @@ definitions:
           key1: value1
           key2: value2
         type: object
+      distance_calc:
+        example: euclidean
+        type: string
       id:
         example: "1234567812345678"
+        type: string
+      max_shift:
+        example: "00:30:00"
         type: string
       name:
         example: Sample Project
@@ -1114,7 +1126,9 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new project with the input payload
+      description: |-
+        Create a new project with the input payload
+        The "distance_calc" parameter must be either "euclidean", "valhalla" or "osrm"
       parameters:
       - description: Create project
         in: body
@@ -1206,7 +1220,9 @@ paths:
     patch:
       consumes:
       - application/json
-      description: Update a project with its project_id
+      description: |-
+        Update a project with its project_id
+        The "distance_calc" parameter must be either "euclidean", "valhalla" or "osrm"
       parameters:
       - description: Project ID
         in: path
@@ -1385,6 +1401,7 @@ paths:
       description: |-
         Schedule the tasks present in a project, deleting any previous schedule and return the new schedule.
 
+        When fresh = true, the old schedule is ignored and a fresh schedule is created. Otherwise, the old schedule of each task is altered such that it remains in the "max_shift" interval. Default value is false.
         **For JSON content type**: When overview = true, only the metadata is returned. Default value is false, which also returns the summary object.
       parameters:
       - description: Project ID
@@ -1392,6 +1409,10 @@ paths:
         name: project_id
         required: true
         type: integer
+      - description: Fresh
+        in: query
+        name: fresh
+        type: boolean
       - description: Overview
         in: query
         name: overview

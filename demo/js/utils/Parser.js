@@ -12,6 +12,10 @@ export default class Parser {
     const durationArray = duration.split(":").map(function (item) {
       return item.trim();
     });
+    if (durationArray.length === 2) {
+      // append seconds if not present
+      durationArray.push("00");
+    }
     if (
       durationArray.length !== 3 ||
       isNaN(parseInt(durationArray[0])) ||
@@ -73,8 +77,8 @@ export default class Parser {
           " must be in YYYY-MM-DDThh:mm:ss format"
       );
     }
-    Parser.parseDate(datetimeArray[0]);
-    Parser.parseDuration(datetimeArray[1]);
+    datetimeArray[0] = Parser.parseDate(datetimeArray[0]);
+    datetimeArray[1] = Parser.parseDuration(datetimeArray[1]);
     return datetimeArray.join("T");
   }
 

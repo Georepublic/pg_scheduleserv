@@ -67,6 +67,7 @@ type Project struct {
 	ID           int64       `json:"id,string" example:"1234567812345678"`
 	Name         string      `json:"name" example:"Sample Project"`
 	DistanceCalc string      `json:"distance_calc" example:"euclidean"`
+	MaxShift     string      `json:"max_shift" example:"00:30:00"`
 	Data         interface{} `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 	CreatedAt    string      `json:"created_at" example:"2021-12-01T13:00:00"`
 	UpdatedAt    string      `json:"updated_at" example:"2021-12-01T13:00:00"`
