@@ -59,7 +59,7 @@ type Querier interface {
 	DBDeleteProject(ctx context.Context, id int64) (Project, error)
 
 	// Schedule
-	DBCreateSchedule(ctx context.Context, id int64) error
+	DBCreateSchedule(ctx context.Context, id int64, fresh string) error
 	DBGetSchedule(ctx context.Context, id int64) (util.ScheduleData, error)
 	DBGetScheduleJob(ctx context.Context, id int64) (util.ScheduleData, error)
 	DBGetScheduleShipment(ctx context.Context, id int64) (util.ScheduleData, error)

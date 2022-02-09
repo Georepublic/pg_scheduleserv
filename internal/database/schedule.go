@@ -37,7 +37,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (q *Queries) DBCreateSchedule(ctx context.Context, projectID int64) error {
+func (q *Queries) DBCreateSchedule(ctx context.Context, projectID int64, fresh string) error {
 	// get the project
 	project, err := q.DBGetProject(ctx, projectID)
 	if err != nil {
@@ -65,10 +65,14 @@ func (q *Queries) DBCreateSchedule(ctx context.Context, projectID int64) error {
 		return fmt.Errorf("No locations present in the project")
 	}
 
-	query := "SELECT create_schedule($1, $2, $3, $4)"
+	var query string
+	// call appropriate function based on the "fresh" parameter
+	if fresh == "true" {
+		query = "SELECT create_fresh_schedule($1, $2, $3, $4)"
+	} else {
+		query = "SELECT create_schedule($1, $2, $3, $4)"
+	}
 	_, err = q.db.Exec(ctx, query, projectID, startIds, endIds, durations)
-	// query := fmt.Sprintf("SELECT create_schedule_forced(%d)", projectID)
-	// _, err := q.db.Exec(ctx, query)
 	return err
 }
 
