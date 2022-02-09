@@ -42,8 +42,6 @@ func HandleDBError(err error) error {
 			switch pgErr.ConstraintName {
 			case "breaks_time_windows_id_fkey":
 				err = fmt.Errorf("Break with the given 'break_id' does not exist")
-			case "project_locations_project_id_fkey":
-				err = fmt.Errorf("Project with the given 'project_id' does not exist")
 			case "jobs_time_windows_id_fkey":
 				err = fmt.Errorf("Job with the given 'job_id' does not exist")
 			case "shipments_time_windows_id_fkey":
@@ -84,6 +82,13 @@ func HandleDBError(err error) error {
 				err = fmt.Errorf("Field 'd_setup' must be non-negative with the format 'HH:MM:SS'")
 			case "breaks_service_check":
 				err = fmt.Errorf("Field 'service' must be non-negative with the format 'HH:MM:SS'")
+
+			case "jobs_project_id_fkey":
+				err = fmt.Errorf("Project with the given 'project_id' does not exist")
+			case "shipments_project_id_fkey":
+				err = fmt.Errorf("Project with the given 'project_id' does not exist")
+			case "vehicles_project_id_fkey":
+				err = fmt.Errorf("Project with the given 'project_id' does not exist")
 			}
 		}
 	}
