@@ -74,17 +74,25 @@ All the steps are similar as above, except that the executable will be built fro
 
 ### Usage
 
-Any API client can be used to interact with the API server. The API can also be tested using the Swagger documentation. These documenations can be accessed after running the API server on the following URLs:
+Any API client can be used to interact with the API server. The API can also be tested using the Swagger documentation. Sample deployed API can be found on https://api.udc.pgrouting.org/
+
+These documenations can be accessed after running the API server on the following URLs:
 - Swagger UI: http://localhost:9100
 - RapiDoc: http://localhost:9100/rapidoc
 - Redoc: http://localhost:9100/redoc
 
+![swagger-api](https://user-images.githubusercontent.com/39548570/152192999-1f173519-61a8-4b9b-91f4-ae680f783fe1.png)
+
 ### Demo Application
 
-A frontend demo application for the API resides in the `demo` directory. To run the demo application:
+A frontend demo application for the API resides in the `demo` directory. Sample deployed demo application can be found on https://vrpdemo.udc.pgrouting.org/
+
+To run the demo application:
 - Change directory to the `demo` directory: `cd demo`
 - Make sure that node is installed. Install the other requirements: `npm install`
 - Run the application: `node server.js`. The application will run at http://localhost:9101 and will use the API running at http://localhost:9100
+
+![demo-application](https://user-images.githubusercontent.com/39548570/152192932-2fe42d9f-b464-42ec-9a10-47779d087c7e.png)
 
 ## LICENSE
 
