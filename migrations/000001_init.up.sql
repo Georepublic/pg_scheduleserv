@@ -384,7 +384,12 @@ CREATE OR REPLACE FUNCTION create_schedule(
 RETURNS void
 AS $BODY$
 
+  CREATE TABLE schedules_copy AS TABLE schedules;
+
+  -- DELETE the schedules without changing the status field of jobs/shipments. Status field will be set by insert trigger later.
+  ALTER TABLE schedules DISABLE TRIGGER tgr_schedule_delete;
   DELETE FROM schedules WHERE project_id = project_id_param;
+  ALTER TABLE schedules ENABLE TRIGGER tgr_schedule_delete;
 
   WITH delta AS (SELECT max_shift FROM projects WHERE id = project_id_param)
   INSERT INTO schedules
@@ -419,7 +424,7 @@ AS $BODY$
       J.id AS id,
       GREATEST(tw_open, arrival - $$' || (SELECT * FROM delta) || '$$::INTERVAL) AS tw_open,
       LEAST(tw_close, arrival + $$' || (SELECT * FROM delta) || '$$::INTERVAL) AS tw_close
-     FROM jobs_time_windows TW RIGHT JOIN jobs J ON(TW.id = J.id) JOIN schedules S ON (J.id = S.task_id)
+     FROM jobs_time_windows TW RIGHT JOIN jobs J ON(TW.id = J.id) JOIN schedules_copy S ON (J.id = S.task_id)
      WHERE
       GREATEST(tw_open, arrival - $$' || (SELECT * FROM delta) || '$$::INTERVAL) <= LEAST(tw_close, arrival + $$' || (SELECT * FROM delta) || '$$::INTERVAL)
       AND status = ''scheduled'' AND type = ''job'' AND J.project_id = ' || project_id_param || ' ORDER BY id, tw_open',
@@ -434,6 +439,7 @@ AS $BODY$
     -- shipments_time_windows
     -- For unscheduled, select original time windows.
     -- For scheduled, alter the time window with a delta interval from the arrival time
+    -- TODO: When time windows are "edited" such that the delta range falls outside new time windows, then the time window is ignored because the <= condition fails
     'SELECT S.id AS id, kind, tw_open, tw_close
      FROM shipments_time_windows TW LEFT JOIN shipments S ON(TW.id = S.id)
      WHERE status = ''unscheduled'' AND project_id = ' || project_id_param || '
@@ -443,7 +449,7 @@ AS $BODY$
       kind,
       GREATEST(tw_open, arrival - $$' || (SELECT * FROM delta) || '$$::INTERVAL) AS tw_open,
       LEAST(tw_close, arrival + $$' || (SELECT * FROM delta) || '$$::INTERVAL) AS tw_close
-     FROM shipments_time_windows TW RIGHT JOIN shipments S ON(TW.id = S.id) JOIN schedules S2 ON (S.id = S2.task_id)
+     FROM shipments_time_windows TW RIGHT JOIN shipments S ON(TW.id = S.id) JOIN schedules_copy S2 ON (S.id = S2.task_id)
      WHERE
       GREATEST(tw_open, arrival - $$' || (SELECT * FROM delta) || '$$::INTERVAL) <= LEAST(tw_close, arrival + $$' || (SELECT * FROM delta) || '$$::INTERVAL)
       AND status = ''scheduled'' AND ((type = ''pickup'' AND kind = ''p'') OR (type = ''delivery'' AND kind = ''d''))
@@ -464,35 +470,7 @@ AS $BODY$
     exploration_level => (SELECT exploration_level FROM projects WHERE id = project_id_param),
     timeout => (SELECT timeout FROM projects WHERE id = project_id_param)
   );
-
-  -- Update schedule jobs status
-  UPDATE jobs SET status = 'scheduled'::TEXT
-    WHERE project_id = project_id_param AND id IN (
-      SELECT task_id FROM schedules
-      WHERE project_id = project_id_param AND type = 'job'::STEP_TYPE AND vehicle_id > 0
-    );
-
-  -- Update unschedule jobs status
-  UPDATE jobs SET status = 'unscheduled'::TEXT
-    WHERE project_id = project_id_param AND id IN (
-      SELECT task_id FROM schedules
-      WHERE project_id = project_id_param AND type = 'job'::STEP_TYPE AND vehicle_id = -1
-    );
-
-  -- Update schedule shipments status
-  UPDATE shipments SET status = 'scheduled'::TEXT
-    WHERE project_id = project_id_param AND id IN (
-      SELECT task_id FROM schedules
-      WHERE project_id = project_id_param AND type = 'pickup'::STEP_TYPE AND vehicle_id > 0
-    );  -- Pickup and delivery always occur with same id
-
-  -- Update unschedule shipments status
-  UPDATE shipments SET status = 'unscheduled'::TEXT
-    WHERE project_id = project_id_param AND id IN (
-      SELECT task_id FROM schedules
-      WHERE project_id = project_id_param AND type = 'pickup'::STEP_TYPE AND vehicle_id = -1
-    );
-
+  DROP TABLE schedules_copy;
 $BODY$ LANGUAGE sql VOLATILE;
 
 
@@ -535,6 +513,17 @@ AS $BODY$
     exploration_level => (SELECT exploration_level FROM projects WHERE id = project_id_param),
     timeout => (SELECT timeout FROM projects WHERE id = project_id_param)
   );
+$BODY$ LANGUAGE sql VOLATILE;
+
+
+-- AFTER INSERT Trigger for schedule, update the status field in jobs or shipments for all the rows
+CREATE OR REPLACE FUNCTION tgr_schedule_insert_func()
+RETURNS TRIGGER
+AS $trig$
+DECLARE
+  project_id_param BIGINT;
+BEGIN
+  SELECT DISTINCT project_id FROM new_table INTO project_id_param;
 
   -- Update schedule jobs status
   UPDATE jobs SET status = 'scheduled'::TEXT
@@ -563,8 +552,45 @@ AS $BODY$
       SELECT task_id FROM schedules
       WHERE project_id = project_id_param AND type = 'pickup'::STEP_TYPE AND vehicle_id = -1
     );
-$BODY$ LANGUAGE sql VOLATILE;
 
+  RETURN NULL;
+END;
+$trig$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tgr_schedule_insert
+AFTER INSERT ON schedules
+REFERENCING NEW TABLE AS new_table
+FOR EACH STATEMENT EXECUTE FUNCTION tgr_schedule_insert_func();
+
+
+-- AFTER DELETE Trigger for schedule, update the status field in jobs or shipments for the deleted rows
+CREATE OR REPLACE FUNCTION tgr_schedule_delete_func()
+RETURNS TRIGGER
+AS $trig$
+BEGIN
+  -- Update jobs status as unscheduled
+  UPDATE jobs SET status = 'unscheduled'::TEXT
+    WHERE id IN (
+      SELECT task_id FROM old_table
+      WHERE type = 'job'::STEP_TYPE
+    );
+
+  -- Pickup and delivery always occur with the same id
+  -- Update shipments status as unscheduled
+  UPDATE shipments SET status = 'unscheduled'::TEXT
+    WHERE id IN (
+      SELECT task_id FROM old_table
+      WHERE type = 'pickup'::STEP_TYPE
+    );
+
+  RETURN NULL;
+END;
+$trig$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tgr_schedule_delete
+AFTER DELETE ON schedules
+REFERENCING OLD TABLE AS old_table
+FOR EACH STATEMENT EXECUTE FUNCTION tgr_schedule_delete_func();
 
 
 -------------------------------------------------------------------------------
