@@ -39,6 +39,7 @@ var IntervalFields = map[string]bool{
 	"setup_time":   true,
 	"service_time": true,
 	"waiting_time": true,
+	"max_shift":    true,
 }
 
 var TimestampFields = map[string]bool{
