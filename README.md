@@ -36,8 +36,8 @@ Coverage | [![codecov](https://img.shields.io/codecov/c/github/Georepublic/pg_sc
   - [Go](https://golang.org/) == 1.17
 
 - Usage Requirements:
-  - [vrpRouting](https://github.com/pgRouting/vrprouting) >= 0.2.0
-    - [VROOM](https://github.com/VROOM-Project/vroom) >= 1.10.0 is required to build vrpRouting.
+  - [vrpRouting](https://github.com/pgRouting/vrprouting) >= 0.3.0
+    - [VROOM](https://github.com/VROOM-Project/vroom) >= 1.11.0 is required to build vrpRouting.
     - [pgRouting](https://github.com/pgRouting/pgrouting)
     - [PostGIS](https://postgis.net/)
     - [PostgreSQL](https://www.postgresql.org/)
@@ -48,8 +48,8 @@ Coverage | [![codecov](https://img.shields.io/codecov/c/github/Georepublic/pg_sc
 ### Download and run
 
 Builds of the latest code can be found in the [releases](https://github.com/Georepublic/pg_scheduleserv/releases).
-- Download the latest executable for Linux, say [pg_scheduleserv-0.1.0](https://github.com/Georepublic/pg_scheduleserv/releases/download/v0.1.0/pg_scheduleserv-0.1.0).
-- Change permissions to make it an executable: `chmod +x pg_scheduleserv-0.1.0`
+- Download the latest executable for Linux, say [pg_scheduleserv-0.2.0](https://github.com/Georepublic/pg_scheduleserv/releases/download/v0.2.0/pg_scheduleserv-0.2.0).
+- Change permissions to make it an executable: `chmod +x pg_scheduleserv-0.2.0`
 - Create `app.env`, and set the values to the environment variables:
   - POSTGRES_USER=username
   - POSTGRES_PASSWORD=password
