@@ -2,6 +2,8 @@
 
 ## 0.2.0 Release Notes
 
+To see all issues & pull requests closed by this release see the [Git closed milestone for 0.2.0](https://github.com/Georepublic/pg_scheduleserv/issues?q=milestone%3Av0.2.0+) on Github.
+
 ### New Features
 
 - #26: Update to `vrprouting v0.3.0` and `vroom v1.11.0`.
