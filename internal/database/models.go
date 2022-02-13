@@ -42,11 +42,6 @@ type Break struct {
 	TimeWindows [][]string  `json:"time_windows"`
 }
 
-// add description to all fields and name, so that it can be displayed in the frontend
-// only one data field is present in shipment, instead of p_ and d_
-
-// change timezone example (add T)
-
 type Job struct {
 	ID          int64               `json:"id,string" example:"1234567812345678"`
 	Location    util.LocationParams `json:"location"`
@@ -64,13 +59,15 @@ type Job struct {
 }
 
 type Project struct {
-	ID           int64       `json:"id,string" example:"1234567812345678"`
-	Name         string      `json:"name" example:"Sample Project"`
-	DistanceCalc string      `json:"distance_calc" example:"euclidean"`
-	MaxShift     string      `json:"max_shift" example:"00:30:00"`
-	Data         interface{} `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
-	CreatedAt    string      `json:"created_at" example:"2021-12-01T13:00:00"`
-	UpdatedAt    string      `json:"updated_at" example:"2021-12-01T13:00:00"`
+	ID               int64       `json:"id,string" example:"1234567812345678"`
+	Name             string      `json:"name" example:"Sample Project"`
+	DurationCalc     string      `json:"duration_calc" example:"euclidean"`
+	ExplorationLevel int64       `json:"exploration_level" example:"5"`
+	Timeout          string      `json:"timeout" example:"00:10:00"`
+	MaxShift         string      `json:"max_shift" example:"00:30:00"`
+	Data             interface{} `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
+	CreatedAt        string      `json:"created_at" example:"2021-12-01T13:00:00"`
+	UpdatedAt        string      `json:"updated_at" example:"2021-12-01T13:00:00"`
 }
 
 type Shipment struct {
@@ -85,7 +82,8 @@ type Shipment struct {
 	Skills       []int32             `json:"skills" example:"1,5"`
 	Priority     int32               `json:"priority" example:"10"`
 	ProjectID    int64               `json:"project_id,string" example:"1234567812345678"`
-	Data         interface{}         `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
+	PData        interface{}         `json:"p_data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
+	DData        interface{}         `json:"d_data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 	CreatedAt    string              `json:"created_at" example:"2021-12-01T13:00:00"`
 	UpdatedAt    string              `json:"updated_at" example:"2021-12-01T13:00:00"`
 	PTimeWindows [][]string          `json:"p_time_windows"`

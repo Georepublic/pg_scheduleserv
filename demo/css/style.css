@@ -18,6 +18,10 @@
     border: red solid 2px;
 }
 
+.dropdown-item {
+    cursor: pointer;
+}
+
 .myDivIcon {
     /* Horizontally center the text (icon) */
     text-align: center;

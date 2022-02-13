@@ -25,12 +25,26 @@ export default class ScheduleView extends AbstractView {
   }
 
   // render the schedules for this project
-  render() {
+  render(refresh) {
     // get the html for the schedules
     let schedulesHtml = this.getSchedulesHtml();
 
-    // set the html for the schedules
-    this.scheduleDiv.innerHTML = schedulesHtml;
+    // when refreshing, don't change the #schedule-view-heading div
+    if (refresh) {
+      let scheduleViewHeading = document.querySelector(
+        "#schedule-view-heading"
+      );
+      // remove the right sibling of the schedule view heading
+      scheduleViewHeading.nextElementSibling.remove();
+      // add the new schedules html
+      scheduleViewHeading.insertAdjacentHTML("afterend", schedulesHtml);
+    } else {
+      this.scheduleDiv.innerHTML = this.getScheduleBodyHtml();
+      let scheduleViewHeading = document.querySelector(
+        "#schedule-view-heading"
+      );
+      scheduleViewHeading.insertAdjacentHTML("afterend", schedulesHtml);
+    }
 
     this.adjustTaskItemWidth();
 
@@ -195,19 +209,30 @@ export default class ScheduleView extends AbstractView {
       `,
       ];
     }
+    return timelineBodyHtml;
+  }
 
+  getScheduleBodyHtml() {
     return `
-      <div class="list-group">
+    <div class="list-group">
         <div class="card">
-          <div class="card-header schedule-view-heading">
+          <div class="card-header" id="schedule-view-heading">
             <h5 class="mb-0">
               Schedules
               <button type="button" class="btn btn-danger mx-2" data-action="schedule-delete" style="float: right">Delete Schedule</button>
               <button type="button" class="btn btn-info mx-2" data-action="schedule-download" style="float: right;">Download Schedule</button>
-              <button type="button" class="btn btn-success mx-2" data-action="schedule-create" style="float: right">Create Schedule</button>
+              <div class="btn-group mx-2" style="float: right">
+                <button type="button" class="btn btn-success" data-action="schedule-create" data-type="normal" style="float: right">Create Schedule (Normal)</button>
+                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                  <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" data-action="schedule-normal">Create Schedule (Normal)</a></li>
+                  <li><a class="dropdown-item" data-action="schedule-fresh">Create Schedule (Fresh)</a></li>
+                </ul>
+              </div>
             </h5>
           </div>
-          ${timelineBodyHtml}
         </div>
       </div>
     `;
@@ -312,16 +337,22 @@ export default class ScheduleView extends AbstractView {
       }
 
       let taskType = task.type.charAt(0).toUpperCase() + task.type.slice(1);
+      let taskId = "";
+      if (taskType != "Start" && taskType != "End") {
+        taskId = `ID: ${task.task_id}<br/>`;
+      }
 
       // set tooltip text for the task
       let tooltipText = `
         <b>${taskType}</b><br/>
+        ${taskId}
         Arr: ${task.arrival}<br/>
         Dep: ${task.departure}<br/>
         Travel time: ${task.travel_time}<br/>
         Waiting time: ${task.waiting_time}<br/>
         Setup time: ${task.setup_time}<br/>
         Service time: ${task.service_time}<br/>
+        Data: ${JSON.stringify(task.task_data)}<br/>
       `;
 
       let zIndex = 10 + route.length - index;
@@ -331,7 +362,7 @@ export default class ScheduleView extends AbstractView {
         <div class="task-item" style="left: ${
           left * widthFactor
         }%; width: ${widthString}; z-index: ${zIndex}">
-          <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="${tooltipText}">
+          <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title='${tooltipText}'>
             <div class="task-item-full" style="background-color: ${color};"></div>
           </a>
         </div>
@@ -463,11 +494,11 @@ export default class ScheduleView extends AbstractView {
         this.mapView.deleteAllNumberPointers();
         this.mapView.deleteAllUnassignedPointers();
         this.mapView.deleteAllRouteLayers();
-        this.render();
+        this.render(true);
       },
       onScheduleDelete: () => {
         this.data = this.getEmptySchedule();
-        this.render();
+        this.render(true);
         this.mapView.deleteAllNumberPointers();
         this.mapView.deleteAllUnassignedPointers();
         this.mapView.deleteAllRouteLayers();

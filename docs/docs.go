@@ -457,7 +457,7 @@ var doc = `{
                 }
             },
             "post": {
-                "description": "Create a new project with the input payload\nThe \"distance_calc\" parameter must be either \"euclidean\", \"valhalla\" or \"osrm\"",
+                "description": "Create a new project with the input payload\nThe \"duration_calc\" parameter must be either \"euclidean\", \"valhalla\" or \"osrm\"",
                 "consumes": [
                     "application/json"
                 ],
@@ -605,7 +605,7 @@ var doc = `{
                 }
             },
             "patch": {
-                "description": "Update a project with its project_id\nThe \"distance_calc\" parameter must be either \"euclidean\", \"valhalla\" or \"osrm\"",
+                "description": "Update a project with its project_id\nThe \"duration_calc\" parameter must be either \"euclidean\", \"valhalla\" or \"osrm\"",
                 "consumes": [
                     "application/json"
                 ],
@@ -1883,9 +1883,13 @@ var doc = `{
                         "key2": "value2"
                     }
                 },
-                "distance_calc": {
+                "duration_calc": {
                     "type": "string",
                     "example": "euclidean"
+                },
+                "exploration_level": {
+                    "type": "integer",
+                    "example": 5
                 },
                 "max_shift": {
                     "type": "string",
@@ -1894,6 +1898,10 @@ var doc = `{
                 "name": {
                     "type": "string",
                     "example": "Sample Project"
+                },
+                "timeout": {
+                    "type": "string",
+                    "example": "00:10:00"
                 }
             }
         },
@@ -1913,6 +1921,16 @@ var doc = `{
                         5,
                         15
                     ]
+                },
+                "d_data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
                 },
                 "d_location": {
                     "$ref": "#/definitions/util.LocationParams"
@@ -1934,7 +1952,7 @@ var doc = `{
                         }
                     }
                 },
-                "data": {
+                "p_data": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "string"
@@ -2143,9 +2161,13 @@ var doc = `{
                         "key2": "value2"
                     }
                 },
-                "distance_calc": {
+                "duration_calc": {
                     "type": "string",
                     "example": "euclidean"
+                },
+                "exploration_level": {
+                    "type": "integer",
+                    "example": 5
                 },
                 "id": {
                     "type": "string",
@@ -2158,6 +2180,10 @@ var doc = `{
                 "name": {
                     "type": "string",
                     "example": "Sample Project"
+                },
+                "timeout": {
+                    "type": "string",
+                    "example": "00:10:00"
                 },
                 "updated_at": {
                     "type": "string",
@@ -2182,6 +2208,16 @@ var doc = `{
                     "type": "string",
                     "example": "2021-12-01T13:00:00"
                 },
+                "d_data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
+                },
                 "d_location": {
                     "$ref": "#/definitions/util.LocationParams"
                 },
@@ -2202,7 +2238,11 @@ var doc = `{
                         }
                     }
                 },
-                "data": {
+                "id": {
+                    "type": "string",
+                    "example": "1234567812345678"
+                },
+                "p_data": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "string"
@@ -2211,10 +2251,6 @@ var doc = `{
                         "key1": "value1",
                         "key2": "value2"
                     }
-                },
-                "id": {
-                    "type": "string",
-                    "example": "1234567812345678"
                 },
                 "p_location": {
                     "$ref": "#/definitions/util.LocationParams"
@@ -2342,6 +2378,16 @@ var doc = `{
                         15
                     ]
                 },
+                "d_data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
+                },
                 "d_location": {
                     "$ref": "#/definitions/util.LocationParams"
                 },
@@ -2362,7 +2408,7 @@ var doc = `{
                         }
                     }
                 },
-                "data": {
+                "p_data": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "string"
@@ -2938,7 +2984,7 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "0.1.0",
+	Version:     "0.2.0",
 	Host:        "localhost:9100",
 	BasePath:    "/",
 	Schemes:     []string{"http", "https"},

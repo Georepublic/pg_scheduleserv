@@ -18,6 +18,7 @@ export default class ScheduleHandler {
     this.handleScheduleDownload();
     this.handleVehicleScheduleDownload();
     this.handleScheduleDelete(onScheduleDelete);
+    this.handleScheduleDropdownClick();
     this.handlePlayRoute(onPlayRoute);
     this.handleStopPlayRoute(onStopPlayRoute);
   }
@@ -36,9 +37,11 @@ export default class ScheduleHandler {
     this.schedule.addEventListener("click", (event) => {
       const el = event.target.closest(`[data-action="schedule-create"]`);
       if (el) {
-        this.scheduleAPI.createSchedule(this.projectID).then((data) => {
-          onScheduleCreate(data);
-        });
+        this.scheduleAPI
+          .createSchedule(this.projectID, el.dataset.type)
+          .then((data) => {
+            onScheduleCreate(data);
+          });
       }
     });
   }
@@ -76,6 +79,27 @@ export default class ScheduleHandler {
       if (el) {
         this.scheduleAPI.deleteSchedule(this.projectID).then(() => {
           onScheduleDelete();
+        });
+      }
+    });
+  }
+
+  handleScheduleDropdownClick() {
+    this.schedule.addEventListener("click", (event) => {
+      const el = document.querySelector(`[data-action="schedule-create"]`);
+      if (event.target.closest(`[data-action="schedule-normal"]`)) {
+        el.dataset.type = "normal";
+        el.innerText = "Create Schedule (Normal)";
+        [el, el.nextElementSibling].forEach((el) => {
+          el.classList.remove("btn-primary");
+          el.classList.add("btn-success");
+        });
+      } else if (event.target.closest(`[data-action="schedule-fresh"]`)) {
+        el.dataset.type = "fresh";
+        el.innerText = "Create Schedule (Fresh)";
+        [el, el.nextElementSibling].forEach((el) => {
+          el.classList.remove("btn-success");
+          el.classList.add("btn-primary");
         });
       }
     });

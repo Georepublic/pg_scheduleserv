@@ -24,6 +24,12 @@ export default class ProjectView extends AbstractView {
     this.vehicleAPI = new VehicleAPI();
     this.scheduleAPI = new ScheduleAPI();
 
+    this.durationType = {
+      euclidean: "Euclidean",
+      valhalla: "Valhalla",
+      osrm: "OSRM",
+    };
+
     this.projectAPI
       .getProject(params.id)
       .then((project) => {
@@ -97,11 +103,23 @@ export default class ProjectView extends AbstractView {
   getHtml(project) {
     var html = `
     <div class="list-group">
-      <div id="project-${project.id}" class="list-group-item flex-column align-items-start">
+      <div id="project-${
+        project.id
+      }" class="list-group-item flex-column align-items-start">
         <div class="d-flex w-100 justify-content-between">
           <h5 class="mb-1">${project.name}</h5>
           <small class="text-muted">Created: ${project.created_at}</small>
         </div>
+        <div class="d-flex w-100 justify-content-between">
+          <p class="mb-1">Duration Calculation: ${
+            this.durationType[project.duration_calc]
+          }</p>
+        </div>
+        <small>
+          Max Shift in schedule: ${project.max_shift}<br/>
+          Exploration Level: ${project.exploration_level}, Timeout: ${
+      project.timeout
+    }
       </div>
     </div>
     <div id="map"></div>

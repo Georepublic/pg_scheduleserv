@@ -1,4 +1,4 @@
-name: 'Lint'
+name: "Lint"
 
 on:
   push:
@@ -24,7 +24,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v2
         with:
-          go-version: '1.17.x'
+          go-version: "1.17.x"
 
       - name: Cache Go modules
         uses: actions/cache@v2

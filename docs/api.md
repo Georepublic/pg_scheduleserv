@@ -9,7 +9,7 @@ This is an API for scheduling VRP tasks. Source code can be found on https://git
 
 ### Version
 
-0.1.0
+0.2.0
 
 ### License
 
@@ -1666,7 +1666,7 @@ PATCH /projects/{project_id}
 ```
 
 Update a project with its project_id
-The "distance_calc" parameter must be either "euclidean", "valhalla" or "osrm"
+The "duration_calc" parameter must be either "euclidean", "valhalla" or "osrm"
 
 #### Consumes
   * application/json
@@ -1904,7 +1904,7 @@ POST /projects
 ```
 
 Create a new project with the input payload
-The "distance_calc" parameter must be either "euclidean", "valhalla" or "osrm"
+The "duration_calc" parameter must be either "euclidean", "valhalla" or "osrm"
 
 #### Consumes
   * application/json
@@ -2390,9 +2390,11 @@ Status: Bad Request
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
 | data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
-| distance_calc | string| `string` |  | |  | `euclidean` |
+| duration_calc | string| `string` |  | |  | `euclidean` |
+| exploration_level | integer| `int64` |  | |  | `5` |
 | max_shift | string| `string` |  | |  | `00:30:00` |
 | name | string| `string` | ✓ | |  | `Sample Project` |
+| timeout | string| `string` |  | |  | `00:10:00` |
 
 
 
@@ -2408,11 +2410,12 @@ Status: Bad Request
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
 | amount | []integer| `[]int64` |  | |  | `[5,15]` |
+| d_data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | d_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` | ✓ | |  |  |
 | d_service | string| `string` |  | |  | `00:02:00` |
 | d_setup | string| `string` |  | |  | `00:00:00` |
 | d_time_windows | [][[]string](#string)| `[][]string` |  | |  |  |
-| data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
+| p_data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | p_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` | ✓ | |  |  |
 | p_service | string| `string` |  | |  | `00:02:00` |
 | p_setup | string| `string` |  | |  | `00:00:00` |
@@ -2485,10 +2488,12 @@ Status: Bad Request
 |------|------|---------|:--------:| ------- |-------------|---------|
 | created_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 | data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
-| distance_calc | string| `string` |  | |  | `euclidean` |
+| duration_calc | string| `string` |  | |  | `euclidean` |
+| exploration_level | integer| `int64` |  | |  | `5` |
 | id | string| `string` |  | |  | `1234567812345678` |
 | max_shift | string| `string` |  | |  | `00:30:00` |
 | name | string| `string` |  | |  | `Sample Project` |
+| timeout | string| `string` |  | |  | `00:10:00` |
 | updated_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
 
 
@@ -2506,12 +2511,13 @@ Status: Bad Request
 |------|------|---------|:--------:| ------- |-------------|---------|
 | amount | []integer| `[]int64` |  | |  | `[5,15]` |
 | created_at | string| `string` |  | |  | `2021-12-01T13:00:00` |
+| d_data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | d_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
 | d_service | string| `string` |  | |  | `00:02:00` |
 | d_setup | string| `string` |  | |  | `00:00:00` |
 | d_time_windows | [][[]string](#string)| `[][]string` |  | |  |  |
-| data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | id | string| `string` |  | |  | `1234567812345678` |
+| p_data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | p_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
 | p_service | string| `string` |  | |  | `00:02:00` |
 | p_setup | string| `string` |  | |  | `00:00:00` |
@@ -2558,11 +2564,12 @@ Status: Bad Request
 | Name | Type | Go type | Required | Default | Description | Example |
 |------|------|---------|:--------:| ------- |-------------|---------|
 | amount | []integer| `[]int64` |  | |  | `[5,15]` |
+| d_data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | d_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
 | d_service | string| `string` |  | |  | `00:02:00` |
 | d_setup | string| `string` |  | |  | `00:00:00` |
 | d_time_windows | [][[]string](#string)| `[][]string` |  | |  |  |
-| data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
+| p_data | map of string| `map[string]string` |  | |  | `{"key1":"value1","key2":"value2"}` |
 | p_location | [UtilLocationParams](#util-location-params)| `UtilLocationParams` |  | |  |  |
 | p_service | string| `string` |  | |  | `00:02:00` |
 | p_setup | string| `string` |  | |  | `00:00:00` |

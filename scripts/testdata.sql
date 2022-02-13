@@ -28,7 +28,7 @@ along with pg_scheduleserv.  If not, see <https://www.gnu.org/licenses/>.
 
 BEGIN;
 
-COPY public.projects (id, name, data, distance_calc, created_at, updated_at, deleted) FROM stdin;
+COPY public.projects (id, name, data, duration_calc, created_at, updated_at, deleted) FROM stdin;
 3909655254191459782	Sample Project	"random"	osrm	2021-10-22 23:29:31.618091	2021-10-22 23:29:31.618091	f
 3909655254191459783	Sample Project2	"random"	osrm	2021-10-22 23:29:31.618091	2021-10-22 23:29:31.618091	f
 2593982828701335033		{"s": 1}	osrm	2021-10-24 19:52:52.303672	2021-10-24 19:52:52.303672	f
@@ -51,10 +51,10 @@ COPY public.jobs_time_windows (id, tw_open, tw_close, created_at, updated_at) FR
 \.
 
 
-COPY public.shipments (id, p_location_id, p_service, d_location_id, d_service, amount, skills, priority, project_id, data, created_at, updated_at, deleted) FROM stdin;
-7794682317520784480	32234010232342	00:02:25	23345800023242	00:01:00	{5,7}	{5,10}	3	2593982828701335033	{"key": "value"}	2021-10-26 00:00:03.080467	2021-10-26 00:00:03.080467	f
-3329730179111013588	1032234010232342	00:01:01	23345800023242	00:02:03	{6,8}	{1}	1	2593982828701335033	{"data": 1}	2021-10-26 00:04:56.045611	2021-10-26 00:04:56.045611	f
-3341766951177830852	1032234010232342	00:00:01	23345800023242	00:00:03	{3,5}	{1}	1	3909655254191459782	{"s": 1}	2021-10-26 00:05:16.67102	2021-10-26 00:05:16.67102	f
+COPY public.shipments (id, p_location_id, p_service, d_location_id, d_service, amount, skills, priority, project_id, p_data, d_data, created_at, updated_at, deleted) FROM stdin;
+7794682317520784480	32234010232342	00:02:25	23345800023242	00:01:00	{5,7}	{5,10}	3	2593982828701335033	{}	{}	2021-10-26 00:00:03.080467	2021-10-26 00:00:03.080467	f
+3329730179111013588	1032234010232342	00:01:01	23345800023242	00:02:03	{6,8}	{1}	1	2593982828701335033	{}	{}	2021-10-26 00:04:56.045611	2021-10-26 00:04:56.045611	f
+3341766951177830852	1032234010232342	00:00:01	23345800023242	00:00:03	{3,5}	{1}	1	3909655254191459782	{}	{}	2021-10-26 00:05:16.67102	2021-10-26 00:05:16.67102	f
 \.
 
 

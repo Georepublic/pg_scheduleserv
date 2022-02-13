@@ -152,7 +152,7 @@ CREATE TABLE IF NOT EXISTS locations (
 
 
 DO $$ BEGIN
-  CREATE TYPE distance_calc_type AS ENUM ('euclidean', 'valhalla', 'osrm');
+  CREATE TYPE duration_calc_type AS ENUM ('euclidean', 'valhalla', 'osrm');
 EXCEPTION
   WHEN duplicate_object THEN null;
 END $$;
@@ -161,9 +161,9 @@ END $$;
 CREATE TABLE IF NOT EXISTS projects (
   id                BIGINT                DEFAULT random_bigint() PRIMARY KEY,
   name              VARCHAR               NOT NULL,
-  distance_calc     DISTANCE_CALC_TYPE    NOT NULL DEFAULT 'euclidean',
+  duration_calc     DURATION_CALC_TYPE    NOT NULL DEFAULT 'euclidean',
   exploration_level INTEGER               NOT NULL DEFAULT 5,
-  timeout           INTERVAL              NOT NULL DEFAULT '-00:00:01'::INTERVAL,
+  timeout           INTERVAL              NOT NULL DEFAULT '00:10:00'::INTERVAL,
   max_shift         INTERVAL              NOT NULL DEFAULT '00:30:00'::INTERVAL,
 
   data        JSONB     NOT NULL DEFAULT '{}'::JSONB,
@@ -238,7 +238,8 @@ CREATE TABLE IF NOT EXISTS shipments (
 
   project_id        BIGINT    NOT NULL REFERENCES projects(id),
 
-  data              JSONB     NOT NULL DEFAULT '{}'::JSONB,
+  p_data            JSONB     NOT NULL DEFAULT '{}'::JSONB,
+  d_data            JSONB     NOT NULL DEFAULT '{}'::JSONB,
   created_at        TIMESTAMP NOT NULL DEFAULT current_timestamp,
   updated_at        TIMESTAMP NOT NULL DEFAULT current_timestamp,
   status            TEXT      NOT NULL DEFAULT 'unscheduled'::TEXT,
@@ -409,10 +410,10 @@ AS $BODY$
     arrival, travel_time, setup_time, service_time, waiting_time, departure, load
   FROM vrp_vroom(
     -- jobs (Unscheduled jobs + Scheduled jobs with 100 priority)
-    'SELECT id, location_id, setup, service, delivery, pickup, skills, priority
+    'SELECT id, location_id, setup, service, delivery, pickup, skills, priority, data
      FROM jobs WHERE project_id = ' || project_id_param || ' AND status = ''unscheduled'' AND deleted = FALSE
      UNION
-     SELECT id, location_id, setup, service, delivery, pickup, skills, 100 AS priority
+     SELECT id, location_id, setup, service, delivery, pickup, skills, 100 AS priority, data
      FROM jobs WHERE project_id = ' || project_id_param || ' AND status = ''scheduled'' AND deleted = FALSE',
 
     -- jobs_time_windows (For unscheduled, select original time windows. For scheduled, alter the time window with a delta interval from the arrival time)
@@ -430,10 +431,10 @@ AS $BODY$
       AND status = ''scheduled'' AND type = ''job'' AND J.project_id = ' || project_id_param || ' ORDER BY id, tw_open',
 
     -- shipments (Unscheduled shipments + Scheduled shipments with 100 priority)
-    'SELECT id, p_location_id, p_setup, p_service, d_location_id, d_setup, d_service, amount, skills, priority
+    'SELECT id, p_location_id, p_setup, p_service, d_location_id, d_setup, d_service, amount, skills, priority, p_data, d_data
      FROM shipments WHERE project_id = ' || project_id_param || ' AND status = ''unscheduled'' AND deleted = FALSE
      UNION
-     SELECT id, p_location_id, p_setup, p_service, d_location_id, d_setup, d_service, amount, skills, 100 AS priority
+     SELECT id, p_location_id, p_setup, p_service, d_location_id, d_setup, d_service, amount, skills, 100 AS priority, p_data, d_data
      FROM shipments WHERE project_id = ' || project_id_param || ' AND status = ''scheduled'' AND deleted = FALSE',
 
     -- shipments_time_windows
