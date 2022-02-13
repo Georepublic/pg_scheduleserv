@@ -1,8 +1,9 @@
 import Toast from "../utils/Toast.js";
+import { config } from "../config.js";
 
 export default class BaseAPI {
   constructor() {
-    this.baseURL = "http://localhost:9100";
+    this.baseURL = config.serverUrl;
   }
 
   showError(error) {

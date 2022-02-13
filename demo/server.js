@@ -10,4 +10,6 @@ app.get("/*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "index.html"));
 });
 
-app.listen(process.env.PORT || 9101, () => console.log("Server running..."));
+const port = process.env.DEMO_PORT || 9101;
+
+app.listen(port, () => console.log(`Server running on port ${port}...`));

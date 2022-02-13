@@ -1,6 +1,8 @@
+import { config } from "../config.js";
+
 export default class OSRMAPI {
   constructor() {
-    this.serverUrl = "https://router.project-osrm.org";
+    this.serverUrl = config.osrmUrl;
   }
 
   // get the route between several coordinates by calling the OSRM API using axios
