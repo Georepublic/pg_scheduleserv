@@ -88,5 +88,5 @@ func main() {
 	}
 	defer conn.Close()
 	server := api.NewServer(conn)
-	logrus.Error(server.Start(config.ServerBindAddress))
+	logrus.Error(server.Start(config.ServerPort))
 }

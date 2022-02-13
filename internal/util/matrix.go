@@ -34,6 +34,9 @@ import (
 	"math"
 	"net/http"
 	"strings"
+
+	"github.com/Georepublic/pg_scheduleserv/internal/config"
+	"github.com/sirupsen/logrus"
 )
 
 // make get request to an url with content-type, and return the response body as json
@@ -63,14 +66,25 @@ func GetMatrix(locationIds []int64, durationCalc string) (startIds []int64, endI
 
 	var matrix [][]int64
 
+	config, err := config.LoadConfig(".")
+	if err != nil {
+		logrus.Error("Cannot load config:", err)
+	}
+
+	valhallaUrl := config.ValhallaUrl
+	valhallaUrl = strings.TrimSuffix(valhallaUrl, "/")
+
+	osrmUrl := config.OsrmUrl
+	osrmUrl = strings.TrimSuffix(osrmUrl, "/")
+
 	// call the appropriate function to get the matrix
 	switch durationCalc {
 	case "euclidean":
 		matrix, err = GetEuclideanMatrix(coordinates)
 	case "valhalla":
-		matrix, err = GetMatrixFromValhalla(coordinates)
+		matrix, err = GetMatrixFromValhalla(coordinates, valhallaUrl)
 	case "osrm":
-		matrix, err = GetMatrixFromOSRM(coordinates)
+		matrix, err = GetMatrixFromOSRM(coordinates, osrmUrl)
 	default:
 		err = fmt.Errorf("Invalid duration calculation method")
 	}
@@ -91,14 +105,12 @@ func GetMatrix(locationIds []int64, durationCalc string) (startIds []int64, endI
 	return startIds, endIds, durations, nil
 }
 
-func GetMatrixFromOSRM(coordinates [][]float64) ([][]int64, error) {
+func GetMatrixFromOSRM(coordinates [][]float64, baseUrl string) ([][]int64, error) {
 	// convert the coordinates to a string
 	coordinatesString := make([]string, 0)
 	for _, coordinate := range coordinates {
 		coordinatesString = append(coordinatesString, fmt.Sprintf("%.4f,%.4f", coordinate[0], coordinate[1]))
 	}
-
-	baseUrl := "https://router.project-osrm.org"
 
 	// call the osrm api function to get the matrix
 	url := fmt.Sprintf("%s/table/v1/driving/%s", baseUrl, strings.Join(coordinatesString, ";"))
@@ -134,9 +146,7 @@ func GetMatrixFromOSRM(coordinates [][]float64) ([][]int64, error) {
 	return matrixInt64, nil
 }
 
-func GetMatrixFromValhalla(coordinates [][]float64) ([][]int64, error) {
-	baseUrl := "https://valhalla1.openstreetmap.de"
-
+func GetMatrixFromValhalla(coordinates [][]float64, baseUrl string) ([][]int64, error) {
 	// call the osrm api function to get the matrix
 	url := fmt.Sprintf("%s/sources_to_targets", baseUrl)
 
