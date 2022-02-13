@@ -163,7 +163,7 @@ CREATE TABLE IF NOT EXISTS projects (
   name              VARCHAR               NOT NULL,
   distance_calc     DISTANCE_CALC_TYPE    NOT NULL DEFAULT 'euclidean',
   exploration_level INTEGER               NOT NULL DEFAULT 5,
-  timeout           INTERVAL              NOT NULL DEFAULT '-00:00:01'::INTERVAL,
+  timeout           INTERVAL              NOT NULL DEFAULT '00:10:00'::INTERVAL,
   max_shift         INTERVAL              NOT NULL DEFAULT '00:30:00'::INTERVAL,
 
   data        JSONB     NOT NULL DEFAULT '{}'::JSONB,
