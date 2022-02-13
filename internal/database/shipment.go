@@ -49,7 +49,8 @@ type CreateShipmentParams struct {
 	DTimeWindows *[][]string          `json:"d_time_windows" validate:"omitempty,dive,min=2,max=2,dive,datetime=2006-01-02T15:04:05"`
 	Priority     *int32               `json:"priority"   validate:"omitempty,min=0,max=100" example:"10"`
 	ProjectID    *int64               `json:"project_id,string" validate:"required" swaggerignore:"true"`
-	Data         *interface{}         `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
+	PData        *interface{}         `json:"p_data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
+	DData        *interface{}         `json:"d_data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 }
 
 type UpdateShipmentParams struct {
@@ -65,7 +66,8 @@ type UpdateShipmentParams struct {
 	DTimeWindows *[][]string          `json:"d_time_windows" validate:"omitempty,dive,min=2,max=2,dive,datetime=2006-01-02T15:04:05"`
 	Priority     *int32               `json:"priority"   validate:"omitempty,min=0,max=100" example:"10"`
 	ProjectID    *int64               `json:"project_id,string" swaggerignore:"true"`
-	Data         *interface{}         `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
+	PData        *interface{}         `json:"p_data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
+	DData        *interface{}         `json:"d_data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 }
 
 func (q *Queries) DBCreateShipment(ctx context.Context, arg CreateShipmentParams) (int64, error) {
@@ -233,7 +235,8 @@ func scanShipmentRow(row pgx.Row) (Shipment, error) {
 		&i.Skills,
 		&i.Priority,
 		&i.ProjectID,
-		&i.Data,
+		&i.PData,
+		&i.DData,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&kind,
@@ -275,7 +278,8 @@ func scanShipmentRows(rows pgx.Rows) ([]Shipment, error) {
 			&i.Skills,
 			&i.Priority,
 			&i.ProjectID,
-			&i.Data,
+			&i.PData,
+			&i.DData,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&kind,
