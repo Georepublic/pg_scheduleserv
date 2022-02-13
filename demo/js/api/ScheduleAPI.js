@@ -5,8 +5,14 @@ export default class ScheduleAPI {
     this.baseAPI = new BaseAPI();
   }
 
-  createSchedule(projectID) {
-    return this.baseAPI.post(`/projects/${projectID}/schedule`);
+  createSchedule(projectID, type) {
+    var queryParam = "";
+    if (type == "fresh") {
+      queryParam = "?fresh=true";
+    } else if (type == "normal") {
+      queryParam = "?fresh=false";
+    }
+    return this.baseAPI.post(`/projects/${projectID}/schedule${queryParam}`);
   }
 
   getSchedule(projectID) {

@@ -25,12 +25,26 @@ export default class ScheduleView extends AbstractView {
   }
 
   // render the schedules for this project
-  render() {
+  render(refresh) {
     // get the html for the schedules
     let schedulesHtml = this.getSchedulesHtml();
 
-    // set the html for the schedules
-    this.scheduleDiv.innerHTML = schedulesHtml;
+    // when refreshing, don't change the #schedule-view-heading div
+    if (refresh) {
+      let scheduleViewHeading = document.querySelector(
+        "#schedule-view-heading"
+      );
+      // remove the right sibling of the schedule view heading
+      scheduleViewHeading.nextElementSibling.remove();
+      // add the new schedules html
+      scheduleViewHeading.insertAdjacentHTML("afterend", schedulesHtml);
+    } else {
+      this.scheduleDiv.innerHTML = this.getScheduleBodyHtml();
+      let scheduleViewHeading = document.querySelector(
+        "#schedule-view-heading"
+      );
+      scheduleViewHeading.insertAdjacentHTML("afterend", schedulesHtml);
+    }
 
     this.adjustTaskItemWidth();
 
@@ -195,19 +209,30 @@ export default class ScheduleView extends AbstractView {
       `,
       ];
     }
+    return timelineBodyHtml;
+  }
 
+  getScheduleBodyHtml() {
     return `
-      <div class="list-group">
+    <div class="list-group">
         <div class="card">
-          <div class="card-header schedule-view-heading">
+          <div class="card-header" id="schedule-view-heading">
             <h5 class="mb-0">
               Schedules
               <button type="button" class="btn btn-danger mx-2" data-action="schedule-delete" style="float: right">Delete Schedule</button>
               <button type="button" class="btn btn-info mx-2" data-action="schedule-download" style="float: right;">Download Schedule</button>
-              <button type="button" class="btn btn-success mx-2" data-action="schedule-create" style="float: right">Create Schedule</button>
+              <div class="btn-group mx-2" style="float: right">
+                <button type="button" class="btn btn-success" data-action="schedule-create" data-type="normal" style="float: right">Create Schedule (Normal)</button>
+                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                  <span class="visually-hidden">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" data-action="schedule-normal">Create Schedule (Normal)</a></li>
+                  <li><a class="dropdown-item" data-action="schedule-fresh">Create Schedule (Fresh)</a></li>
+                </ul>
+              </div>
             </h5>
           </div>
-          ${timelineBodyHtml}
         </div>
       </div>
     `;
@@ -463,11 +488,11 @@ export default class ScheduleView extends AbstractView {
         this.mapView.deleteAllNumberPointers();
         this.mapView.deleteAllUnassignedPointers();
         this.mapView.deleteAllRouteLayers();
-        this.render();
+        this.render(true);
       },
       onScheduleDelete: () => {
         this.data = this.getEmptySchedule();
-        this.render();
+        this.render(true);
         this.mapView.deleteAllNumberPointers();
         this.mapView.deleteAllUnassignedPointers();
         this.mapView.deleteAllRouteLayers();
