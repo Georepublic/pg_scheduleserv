@@ -40,9 +40,10 @@ type CreateVehicleParams struct {
 	EndLocation   *util.LocationParams `json:"end_location" validate:"required"`
 	Capacity      *[]int64             `json:"capacity" validate:"omitempty,dive,min=0" example:"50,25"`
 	Skills        *[]int32             `json:"skills" validate:"omitempty,dive,min=0" example:"1,5"`
-	TwOpen        *string              `json:"tw_open" validate:"omitempty,datetime=2006-01-02 15:04:05" example:"2021-12-31 23:00:00"`
-	TwClose       *string              `json:"tw_close" validate:"omitempty,datetime=2006-01-02 15:04:05" example:"2021-12-31 23:59:00"`
+	TwOpen        *string              `json:"tw_open" validate:"omitempty,datetime=2006-01-02T15:04:05" example:"2021-12-31T23:00:00"`
+	TwClose       *string              `json:"tw_close" validate:"omitempty,datetime=2006-01-02T15:04:05" example:"2021-12-31T23:59:00"`
 	SpeedFactor   *float64             `json:"speed_factor" validate:"omitempty,gt=0" example:"1.0"`
+	MaxTasks      *int32               `json:"max_tasks" validate:"omitempty,gt=0" example:"20"`
 	ProjectID     *int64               `json:"project_id,string" validate:"required" swaggerignore:"true"`
 	Data          *interface{}         `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 }
@@ -52,32 +53,38 @@ type UpdateVehicleParams struct {
 	EndLocation   *util.LocationParams `json:"end_location"`
 	Capacity      *[]int64             `json:"capacity" validate:"omitempty,dive,min=0" example:"50,25"`
 	Skills        *[]int32             `json:"skills" validate:"omitempty,dive,min=0" example:"1,5"`
-	TwOpen        *string              `json:"tw_open" validate:"omitempty,datetime=2006-01-02 15:04:05" example:"2021-12-31 23:00:00"`
-	TwClose       *string              `json:"tw_close" validate:"omitempty,datetime=2006-01-02 15:04:05" example:"2021-12-31 23:59:00"`
+	TwOpen        *string              `json:"tw_open" validate:"omitempty,datetime=2006-01-02T15:04:05" example:"2021-12-31T23:00:00"`
+	TwClose       *string              `json:"tw_close" validate:"omitempty,datetime=2006-01-02T15:04:05" example:"2021-12-31T23:59:00"`
 	SpeedFactor   *float64             `json:"speed_factor" validate:"omitempty,gt=0" example:"1.0"`
+	MaxTasks      *int32               `json:"max_tasks" validate:"omitempty,gt=0" example:"20"`
 	ProjectID     *int64               `json:"project_id,string" swaggerignore:"true"`
 	Data          *interface{}         `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
 }
 
 func (q *Queries) DBCreateVehicle(ctx context.Context, arg CreateVehicleParams) (Vehicle, error) {
-	sql, args := createResource("vehicles", arg)
-	return_sql := " RETURNING " + util.GetOutputFields(Vehicle{})
+	tableName := "vehicles"
+	sql, args := createResource(tableName, arg)
+	return_sql := " RETURNING " + util.GetOutputFields(Vehicle{}, tableName)
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	return scanVehicleRow(row)
 }
 
 func (q *Queries) DBGetVehicle(ctx context.Context, id int64) (Vehicle, error) {
-	table_name := "vehicles"
-	additional_query := " WHERE id = $1 AND deleted = FALSE LIMIT 1"
-	sql := "SELECT " + util.GetOutputFields(Vehicle{}) + " FROM " + table_name + additional_query
+	tableName := "vehicles"
+	additionalQuery := " WHERE id = $1 AND deleted = FALSE LIMIT 1"
+	sql := "SELECT " + util.GetOutputFields(Vehicle{}, tableName) + " FROM " + tableName + additionalQuery
 	row := q.db.QueryRow(ctx, sql, id)
 	return scanVehicleRow(row)
 }
 
 func (q *Queries) DBListVehicles(ctx context.Context, projectID int64) ([]Vehicle, error) {
-	table_name := "vehicles"
-	additional_query := " WHERE project_id = $1 AND deleted = FALSE ORDER BY created_at"
-	sql := "SELECT " + util.GetOutputFields(Vehicle{}) + " FROM " + table_name + additional_query
+	_, err := q.DBGetProject(ctx, projectID)
+	if err != nil {
+		return nil, err
+	}
+	tableName := "vehicles"
+	additionalQuery := " WHERE project_id = $1 AND deleted = FALSE ORDER BY created_at"
+	sql := "SELECT " + util.GetOutputFields(Vehicle{}, tableName) + " FROM " + tableName + additionalQuery
 	rows, err := q.db.Query(ctx, sql, projectID)
 	if err != nil {
 		return nil, err
@@ -87,38 +94,41 @@ func (q *Queries) DBListVehicles(ctx context.Context, projectID int64) ([]Vehicl
 }
 
 func (q *Queries) DBUpdateVehicle(ctx context.Context, arg UpdateVehicleParams, vehicle_id int64) (Vehicle, error) {
-	sql, args := updateResource("vehicles", arg, vehicle_id)
-	return_sql := " RETURNING " + util.GetOutputFields(Vehicle{})
+	tableName := "vehicles"
+	sql, args := updateResource(tableName, arg, vehicle_id)
+	return_sql := " RETURNING " + util.GetOutputFields(Vehicle{}, tableName)
 	row := q.db.QueryRow(ctx, sql+return_sql, args...)
 	return scanVehicleRow(row)
 }
 
 func (q *Queries) DBDeleteVehicle(ctx context.Context, id int64) (Vehicle, error) {
-	sql := "UPDATE vehicles SET deleted = TRUE WHERE id = $1"
-	return_sql := " RETURNING " + util.GetOutputFields(Vehicle{})
+	tableName := "vehicles"
+	sql := "UPDATE " + tableName + " SET deleted = TRUE WHERE id = $1"
+	return_sql := " RETURNING " + util.GetOutputFields(Vehicle{}, tableName)
 	row := q.db.QueryRow(ctx, sql+return_sql, id)
 	return scanVehicleRow(row)
 }
 
 func scanVehicleRow(row pgx.Row) (Vehicle, error) {
 	var i Vehicle
-	var start_index, end_index int64
+	var start_id, end_id int64
 	err := row.Scan(
 		&i.ID,
-		&start_index,
-		&end_index,
+		&start_id,
+		&end_id,
 		&i.Capacity,
 		&i.Skills,
 		&i.TwOpen,
 		&i.TwClose,
 		&i.SpeedFactor,
+		&i.MaxTasks,
 		&i.ProjectID,
 		&i.Data,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
-	start_latitude, start_longitude := util.GetCoordinates(start_index)
-	end_latitude, end_longitude := util.GetCoordinates(end_index)
+	start_latitude, start_longitude := util.GetCoordinates(start_id)
+	end_latitude, end_longitude := util.GetCoordinates(end_id)
 	i.StartLocation = util.LocationParams{
 		Latitude:  &start_latitude,
 		Longitude: &start_longitude,
@@ -134,17 +144,18 @@ func scanVehicleRow(row pgx.Row) (Vehicle, error) {
 func scanVehicleRows(rows pgx.Rows) ([]Vehicle, error) {
 	var i Vehicle
 	items := []Vehicle{}
-	var start_index, end_index int64
+	var start_id, end_id int64
 	for rows.Next() {
 		if err := rows.Scan(
 			&i.ID,
-			&start_index,
-			&end_index,
+			&start_id,
+			&end_id,
 			&i.Capacity,
 			&i.Skills,
 			&i.TwOpen,
 			&i.TwClose,
 			&i.SpeedFactor,
+			&i.MaxTasks,
 			&i.ProjectID,
 			&i.Data,
 			&i.CreatedAt,
@@ -152,8 +163,8 @@ func scanVehicleRows(rows pgx.Rows) ([]Vehicle, error) {
 		); err != nil {
 			return nil, err
 		}
-		start_latitude, start_longitude := util.GetCoordinates(start_index)
-		end_latitude, end_longitude := util.GetCoordinates(end_index)
+		start_latitude, start_longitude := util.GetCoordinates(start_id)
+		end_latitude, end_longitude := util.GetCoordinates(end_id)
 		i.StartLocation = util.LocationParams{
 			Latitude:  &start_latitude,
 			Longitude: &start_longitude,

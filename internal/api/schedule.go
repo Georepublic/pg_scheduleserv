@@ -32,29 +32,37 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/Georepublic/pg_scheduleserv/internal/util"
 	"github.com/gorilla/mux"
 )
 
 // CreateSchedule godoc
 // @Summary Schedule the tasks
-// @Description Schedule the tasks present in a project, deleting any previous schedule
+// @Description Schedule the tasks present in a project, deleting any previous schedule and return the new schedule.
+// @Description
+// @Description When fresh = true, the old schedule is ignored and a fresh schedule is created. Otherwise, the old schedule of each task is altered such that it remains in the "max_shift" interval. Default value is false.
+// @Description **For JSON content type**: When overview = true, only the metadata is returned. Default value is false, which also returns the summary object.
 // @Tags Schedule
 // @Accept application/json
 // @Produce application/json
 // @Param project_id path int true "Project ID"
-// @Success 200 {object} util.Schedule
-// @Failure 400 {object} util.MultiError
+// @Param fresh query bool false "Fresh"
+// @Param overview query bool false "Overview"
+// @Success 201 {object} util.SuccessResponse{data=util.ScheduleData}
+// @Failure 400 {object} util.ErrorResponse
 // @Router /projects/{project_id}/schedule [post]
 func (server *Server) CreateSchedule(w http.ResponseWriter, r *http.Request) {
 	// Add the project_id path variable
 	vars := mux.Vars(r)
 	projectID, err := strconv.ParseInt(vars["project_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
-	err = server.DBCreateSchedule(ctx, projectID)
+	fresh := r.URL.Query().Get("fresh")
+	err = server.DBCreateSchedule(ctx, projectID, fresh)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
@@ -66,25 +74,37 @@ func (server *Server) CreateSchedule(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	server.FormatJSON(w, http.StatusCreated, schedule)
+	overview := r.URL.Query().Get("overview")
+	if overview == "true" {
+		server.FormatJSON(w, http.StatusCreated, util.ScheduleDataOverview{
+			Metadata:  schedule.Metadata,
+			ProjectID: schedule.ProjectID,
+		})
+	} else {
+		server.FormatJSON(w, http.StatusCreated, schedule)
+	}
 }
 
 // GetSchedule godoc
 // @Summary Get the schedule
-// @Description Get the schedule for a project
+// @Description Get the schedule for a project.
+// @Description
+// @Description **For JSON content type**: When overview = true, only the metadata is returned. Default value is false, which also returns the summary object.
 // @Tags Schedule
 // @Accept application/json
 // @Produce text/calendar,application/json
 // @Param project_id path int true "Project ID"
-// @Success 200 {object} util.Schedule
-// @Failure 400 {object} util.MultiError
+// @Param overview query bool false "Overview"
+// @Success 200 {object} util.SuccessResponse{data=util.ScheduleData}
+// @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
 // @Router /projects/{project_id}/schedule [get]
 func (server *Server) GetSchedule(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	projectID, err := strconv.ParseInt(vars["project_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
@@ -99,7 +119,15 @@ func (server *Server) GetSchedule(w http.ResponseWriter, r *http.Request) {
 		calendar, filename := server.GetScheduleICal(schedule)
 		server.FormatICAL(w, http.StatusOK, calendar, filename)
 	case "application/json":
-		server.FormatJSON(w, http.StatusOK, schedule)
+		overview := r.URL.Query().Get("overview")
+		if overview == "true" {
+			server.FormatJSON(w, http.StatusOK, util.ScheduleDataOverview{
+				Metadata:  schedule.Metadata,
+				ProjectID: schedule.ProjectID,
+			})
+		} else {
+			server.FormatJSON(w, http.StatusOK, schedule)
+		}
 	default:
 		calendar, filename := server.GetScheduleICal(schedule)
 		server.FormatICAL(w, http.StatusOK, calendar, filename)
@@ -115,14 +143,15 @@ func (server *Server) GetSchedule(w http.ResponseWriter, r *http.Request) {
 // @Produce application/json
 // @Param project_id path int true "Project ID"
 // @Success 200 {object} util.Success
-// @Failure 400 {object} util.MultiError
+// @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
 // @Router /projects/{project_id}/schedule [delete]
 func (server *Server) DeleteSchedule(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	project_id, err := strconv.ParseInt(vars["project_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()

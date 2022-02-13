@@ -30,73 +30,44 @@ package database
 
 import (
 	"context"
-
-	"github.com/Georepublic/pg_scheduleserv/internal/util"
-	"github.com/jackc/pgx/v4"
+	"fmt"
 )
 
-type CreateJobTimeWindowParams struct {
-	ID      *int64  `json:"id,string" example:"1234567812345678" validate:"required" swaggerignore:"true"`
-	TwOpen  *string `json:"tw_open" validate:"required,datetime=2006-01-02 15:04:05" example:"2021-12-31 23:00:00"`
-	TwClose *string `json:"tw_close" validate:"required,datetime=2006-01-02 15:04:05" example:"2021-12-31 23:59:00"`
+type TimeWindowParams struct {
+	TwOpen  string `json:"tw_open" validate:"required,datetime=2006-01-02T15:04:05" example:"2021-12-31T23:00:00"`
+	TwClose string `json:"tw_close" validate:"required,datetime=2006-01-02T15:04:05" example:"2021-12-31T23:59:00"`
 }
 
-func (q *Queries) DBCreateJobTimeWindow(ctx context.Context, arg CreateJobTimeWindowParams) (JobTimeWindow, error) {
-	sql, args := createResource("jobs_time_windows", arg)
-	return_sql := " RETURNING " + util.GetOutputFields(JobTimeWindow{})
-	row := q.db.QueryRow(ctx, sql+return_sql, args...)
-	return scanJobTimeWindowRow(row)
-}
-
-func (q *Queries) DBListJobTimeWindows(ctx context.Context, id int64) ([]JobTimeWindow, error) {
-	table_name := "jobs_time_windows"
-	additional_query := " WHERE id = $1 ORDER BY created_at"
-	sql := "SELECT " + util.GetOutputFields(JobTimeWindow{}) + " FROM " + table_name + additional_query
-	rows, err := q.db.Query(ctx, sql, id)
-	if err != nil {
-		return nil, err
+func (q *Queries) DBCreateJobTimeWindows(ctx context.Context, id int64, arg []TimeWindowParams) error {
+	if len(arg) == 0 {
+		return nil
 	}
-	defer rows.Close()
-	return scanJobTimeWindowRows(rows)
-}
 
-func (q *Queries) DBDeleteJobTimeWindow(ctx context.Context, id int64) (JobTimeWindow, error) {
-	sql := "DELETE FROM jobs_time_windows WHERE id = $1"
-	return_sql := " RETURNING " + util.GetOutputFields(JobTimeWindow{})
-	row := q.db.QueryRow(ctx, sql+return_sql, id)
-	return scanJobTimeWindowRow(row)
-}
-
-func scanJobTimeWindowRow(row pgx.Row) (JobTimeWindow, error) {
-	var i JobTimeWindow
-	err := row.Scan(
-		&i.ID,
-		&i.TwOpen,
-		&i.TwClose,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	err = util.HandleDBError(err)
-	return i, err
-}
-
-func scanJobTimeWindowRows(rows pgx.Rows) ([]JobTimeWindow, error) {
-	items := []JobTimeWindow{}
-	var i JobTimeWindow
-	for rows.Next() {
-		if err := rows.Scan(
-			&i.ID,
-			&i.TwOpen,
-			&i.TwClose,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
+	// create an sql query to insert multiple rows
+	sql := "INSERT INTO jobs_time_windows (id, tw_open, tw_close) VALUES "
+	for i := range arg {
+		if i > 0 {
+			sql += ","
 		}
-		items = append(items, i)
+		sql += fmt.Sprintf("($%d, $%d, $%d)", i*3+1, i*3+2, i*3+3)
 	}
-	if err := rows.Err(); err != nil {
-		return nil, err
+
+	// create a slice of arguments for the query
+	args := make([]interface{}, len(arg)*3)
+	for i, v := range arg {
+		args[i*3] = id
+		args[i*3+1] = v.TwOpen
+		args[i*3+2] = v.TwClose
 	}
-	return items, nil
+
+	// execute the query
+	_, err := q.db.Exec(ctx, sql, args...)
+	return err
+}
+
+func (q *Queries) DBDeleteJobTimeWindows(ctx context.Context, id int64) error {
+	tableName := "jobs_time_windows"
+	sql := "DELETE FROM " + tableName + " WHERE id = $1"
+	_, err := q.db.Exec(ctx, sql, id)
+	return err
 }

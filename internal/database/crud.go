@@ -42,12 +42,14 @@ func createResource(resource string, resourceStruct interface{}) (sql string, ar
 	partialSQL := util.GetPartialSQL(resourceStruct)
 	sqlFields := ""
 	values := ""
-	for i, field := range partialSQL.Fields {
+
+	i := 0
+	for _, field := range partialSQL.Fields {
 		val := fmt.Sprintf("$%d", i+1)
 
 		// Convert any interval field to its type
 		if _, intervalFieldFound := util.IntervalFields[field]; intervalFieldFound {
-			val = val + "* '1 sec'::INTERVAL"
+			val = val + "::INTERVAL"
 		}
 
 		if i == 0 {
@@ -57,6 +59,7 @@ func createResource(resource string, resourceStruct interface{}) (sql string, ar
 			sqlFields += ", " + field
 			values += ", " + val
 		}
+		i++
 	}
 	sql = fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)", resource, sqlFields, values)
 	args = partialSQL.Args
@@ -69,12 +72,18 @@ func createResource(resource string, resourceStruct interface{}) (sql string, ar
 func updateResource(resource string, resourceStruct interface{}, id int64) (sql string, args []interface{}) {
 	partialSQL := util.GetPartialSQL(resourceStruct)
 	restSQL := ""
-	for i, field := range partialSQL.Fields {
+
+	i := 0
+	for _, field := range partialSQL.Fields {
+		// skip fieldName == "time_windows" because it is not a field in the database
+		if field == "time_windows" || field == "p_time_windows" || field == "d_time_windows" {
+			continue
+		}
 		val := fmt.Sprintf("$%d", i+1)
 
 		// Convert any interval field to its type
 		if _, intervalFieldFound := util.IntervalFields[field]; intervalFieldFound {
-			val = val + "* '1 sec'::INTERVAL"
+			val = val + "::INTERVAL"
 		}
 
 		if i == 0 {
@@ -82,6 +91,7 @@ func updateResource(resource string, resourceStruct interface{}, id int64) (sql 
 		} else {
 			restSQL += ", " + field + " = " + val
 		}
+		i++
 	}
 	// If the request body is empty, do a fake update on ID
 	if restSQL == "" {

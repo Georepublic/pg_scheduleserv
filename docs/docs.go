@@ -57,13 +57,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Break"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Break"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -105,7 +117,7 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -150,141 +162,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Break"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Break"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/util.NotFound"
-                        }
-                    }
-                }
-            }
-        },
-        "/breaks/{break_id}/time_windows": {
-            "get": {
-                "description": "Get a list of break time windows for a break with break_id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Break"
-                ],
-                "summary": "List break time windows for a break",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Break ID",
-                        "name": "break_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/database.BreakTimeWindow"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.MultiError"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create a new break time window with the input payload",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Break"
-                ],
-                "summary": "Create a new break time window",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Break ID",
-                        "name": "break_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Create break time window",
-                        "name": "BreakTimeWindow",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/database.CreateBreakTimeWindowParams"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/database.BreakTimeWindow"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.MultiError"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete all break time windows for a break with break_id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Break"
-                ],
-                "summary": "Delete break time windows",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Break ID",
-                        "name": "break_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/util.Success"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -322,13 +218,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Job"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Job"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -370,7 +278,7 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -400,19 +308,40 @@ var doc = `{
                         "name": "job_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Job object",
+                        "name": "Job",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/database.UpdateJobParams"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Job"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Job"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -451,141 +380,28 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/util.Schedule"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/util.ScheduleDataTask"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/util.NotFound"
-                        }
-                    }
-                }
-            }
-        },
-        "/jobs/{job_id}/time_windows": {
-            "get": {
-                "description": "Get a list of job time windows for a job with job_id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Job"
-                ],
-                "summary": "List job time windows for a job",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Job ID",
-                        "name": "job_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/database.JobTimeWindow"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.MultiError"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create a new job time window with the input payload",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Job"
-                ],
-                "summary": "Create a new job time window",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Job ID",
-                        "name": "job_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Create job time window",
-                        "name": "JobTimeWindow",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/database.CreateJobTimeWindowParams"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/database.JobTimeWindow"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.MultiError"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete all job time windows for a job with job_id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Job"
-                ],
-                "summary": "Delete job time windows",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Job ID",
-                        "name": "job_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/util.Success"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -614,22 +430,34 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/database.Project"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/database.Project"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
             },
             "post": {
-                "description": "Create a new project with the input payload",
+                "description": "Create a new project with the input payload\nThe \"duration_calc\" parameter must be either \"euclidean\", \"valhalla\" or \"osrm\"",
                 "consumes": [
                     "application/json"
                 ],
@@ -655,13 +483,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Project"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Project"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -693,13 +533,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Project"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Project"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -741,7 +593,7 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -753,7 +605,7 @@ var doc = `{
                 }
             },
             "patch": {
-                "description": "Update a project with its project_id",
+                "description": "Update a project with its project_id\nThe \"duration_calc\" parameter must be either \"euclidean\", \"valhalla\" or \"osrm\"",
                 "consumes": [
                     "application/json"
                 ],
@@ -786,13 +638,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Project"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Project"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -830,16 +694,28 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/database.Job"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/database.Job"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -878,13 +754,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Job"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Job"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -892,7 +780,7 @@ var doc = `{
         },
         "/projects/{project_id}/schedule": {
             "get": {
-                "description": "Get the schedule for a project",
+                "description": "Get the schedule for a project.\n\n**For JSON content type**: When overview = true, only the metadata is returned. Default value is false, which also returns the summary object.",
                 "consumes": [
                     "application/json"
                 ],
@@ -911,19 +799,37 @@ var doc = `{
                         "name": "project_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Overview",
+                        "name": "overview",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/util.Schedule"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/util.ScheduleData"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -935,7 +841,7 @@ var doc = `{
                 }
             },
             "post": {
-                "description": "Schedule the tasks present in a project, deleting any previous schedule",
+                "description": "Schedule the tasks present in a project, deleting any previous schedule and return the new schedule.\n\nWhen fresh = true, the old schedule is ignored and a fresh schedule is created. Otherwise, the old schedule of each task is altered such that it remains in the \"max_shift\" interval. Default value is false.\n**For JSON content type**: When overview = true, only the metadata is returned. Default value is false, which also returns the summary object.",
                 "consumes": [
                     "application/json"
                 ],
@@ -953,19 +859,43 @@ var doc = `{
                         "name": "project_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Fresh",
+                        "name": "fresh",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Overview",
+                        "name": "overview",
+                        "in": "query"
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/util.Schedule"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/util.ScheduleData"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -1001,7 +931,7 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -1039,16 +969,28 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/database.Shipment"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/database.Shipment"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -1087,13 +1029,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Shipment"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Shipment"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -1125,16 +1079,28 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/database.Vehicle"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/database.Vehicle"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -1173,13 +1139,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Vehicle"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Vehicle"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -1211,13 +1189,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Shipment"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Shipment"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -1259,7 +1249,7 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -1304,13 +1294,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Shipment"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Shipment"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -1349,141 +1351,28 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/util.Schedule"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/util.ScheduleDataTask"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/util.NotFound"
-                        }
-                    }
-                }
-            }
-        },
-        "/shipments/{shipment_id}/time_windows": {
-            "get": {
-                "description": "Get a list of shipment time windows for a shipment with shipment_id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Shipment"
-                ],
-                "summary": "List shipment time windows for a shipment",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Shipment ID",
-                        "name": "shipment_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/database.ShipmentTimeWindow"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.MultiError"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Create a new shipment time window with the input payload",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Shipment"
-                ],
-                "summary": "Create a new shipment time window",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Shipment ID",
-                        "name": "shipment_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Create shipment time window",
-                        "name": "ShipmentTimeWindow",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/database.CreateShipmentTimeWindowParams"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/database.ShipmentTimeWindow"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.MultiError"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete all shipment time windows for a shipment with shipment_id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Shipment"
-                ],
-                "summary": "Delete shipment time windows",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Shipment ID",
-                        "name": "shipment_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/util.Success"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -1521,13 +1410,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Vehicle"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Vehicle"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -1569,7 +1470,7 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -1614,13 +1515,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Vehicle"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Vehicle"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -1658,16 +1571,28 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/database.Break"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/database.Break"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -1706,13 +1631,25 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/database.Break"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/database.Break"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     }
                 }
@@ -1720,7 +1657,7 @@ var doc = `{
         },
         "/vehicles/{vehicle_id}/schedule": {
             "get": {
-                "description": "Get the schedule for a vehicle using vehicle_id",
+                "description": "Get the schedule for a vehicle using vehicle_id\n\n**For JSON content type**: When overview = true, only the metadata is returned. Default value is false, which also returns the summary object.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1739,19 +1676,40 @@ var doc = `{
                         "name": "vehicle_id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Overview",
+                        "name": "overview",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/util.Schedule"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/util.ScheduleDB"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/util.MultiError"
+                            "$ref": "#/definitions/util.ErrorResponse"
                         }
                     },
                     "404": {
@@ -1770,7 +1728,7 @@ var doc = `{
             "properties": {
                 "created_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "data": {
                     "type": "object",
@@ -1787,41 +1745,25 @@ var doc = `{
                     "example": "1234567812345678"
                 },
                 "service": {
-                    "type": "integer",
-                    "example": 120
+                    "type": "string",
+                    "example": "00:02:00"
+                },
+                "time_windows": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
                 },
                 "updated_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "vehicle_id": {
                     "type": "string",
                     "example": "1234567812345678"
-                }
-            }
-        },
-        "database.BreakTimeWindow": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2021-12-01 13:00:00"
-                },
-                "id": {
-                    "type": "string",
-                    "example": "1234567812345678"
-                },
-                "tw_close": {
-                    "type": "string",
-                    "example": "2021-12-31 23:59:00"
-                },
-                "tw_open": {
-                    "type": "string",
-                    "example": "2021-12-31 23:00:00"
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2021-12-01 13:00:00"
                 }
             }
         },
@@ -1839,25 +1781,17 @@ var doc = `{
                     }
                 },
                 "service": {
-                    "type": "integer",
-                    "example": 120
-                }
-            }
-        },
-        "database.CreateBreakTimeWindowParams": {
-            "type": "object",
-            "required": [
-                "tw_close",
-                "tw_open"
-            ],
-            "properties": {
-                "tw_close": {
                     "type": "string",
-                    "example": "2021-12-31 23:59:00"
+                    "example": "00:02:00"
                 },
-                "tw_open": {
-                    "type": "string",
-                    "example": "2021-12-31 23:00:00"
+                "time_windows": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
                 }
             }
         },
@@ -1905,8 +1839,12 @@ var doc = `{
                     "example": 10
                 },
                 "service": {
-                    "type": "integer",
-                    "example": 120
+                    "type": "string",
+                    "example": "00:02:00"
+                },
+                "setup": {
+                    "type": "string",
+                    "example": "00:00:00"
                 },
                 "skills": {
                     "type": "array",
@@ -1917,23 +1855,15 @@ var doc = `{
                         1,
                         5
                     ]
-                }
-            }
-        },
-        "database.CreateJobTimeWindowParams": {
-            "type": "object",
-            "required": [
-                "tw_close",
-                "tw_open"
-            ],
-            "properties": {
-                "tw_close": {
-                    "type": "string",
-                    "example": "2021-12-31 23:59:00"
                 },
-                "tw_open": {
-                    "type": "string",
-                    "example": "2021-12-31 23:00:00"
+                "time_windows": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
                 }
             }
         },
@@ -1953,9 +1883,25 @@ var doc = `{
                         "key2": "value2"
                     }
                 },
+                "duration_calc": {
+                    "type": "string",
+                    "example": "euclidean"
+                },
+                "exploration_level": {
+                    "type": "integer",
+                    "example": 5
+                },
+                "max_shift": {
+                    "type": "string",
+                    "example": "00:30:00"
+                },
                 "name": {
                     "type": "string",
                     "example": "Sample Project"
+                },
+                "timeout": {
+                    "type": "string",
+                    "example": "00:10:00"
                 }
             }
         },
@@ -1976,14 +1922,37 @@ var doc = `{
                         15
                     ]
                 },
+                "d_data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
+                },
                 "d_location": {
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "d_service": {
-                    "type": "integer",
-                    "example": 120
+                    "type": "string",
+                    "example": "00:02:00"
                 },
-                "data": {
+                "d_setup": {
+                    "type": "string",
+                    "example": "00:00:00"
+                },
+                "d_time_windows": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "p_data": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "string"
@@ -1997,8 +1966,21 @@ var doc = `{
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "p_service": {
-                    "type": "integer",
-                    "example": 120
+                    "type": "string",
+                    "example": "00:02:00"
+                },
+                "p_setup": {
+                    "type": "string",
+                    "example": "00:00:00"
+                },
+                "p_time_windows": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
                 },
                 "priority": {
                     "type": "integer",
@@ -2013,28 +1995,6 @@ var doc = `{
                         1,
                         5
                     ]
-                }
-            }
-        },
-        "database.CreateShipmentTimeWindowParams": {
-            "type": "object",
-            "required": [
-                "kind",
-                "tw_close",
-                "tw_open"
-            ],
-            "properties": {
-                "kind": {
-                    "type": "string",
-                    "example": "p"
-                },
-                "tw_close": {
-                    "type": "string",
-                    "example": "2021-12-31 23:59:00"
-                },
-                "tw_open": {
-                    "type": "string",
-                    "example": "2021-12-31 23:00:00"
                 }
             }
         },
@@ -2068,6 +2028,10 @@ var doc = `{
                 "end_location": {
                     "$ref": "#/definitions/util.LocationParams"
                 },
+                "max_tasks": {
+                    "type": "integer",
+                    "example": 20
+                },
                 "skills": {
                     "type": "array",
                     "items": {
@@ -2087,11 +2051,11 @@ var doc = `{
                 },
                 "tw_close": {
                     "type": "string",
-                    "example": "2021-12-31 23:59:00"
+                    "example": "2021-12-31T23:59:00"
                 },
                 "tw_open": {
                     "type": "string",
-                    "example": "2021-12-31 23:00:00"
+                    "example": "2021-12-31T23:00:00"
                 }
             }
         },
@@ -2100,7 +2064,7 @@ var doc = `{
             "properties": {
                 "created_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "data": {
                     "type": "object",
@@ -2148,8 +2112,12 @@ var doc = `{
                     "example": "1234567812345678"
                 },
                 "service": {
-                    "type": "integer",
-                    "example": 120
+                    "type": "string",
+                    "example": "00:02:00"
+                },
+                "setup": {
+                    "type": "string",
+                    "example": "00:00:00"
                 },
                 "skills": {
                     "type": "array",
@@ -2161,34 +2129,18 @@ var doc = `{
                         5
                     ]
                 },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2021-12-01 13:00:00"
-                }
-            }
-        },
-        "database.JobTimeWindow": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2021-12-01 13:00:00"
-                },
-                "id": {
-                    "type": "string",
-                    "example": "1234567812345678"
-                },
-                "tw_close": {
-                    "type": "string",
-                    "example": "2021-12-31 23:59:00"
-                },
-                "tw_open": {
-                    "type": "string",
-                    "example": "2021-12-31 23:00:00"
+                "time_windows": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
                 },
                 "updated_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 }
             }
         },
@@ -2197,7 +2149,7 @@ var doc = `{
             "properties": {
                 "created_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "data": {
                     "type": "object",
@@ -2209,17 +2161,33 @@ var doc = `{
                         "key2": "value2"
                     }
                 },
+                "duration_calc": {
+                    "type": "string",
+                    "example": "euclidean"
+                },
+                "exploration_level": {
+                    "type": "integer",
+                    "example": 5
+                },
                 "id": {
                     "type": "string",
                     "example": "1234567812345678"
+                },
+                "max_shift": {
+                    "type": "string",
+                    "example": "00:30:00"
                 },
                 "name": {
                     "type": "string",
                     "example": "Sample Project"
                 },
+                "timeout": {
+                    "type": "string",
+                    "example": "00:10:00"
+                },
                 "updated_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 }
             }
         },
@@ -2238,16 +2206,9 @@ var doc = `{
                 },
                 "created_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
-                "d_location": {
-                    "$ref": "#/definitions/util.LocationParams"
-                },
-                "d_service": {
-                    "type": "integer",
-                    "example": 120
-                },
-                "data": {
+                "d_data": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "string"
@@ -2257,16 +2218,59 @@ var doc = `{
                         "key2": "value2"
                     }
                 },
+                "d_location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "d_service": {
+                    "type": "string",
+                    "example": "00:02:00"
+                },
+                "d_setup": {
+                    "type": "string",
+                    "example": "00:00:00"
+                },
+                "d_time_windows": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
                 "id": {
                     "type": "string",
                     "example": "1234567812345678"
+                },
+                "p_data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
                 },
                 "p_location": {
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "p_service": {
-                    "type": "integer",
-                    "example": 120
+                    "type": "string",
+                    "example": "00:02:00"
+                },
+                "p_setup": {
+                    "type": "string",
+                    "example": "00:00:00"
+                },
+                "p_time_windows": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
                 },
                 "priority": {
                     "type": "integer",
@@ -2288,36 +2292,76 @@ var doc = `{
                 },
                 "updated_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 }
             }
         },
-        "database.ShipmentTimeWindow": {
+        "database.UpdateJobParams": {
             "type": "object",
             "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                "data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
                 },
-                "id": {
-                    "type": "string",
-                    "example": "1234567812345678"
+                "delivery": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "example": [
+                        10,
+                        20
+                    ]
                 },
-                "kind": {
-                    "type": "string",
-                    "example": "p"
+                "location": {
+                    "$ref": "#/definitions/util.LocationParams"
                 },
-                "tw_close": {
-                    "type": "string",
-                    "example": "2021-12-31 23:59:00"
+                "pickup": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "example": [
+                        5,
+                        15
+                    ]
                 },
-                "tw_open": {
-                    "type": "string",
-                    "example": "2021-12-31 23:00:00"
+                "priority": {
+                    "type": "integer",
+                    "example": 10
                 },
-                "updated_at": {
+                "service": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "00:02:00"
+                },
+                "setup": {
+                    "type": "string",
+                    "example": "00:00:00"
+                },
+                "skills": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "example": [
+                        1,
+                        5
+                    ]
+                },
+                "time_windows": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
                 }
             }
         },
@@ -2334,14 +2378,37 @@ var doc = `{
                         15
                     ]
                 },
+                "d_data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
+                },
                 "d_location": {
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "d_service": {
-                    "type": "integer",
-                    "example": 120
+                    "type": "string",
+                    "example": "00:02:00"
                 },
-                "data": {
+                "d_setup": {
+                    "type": "string",
+                    "example": "00:00:00"
+                },
+                "d_time_windows": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "p_data": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "string"
@@ -2355,8 +2422,21 @@ var doc = `{
                     "$ref": "#/definitions/util.LocationParams"
                 },
                 "p_service": {
-                    "type": "integer",
-                    "example": 120
+                    "type": "string",
+                    "example": "00:02:00"
+                },
+                "p_setup": {
+                    "type": "string",
+                    "example": "00:00:00"
+                },
+                "p_time_windows": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
                 },
                 "priority": {
                     "type": "integer",
@@ -2400,6 +2480,10 @@ var doc = `{
                 "end_location": {
                     "$ref": "#/definitions/util.LocationParams"
                 },
+                "max_tasks": {
+                    "type": "integer",
+                    "example": 20
+                },
                 "skills": {
                     "type": "array",
                     "items": {
@@ -2419,11 +2503,11 @@ var doc = `{
                 },
                 "tw_close": {
                     "type": "string",
-                    "example": "2021-12-31 23:59:00"
+                    "example": "2021-12-31T23:59:00"
                 },
                 "tw_open": {
                     "type": "string",
-                    "example": "2021-12-31 23:00:00"
+                    "example": "2021-12-31T23:00:00"
                 }
             }
         },
@@ -2442,7 +2526,7 @@ var doc = `{
                 },
                 "created_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "data": {
                     "type": "object",
@@ -2460,6 +2544,10 @@ var doc = `{
                 "id": {
                     "type": "string",
                     "example": "1234567812345678"
+                },
+                "max_tasks": {
+                    "type": "integer",
+                    "example": 20
                 },
                 "project_id": {
                     "type": "string",
@@ -2484,15 +2572,38 @@ var doc = `{
                 },
                 "tw_close": {
                     "type": "string",
-                    "example": "2021-12-31 23:59:00"
+                    "example": "2021-12-31T23:59:00"
                 },
                 "tw_open": {
                     "type": "string",
-                    "example": "2021-12-31 23:00:00"
+                    "example": "2021-12-31T23:00:00"
                 },
                 "updated_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
+                }
+            }
+        },
+        "util.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "400"
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "Error message1",
+                        "Error message2"
+                    ]
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Bad Request"
                 }
             }
         },
@@ -2513,79 +2624,68 @@ var doc = `{
                 }
             }
         },
-        "util.MultiError": {
+        "util.MetadataResponse": {
             "type": "object",
             "properties": {
-                "errors": {
+                "summary": {
                     "type": "array",
                     "items": {
-                        "type": "string"
-                    },
-                    "example": [
-                        "Error message1",
-                        "Error message2"
-                    ]
+                        "$ref": "#/definitions/util.ScheduleSummary"
+                    }
+                },
+                "total_service": {
+                    "type": "string",
+                    "example": "00:10:00"
+                },
+                "total_setup": {
+                    "type": "string",
+                    "example": "00:05:00"
+                },
+                "total_travel": {
+                    "type": "string",
+                    "example": "01:00:00"
+                },
+                "total_waiting": {
+                    "type": "string",
+                    "example": "00:30:00"
+                },
+                "unassigned": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/util.ScheduleUnassigned"
+                    }
                 }
             }
         },
         "util.NotFound": {
             "type": "object",
             "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "404"
+                },
                 "error": {
                     "type": "string",
                     "example": "Not Found"
                 }
             }
         },
-        "util.Schedule": {
+        "util.ScheduleDB": {
             "type": "object",
             "properties": {
                 "arrival": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
-                },
-                "break_id": {
-                    "type": "string",
-                    "example": "1234567812345678"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "created_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
                 "departure": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
                 },
-                "end_load": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    },
-                    "example": [
-                        50,
-                        25
-                    ]
-                },
-                "job_id": {
-                    "type": "string",
-                    "example": "1234567812345678"
-                },
-                "location": {
-                    "$ref": "#/definitions/util.LocationParams"
-                },
-                "project_id": {
-                    "type": "string",
-                    "example": "1234567812345678"
-                },
-                "service_time": {
-                    "type": "integer",
-                    "example": 120
-                },
-                "shipment_id": {
-                    "type": "string",
-                    "example": "1234567812345678"
-                },
-                "start_load": {
+                "load": {
                     "type": "array",
                     "items": {
                         "type": "integer"
@@ -2595,9 +2695,38 @@ var doc = `{
                         0
                     ]
                 },
+                "location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "project_id": {
+                    "type": "string",
+                    "example": "1234567812345678"
+                },
+                "service_time": {
+                    "type": "string",
+                    "example": "00:02:00"
+                },
+                "setup_time": {
+                    "type": "string",
+                    "example": "00:00:00"
+                },
+                "task_data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
+                },
+                "task_id": {
+                    "type": "string",
+                    "example": "1234567812345678"
+                },
                 "travel_time": {
-                    "type": "integer",
-                    "example": 1000
+                    "type": "string",
+                    "example": "00:16:40"
                 },
                 "type": {
                     "type": "string",
@@ -2605,24 +2734,239 @@ var doc = `{
                 },
                 "updated_at": {
                     "type": "string",
-                    "example": "2021-12-01 13:00:00"
+                    "example": "2021-12-01T13:00:00"
+                },
+                "vehicle_data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
                 },
                 "vehicle_id": {
                     "type": "string",
                     "example": "1234567812345678"
                 },
                 "waiting_time": {
-                    "type": "integer",
-                    "example": 0
+                    "type": "string",
+                    "example": "00:00:00"
+                }
+            }
+        },
+        "util.ScheduleData": {
+            "type": "object",
+            "properties": {
+                "metadata": {
+                    "$ref": "#/definitions/util.MetadataResponse"
+                },
+                "project_id": {
+                    "type": "string",
+                    "example": "1234567812345678"
+                },
+                "schedule": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/util.ScheduleResponse"
+                    }
+                }
+            }
+        },
+        "util.ScheduleDataTask": {
+            "type": "object",
+            "properties": {
+                "project_id": {
+                    "type": "string",
+                    "example": "1234567812345678"
+                },
+                "schedule": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/util.ScheduleResponse"
+                    }
+                }
+            }
+        },
+        "util.ScheduleResponse": {
+            "type": "object",
+            "properties": {
+                "route": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/util.ScheduleRoute"
+                    }
+                },
+                "vehicle_data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
+                },
+                "vehicle_id": {
+                    "type": "string",
+                    "example": "0"
+                }
+            }
+        },
+        "util.ScheduleRoute": {
+            "type": "object",
+            "properties": {
+                "arrival": {
+                    "type": "string",
+                    "example": "2021-12-01T13:00:00"
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2021-12-01T13:00:00"
+                },
+                "departure": {
+                    "type": "string",
+                    "example": "2021-12-01T13:00:00"
+                },
+                "load": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    },
+                    "example": [
+                        0,
+                        0
+                    ]
+                },
+                "location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "service_time": {
+                    "type": "string",
+                    "example": "00:02:00"
+                },
+                "setup_time": {
+                    "type": "string",
+                    "example": "00:00:00"
+                },
+                "task_data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
+                },
+                "task_id": {
+                    "type": "string",
+                    "example": "1234567812345678"
+                },
+                "travel_time": {
+                    "type": "string",
+                    "example": "00:16:40"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "job"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2021-12-01T13:00:00"
+                },
+                "waiting_time": {
+                    "type": "string",
+                    "example": "00:00:00"
+                }
+            }
+        },
+        "util.ScheduleSummary": {
+            "type": "object",
+            "properties": {
+                "service_time": {
+                    "type": "string",
+                    "example": "00:02:00"
+                },
+                "setup_time": {
+                    "type": "string",
+                    "example": "00:00:00"
+                },
+                "travel_time": {
+                    "type": "string",
+                    "example": "00:16:40"
+                },
+                "vehicle_data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
+                },
+                "vehicle_id": {
+                    "type": "string",
+                    "example": "1234567812345678"
+                },
+                "waiting_time": {
+                    "type": "string",
+                    "example": "00:00:00"
+                }
+            }
+        },
+        "util.ScheduleUnassigned": {
+            "type": "object",
+            "properties": {
+                "location": {
+                    "$ref": "#/definitions/util.LocationParams"
+                },
+                "task_data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "example": {
+                        "key1": "value1",
+                        "key2": "value2"
+                    }
+                },
+                "task_id": {
+                    "type": "string",
+                    "example": "1234567812345678"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "job"
                 }
             }
         },
         "util.Success": {
             "type": "object",
             "properties": {
-                "success": {
+                "code": {
                     "type": "string",
-                    "example": "true"
+                    "example": "200"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "OK"
+                }
+            }
+        },
+        "util.SuccessResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "example": "200"
+                },
+                "data": {},
+                "message": {
+                    "type": "string",
+                    "example": "OK"
                 }
             }
         }
@@ -2640,7 +2984,7 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "0.1.0",
+	Version:     "0.2.0",
 	Host:        "localhost:9100",
 	BasePath:    "/",
 	Schemes:     []string{"http", "https"},

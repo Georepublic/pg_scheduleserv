@@ -36,7 +36,35 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func GetLocationIndex(latitude float64, longitude float64) int64 {
+func GetShipmentTimeWindows(kind []*string, timeWindows [][]*string) ([][]string, [][]string) {
+	// If no time windows exist, then [[NULL, NULL]] is stored in timeWindows when LEFT JOIN is performed
+	p_parsedTimeWindows := make([][]string, 0)
+	d_parsedTimeWindows := make([][]string, 0)
+	for i, tw := range timeWindows {
+		if tw[0] != nil && tw[1] != nil && kind[i] != nil {
+			// depending on the kind of shipment, the time window is either the pickup or the delivery time window
+			if *kind[i] == "p" {
+				p_parsedTimeWindows = append(p_parsedTimeWindows, []string{*tw[0], *tw[1]})
+			} else {
+				d_parsedTimeWindows = append(d_parsedTimeWindows, []string{*tw[0], *tw[1]})
+			}
+		}
+	}
+	return p_parsedTimeWindows, d_parsedTimeWindows
+}
+
+func GetTimeWindows(timeWindows [][]*string) [][]string {
+	// If no time windows exist, then [[NULL, NULL]] is stored in timeWindows when LEFT JOIN is performed
+	parsedTimeWindows := make([][]string, 0)
+	for _, tw := range timeWindows {
+		if tw[0] != nil && tw[1] != nil {
+			parsedTimeWindows = append(parsedTimeWindows, []string{*tw[0], *tw[1]})
+		}
+	}
+	return parsedTimeWindows
+}
+
+func GetLocationId(latitude float64, longitude float64) int64 {
 	lat_prefix := '0'
 	lon_prefix := '0'
 	if latitude < 0 {

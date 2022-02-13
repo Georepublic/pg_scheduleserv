@@ -3,7 +3,7 @@ definitions:
   database.Break:
     properties:
       created_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       data:
         additionalProperties:
@@ -16,31 +16,19 @@ definitions:
         example: "1234567812345678"
         type: string
       service:
-        example: 120
-        type: integer
+        example: "00:02:00"
+        type: string
+      time_windows:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
       updated_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       vehicle_id:
         example: "1234567812345678"
-        type: string
-    type: object
-  database.BreakTimeWindow:
-    properties:
-      created_at:
-        example: "2021-12-01 13:00:00"
-        type: string
-      id:
-        example: "1234567812345678"
-        type: string
-      tw_close:
-        example: "2021-12-31 23:59:00"
-        type: string
-      tw_open:
-        example: "2021-12-31 23:00:00"
-        type: string
-      updated_at:
-        example: "2021-12-01 13:00:00"
         type: string
     type: object
   database.CreateBreakParams:
@@ -53,20 +41,14 @@ definitions:
           key2: value2
         type: object
       service:
-        example: 120
-        type: integer
-    type: object
-  database.CreateBreakTimeWindowParams:
-    properties:
-      tw_close:
-        example: "2021-12-31 23:59:00"
+        example: "00:02:00"
         type: string
-      tw_open:
-        example: "2021-12-31 23:00:00"
-        type: string
-    required:
-    - tw_close
-    - tw_open
+      time_windows:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
     type: object
   database.CreateJobParams:
     properties:
@@ -97,8 +79,11 @@ definitions:
         example: 10
         type: integer
       service:
-        example: 120
-        type: integer
+        example: "00:02:00"
+        type: string
+      setup:
+        example: "00:00:00"
+        type: string
       skills:
         example:
         - 1
@@ -106,20 +91,14 @@ definitions:
         items:
           type: integer
         type: array
+      time_windows:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
     required:
     - location
-    type: object
-  database.CreateJobTimeWindowParams:
-    properties:
-      tw_close:
-        example: "2021-12-31 23:59:00"
-        type: string
-      tw_open:
-        example: "2021-12-31 23:00:00"
-        type: string
-    required:
-    - tw_close
-    - tw_open
     type: object
   database.CreateProjectParams:
     properties:
@@ -130,8 +109,20 @@ definitions:
           key1: value1
           key2: value2
         type: object
+      duration_calc:
+        example: euclidean
+        type: string
+      exploration_level:
+        example: 5
+        type: integer
+      max_shift:
+        example: "00:30:00"
+        type: string
       name:
         example: Sample Project
+        type: string
+      timeout:
+        example: "00:10:00"
         type: string
     required:
     - name
@@ -145,12 +136,28 @@ definitions:
         items:
           type: integer
         type: array
+      d_data:
+        additionalProperties:
+          type: string
+        example:
+          key1: value1
+          key2: value2
+        type: object
       d_location:
         $ref: '#/definitions/util.LocationParams'
       d_service:
-        example: 120
-        type: integer
-      data:
+        example: "00:02:00"
+        type: string
+      d_setup:
+        example: "00:00:00"
+        type: string
+      d_time_windows:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
+      p_data:
         additionalProperties:
           type: string
         example:
@@ -160,8 +167,17 @@ definitions:
       p_location:
         $ref: '#/definitions/util.LocationParams'
       p_service:
-        example: 120
-        type: integer
+        example: "00:02:00"
+        type: string
+      p_setup:
+        example: "00:00:00"
+        type: string
+      p_time_windows:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
       priority:
         example: 10
         type: integer
@@ -175,22 +191,6 @@ definitions:
     required:
     - d_location
     - p_location
-    type: object
-  database.CreateShipmentTimeWindowParams:
-    properties:
-      kind:
-        example: p
-        type: string
-      tw_close:
-        example: "2021-12-31 23:59:00"
-        type: string
-      tw_open:
-        example: "2021-12-31 23:00:00"
-        type: string
-    required:
-    - kind
-    - tw_close
-    - tw_open
     type: object
   database.CreateVehicleParams:
     properties:
@@ -210,6 +210,9 @@ definitions:
         type: object
       end_location:
         $ref: '#/definitions/util.LocationParams'
+      max_tasks:
+        example: 20
+        type: integer
       skills:
         example:
         - 1
@@ -223,10 +226,10 @@ definitions:
       start_location:
         $ref: '#/definitions/util.LocationParams'
       tw_close:
-        example: "2021-12-31 23:59:00"
+        example: 2021-12-31T23:59:00
         type: string
       tw_open:
-        example: "2021-12-31 23:00:00"
+        example: 2021-12-31T23:00:00
         type: string
     required:
     - end_location
@@ -235,7 +238,7 @@ definitions:
   database.Job:
     properties:
       created_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       data:
         additionalProperties:
@@ -270,8 +273,11 @@ definitions:
         example: "1234567812345678"
         type: string
       service:
-        example: 120
-        type: integer
+        example: "00:02:00"
+        type: string
+      setup:
+        example: "00:00:00"
+        type: string
       skills:
         example:
         - 1
@@ -279,32 +285,20 @@ definitions:
         items:
           type: integer
         type: array
+      time_windows:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
       updated_at:
-        example: "2021-12-01 13:00:00"
-        type: string
-    type: object
-  database.JobTimeWindow:
-    properties:
-      created_at:
-        example: "2021-12-01 13:00:00"
-        type: string
-      id:
-        example: "1234567812345678"
-        type: string
-      tw_close:
-        example: "2021-12-31 23:59:00"
-        type: string
-      tw_open:
-        example: "2021-12-31 23:00:00"
-        type: string
-      updated_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
     type: object
   database.Project:
     properties:
       created_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       data:
         additionalProperties:
@@ -313,14 +307,26 @@ definitions:
           key1: value1
           key2: value2
         type: object
+      duration_calc:
+        example: euclidean
+        type: string
+      exploration_level:
+        example: 5
+        type: integer
       id:
         example: "1234567812345678"
+        type: string
+      max_shift:
+        example: "00:30:00"
         type: string
       name:
         example: Sample Project
         type: string
+      timeout:
+        example: "00:10:00"
+        type: string
       updated_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
     type: object
   database.Shipment:
@@ -333,28 +339,53 @@ definitions:
           type: integer
         type: array
       created_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
-      d_location:
-        $ref: '#/definitions/util.LocationParams'
-      d_service:
-        example: 120
-        type: integer
-      data:
+      d_data:
         additionalProperties:
           type: string
         example:
           key1: value1
           key2: value2
         type: object
+      d_location:
+        $ref: '#/definitions/util.LocationParams'
+      d_service:
+        example: "00:02:00"
+        type: string
+      d_setup:
+        example: "00:00:00"
+        type: string
+      d_time_windows:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
       id:
         example: "1234567812345678"
         type: string
+      p_data:
+        additionalProperties:
+          type: string
+        example:
+          key1: value1
+          key2: value2
+        type: object
       p_location:
         $ref: '#/definitions/util.LocationParams'
       p_service:
-        example: 120
-        type: integer
+        example: "00:02:00"
+        type: string
+      p_setup:
+        example: "00:00:00"
+        type: string
+      p_time_windows:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
       priority:
         example: 10
         type: integer
@@ -369,29 +400,56 @@ definitions:
           type: integer
         type: array
       updated_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
     type: object
-  database.ShipmentTimeWindow:
+  database.UpdateJobParams:
     properties:
-      created_at:
-        example: "2021-12-01 13:00:00"
+      data:
+        additionalProperties:
+          type: string
+        example:
+          key1: value1
+          key2: value2
+        type: object
+      delivery:
+        example:
+        - 10
+        - 20
+        items:
+          type: integer
+        type: array
+      location:
+        $ref: '#/definitions/util.LocationParams'
+      pickup:
+        example:
+        - 5
+        - 15
+        items:
+          type: integer
+        type: array
+      priority:
+        example: 10
+        type: integer
+      service:
+        example: "00:02:00"
         type: string
-      id:
-        example: "1234567812345678"
+      setup:
+        example: "00:00:00"
         type: string
-      kind:
-        example: p
-        type: string
-      tw_close:
-        example: "2021-12-31 23:59:00"
-        type: string
-      tw_open:
-        example: "2021-12-31 23:00:00"
-        type: string
-      updated_at:
-        example: "2021-12-01 13:00:00"
-        type: string
+      skills:
+        example:
+        - 1
+        - 5
+        items:
+          type: integer
+        type: array
+      time_windows:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
     type: object
   database.UpdateShipmentParams:
     properties:
@@ -402,12 +460,28 @@ definitions:
         items:
           type: integer
         type: array
+      d_data:
+        additionalProperties:
+          type: string
+        example:
+          key1: value1
+          key2: value2
+        type: object
       d_location:
         $ref: '#/definitions/util.LocationParams'
       d_service:
-        example: 120
-        type: integer
-      data:
+        example: "00:02:00"
+        type: string
+      d_setup:
+        example: "00:00:00"
+        type: string
+      d_time_windows:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
+      p_data:
         additionalProperties:
           type: string
         example:
@@ -417,8 +491,17 @@ definitions:
       p_location:
         $ref: '#/definitions/util.LocationParams'
       p_service:
-        example: 120
-        type: integer
+        example: "00:02:00"
+        type: string
+      p_setup:
+        example: "00:00:00"
+        type: string
+      p_time_windows:
+        items:
+          items:
+            type: string
+          type: array
+        type: array
       priority:
         example: 10
         type: integer
@@ -448,6 +531,9 @@ definitions:
         type: object
       end_location:
         $ref: '#/definitions/util.LocationParams'
+      max_tasks:
+        example: 20
+        type: integer
       skills:
         example:
         - 1
@@ -461,10 +547,10 @@ definitions:
       start_location:
         $ref: '#/definitions/util.LocationParams'
       tw_close:
-        example: "2021-12-31 23:59:00"
+        example: 2021-12-31T23:59:00
         type: string
       tw_open:
-        example: "2021-12-31 23:00:00"
+        example: 2021-12-31T23:00:00
         type: string
     type: object
   database.Vehicle:
@@ -477,7 +563,7 @@ definitions:
           type: integer
         type: array
       created_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       data:
         additionalProperties:
@@ -491,6 +577,9 @@ definitions:
       id:
         example: "1234567812345678"
         type: string
+      max_tasks:
+        example: 20
+        type: integer
       project_id:
         example: "1234567812345678"
         type: string
@@ -507,13 +596,29 @@ definitions:
       start_location:
         $ref: '#/definitions/util.LocationParams'
       tw_close:
-        example: "2021-12-31 23:59:00"
+        example: 2021-12-31T23:59:00
         type: string
       tw_open:
-        example: "2021-12-31 23:00:00"
+        example: 2021-12-31T23:00:00
         type: string
       updated_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
+        type: string
+    type: object
+  util.ErrorResponse:
+    properties:
+      code:
+        example: "400"
+        type: string
+      errors:
+        example:
+        - Error message1
+        - Error message2
+        items:
+          type: string
+        type: array
+      message:
+        example: Bad Request
         type: string
     type: object
   util.LocationParams:
@@ -528,84 +633,248 @@ definitions:
     - latitude
     - longitude
     type: object
-  util.MultiError:
+  util.MetadataResponse:
     properties:
-      errors:
-        example:
-        - Error message1
-        - Error message2
+      summary:
         items:
-          type: string
+          $ref: '#/definitions/util.ScheduleSummary'
+        type: array
+      total_service:
+        example: "00:10:00"
+        type: string
+      total_setup:
+        example: "00:05:00"
+        type: string
+      total_travel:
+        example: "01:00:00"
+        type: string
+      total_waiting:
+        example: "00:30:00"
+        type: string
+      unassigned:
+        items:
+          $ref: '#/definitions/util.ScheduleUnassigned'
         type: array
     type: object
   util.NotFound:
     properties:
+      code:
+        example: "404"
+        type: string
       error:
         example: Not Found
         type: string
     type: object
-  util.Schedule:
+  util.ScheduleDB:
     properties:
       arrival:
-        example: "2021-12-01 13:00:00"
-        type: string
-      break_id:
-        example: "1234567812345678"
+        example: 2021-12-01T13:00:00
         type: string
       created_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
       departure:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
-      end_load:
+      load:
         example:
-        - 50
-        - 25
+        - 0
+        - 0
         items:
           type: integer
         type: array
-      job_id:
-        example: "1234567812345678"
-        type: string
       location:
         $ref: '#/definitions/util.LocationParams'
       project_id:
         example: "1234567812345678"
         type: string
       service_time:
-        example: 120
-        type: integer
-      shipment_id:
+        example: "00:02:00"
+        type: string
+      setup_time:
+        example: "00:00:00"
+        type: string
+      task_data:
+        additionalProperties:
+          type: string
+        example:
+          key1: value1
+          key2: value2
+        type: object
+      task_id:
         example: "1234567812345678"
         type: string
-      start_load:
+      travel_time:
+        example: "00:16:40"
+        type: string
+      type:
+        example: job
+        type: string
+      updated_at:
+        example: 2021-12-01T13:00:00
+        type: string
+      vehicle_data:
+        additionalProperties:
+          type: string
+        example:
+          key1: value1
+          key2: value2
+        type: object
+      vehicle_id:
+        example: "1234567812345678"
+        type: string
+      waiting_time:
+        example: "00:00:00"
+        type: string
+    type: object
+  util.ScheduleData:
+    properties:
+      metadata:
+        $ref: '#/definitions/util.MetadataResponse'
+      project_id:
+        example: "1234567812345678"
+        type: string
+      schedule:
+        items:
+          $ref: '#/definitions/util.ScheduleResponse'
+        type: array
+    type: object
+  util.ScheduleDataTask:
+    properties:
+      project_id:
+        example: "1234567812345678"
+        type: string
+      schedule:
+        items:
+          $ref: '#/definitions/util.ScheduleResponse'
+        type: array
+    type: object
+  util.ScheduleResponse:
+    properties:
+      route:
+        items:
+          $ref: '#/definitions/util.ScheduleRoute'
+        type: array
+      vehicle_data:
+        additionalProperties:
+          type: string
+        example:
+          key1: value1
+          key2: value2
+        type: object
+      vehicle_id:
+        example: "0"
+        type: string
+    type: object
+  util.ScheduleRoute:
+    properties:
+      arrival:
+        example: 2021-12-01T13:00:00
+        type: string
+      created_at:
+        example: 2021-12-01T13:00:00
+        type: string
+      departure:
+        example: 2021-12-01T13:00:00
+        type: string
+      load:
         example:
         - 0
         - 0
         items:
           type: integer
         type: array
+      location:
+        $ref: '#/definitions/util.LocationParams'
+      service_time:
+        example: "00:02:00"
+        type: string
+      setup_time:
+        example: "00:00:00"
+        type: string
+      task_data:
+        additionalProperties:
+          type: string
+        example:
+          key1: value1
+          key2: value2
+        type: object
+      task_id:
+        example: "1234567812345678"
+        type: string
       travel_time:
-        example: 1000
-        type: integer
+        example: "00:16:40"
+        type: string
       type:
         example: job
         type: string
       updated_at:
-        example: "2021-12-01 13:00:00"
+        example: 2021-12-01T13:00:00
         type: string
+      waiting_time:
+        example: "00:00:00"
+        type: string
+    type: object
+  util.ScheduleSummary:
+    properties:
+      service_time:
+        example: "00:02:00"
+        type: string
+      setup_time:
+        example: "00:00:00"
+        type: string
+      travel_time:
+        example: "00:16:40"
+        type: string
+      vehicle_data:
+        additionalProperties:
+          type: string
+        example:
+          key1: value1
+          key2: value2
+        type: object
       vehicle_id:
         example: "1234567812345678"
         type: string
       waiting_time:
-        example: 0
-        type: integer
+        example: "00:00:00"
+        type: string
+    type: object
+  util.ScheduleUnassigned:
+    properties:
+      location:
+        $ref: '#/definitions/util.LocationParams'
+      task_data:
+        additionalProperties:
+          type: string
+        example:
+          key1: value1
+          key2: value2
+        type: object
+      task_id:
+        example: "1234567812345678"
+        type: string
+      type:
+        example: job
+        type: string
     type: object
   util.Success:
     properties:
-      success:
-        example: "true"
+      code:
+        example: "200"
+        type: string
+      message:
+        example: OK
+        type: string
+    type: object
+  util.SuccessResponse:
+    properties:
+      code:
+        example: "200"
+        type: string
+      data: {}
+      message:
+        example: OK
         type: string
     type: object
 host: localhost:9100
@@ -620,7 +889,7 @@ info:
     url: https://www.gnu.org/licenses/agpl-3.0.en.html
   termsOfService: https://swagger.io/terms/
   title: pg_scheduleserv API
-  version: 0.1.0
+  version: 0.2.0
 paths:
   /breaks/{break_id}:
     delete:
@@ -643,7 +912,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -667,11 +936,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Break'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Break'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -701,101 +975,21 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Break'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Break'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
             $ref: '#/definitions/util.NotFound'
       summary: Update a break
-      tags:
-      - Break
-  /breaks/{break_id}/time_windows:
-    delete:
-      consumes:
-      - application/json
-      description: Delete all break time windows for a break with break_id
-      parameters:
-      - description: Break ID
-        in: path
-        name: break_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/util.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.MultiError'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/util.NotFound'
-      summary: Delete break time windows
-      tags:
-      - Break
-    get:
-      consumes:
-      - application/json
-      description: Get a list of break time windows for a break with break_id
-      parameters:
-      - description: Break ID
-        in: path
-        name: break_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/database.BreakTimeWindow'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.MultiError'
-      summary: List break time windows for a break
-      tags:
-      - Break
-    post:
-      consumes:
-      - application/json
-      description: Create a new break time window with the input payload
-      parameters:
-      - description: Break ID
-        in: path
-        name: break_id
-        required: true
-        type: integer
-      - description: Create break time window
-        in: body
-        name: BreakTimeWindow
-        required: true
-        schema:
-          $ref: '#/definitions/database.CreateBreakTimeWindowParams'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/database.BreakTimeWindow'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.MultiError'
-      summary: Create a new break time window
       tags:
       - Break
   /jobs/{job_id}:
@@ -819,7 +1013,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -843,11 +1037,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Job'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Job'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -865,17 +1064,28 @@ paths:
         name: job_id
         required: true
         type: integer
+      - description: Job object
+        in: body
+        name: Job
+        required: true
+        schema:
+          $ref: '#/definitions/database.UpdateJobParams'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Job'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Job'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -901,101 +1111,23 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.Schedule'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/util.ScheduleDataTask'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
             $ref: '#/definitions/util.NotFound'
       summary: Get the schedule for a job
-      tags:
-      - Job
-  /jobs/{job_id}/time_windows:
-    delete:
-      consumes:
-      - application/json
-      description: Delete all job time windows for a job with job_id
-      parameters:
-      - description: Job ID
-        in: path
-        name: job_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/util.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.MultiError'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/util.NotFound'
-      summary: Delete job time windows
-      tags:
-      - Job
-    get:
-      consumes:
-      - application/json
-      description: Get a list of job time windows for a job with job_id
-      parameters:
-      - description: Job ID
-        in: path
-        name: job_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/database.JobTimeWindow'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.MultiError'
-      summary: List job time windows for a job
-      tags:
-      - Job
-    post:
-      consumes:
-      - application/json
-      description: Create a new job time window with the input payload
-      parameters:
-      - description: Job ID
-        in: path
-        name: job_id
-        required: true
-        type: integer
-      - description: Create job time window
-        in: body
-        name: JobTimeWindow
-        required: true
-        schema:
-          $ref: '#/definitions/database.CreateJobTimeWindowParams'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/database.JobTimeWindow'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.MultiError'
-      summary: Create a new job time window
       tags:
       - Job
   /projects:
@@ -1009,20 +1141,27 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/database.Project'
-            type: array
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/database.Project'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: List projects
       tags:
       - Project
     post:
       consumes:
       - application/json
-      description: Create a new project with the input payload
+      description: |-
+        Create a new project with the input payload
+        The "duration_calc" parameter must be either "euclidean", "valhalla" or "osrm"
       parameters:
       - description: Create project
         in: body
@@ -1036,11 +1175,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Project'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Project'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: Create a new project
       tags:
       - Project
@@ -1065,7 +1209,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1089,11 +1233,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Project'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Project'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1104,7 +1253,9 @@ paths:
     patch:
       consumes:
       - application/json
-      description: Update a project with its project_id
+      description: |-
+        Update a project with its project_id
+        The "duration_calc" parameter must be either "euclidean", "valhalla" or "osrm"
       parameters:
       - description: Project ID
         in: path
@@ -1123,11 +1274,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Project'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Project'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1152,13 +1308,18 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/database.Job'
-            type: array
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/database.Job'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: List jobs for a project
       tags:
       - Job
@@ -1184,11 +1345,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Job'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Job'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: Create a new job
       tags:
       - Job
@@ -1213,7 +1379,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1224,13 +1390,20 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get the schedule for a project
+      description: |-
+        Get the schedule for a project.
+
+        **For JSON content type**: When overview = true, only the metadata is returned. Default value is false, which also returns the summary object.
       parameters:
       - description: Project ID
         in: path
         name: project_id
         required: true
         type: integer
+      - description: Overview
+        in: query
+        name: overview
+        type: boolean
       produces:
       - text/calendar
       - application/json
@@ -1238,11 +1411,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.Schedule'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/util.ScheduleData'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1253,25 +1431,41 @@ paths:
     post:
       consumes:
       - application/json
-      description: Schedule the tasks present in a project, deleting any previous
-        schedule
+      description: |-
+        Schedule the tasks present in a project, deleting any previous schedule and return the new schedule.
+
+        When fresh = true, the old schedule is ignored and a fresh schedule is created. Otherwise, the old schedule of each task is altered such that it remains in the "max_shift" interval. Default value is false.
+        **For JSON content type**: When overview = true, only the metadata is returned. Default value is false, which also returns the summary object.
       parameters:
       - description: Project ID
         in: path
         name: project_id
         required: true
         type: integer
+      - description: Fresh
+        in: query
+        name: fresh
+        type: boolean
+      - description: Overview
+        in: query
+        name: overview
+        type: boolean
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
-            $ref: '#/definitions/util.Schedule'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/util.ScheduleData'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: Schedule the tasks
       tags:
       - Schedule
@@ -1292,13 +1486,18 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/database.Shipment'
-            type: array
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/database.Shipment'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: List shipments for a project
       tags:
       - Shipment
@@ -1324,11 +1523,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Shipment'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Shipment'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: Create a new shipment
       tags:
       - Shipment
@@ -1349,13 +1553,18 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/database.Vehicle'
-            type: array
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/database.Vehicle'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: List vehicles for a project
       tags:
       - Vehicle
@@ -1381,11 +1590,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Vehicle'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Vehicle'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: Create a new vehicle
       tags:
       - Vehicle
@@ -1410,7 +1624,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1434,11 +1648,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Shipment'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Shipment'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1468,11 +1687,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Shipment'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Shipment'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1498,101 +1722,23 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.Schedule'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/util.ScheduleDataTask'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
             $ref: '#/definitions/util.NotFound'
       summary: Get the schedule for a shipment
-      tags:
-      - Shipment
-  /shipments/{shipment_id}/time_windows:
-    delete:
-      consumes:
-      - application/json
-      description: Delete all shipment time windows for a shipment with shipment_id
-      parameters:
-      - description: Shipment ID
-        in: path
-        name: shipment_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/util.Success'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.MultiError'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/util.NotFound'
-      summary: Delete shipment time windows
-      tags:
-      - Shipment
-    get:
-      consumes:
-      - application/json
-      description: Get a list of shipment time windows for a shipment with shipment_id
-      parameters:
-      - description: Shipment ID
-        in: path
-        name: shipment_id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/database.ShipmentTimeWindow'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.MultiError'
-      summary: List shipment time windows for a shipment
-      tags:
-      - Shipment
-    post:
-      consumes:
-      - application/json
-      description: Create a new shipment time window with the input payload
-      parameters:
-      - description: Shipment ID
-        in: path
-        name: shipment_id
-        required: true
-        type: integer
-      - description: Create shipment time window
-        in: body
-        name: ShipmentTimeWindow
-        required: true
-        schema:
-          $ref: '#/definitions/database.CreateShipmentTimeWindowParams'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/database.ShipmentTimeWindow'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/util.MultiError'
-      summary: Create a new shipment time window
       tags:
       - Shipment
   /vehicles/{vehicle_id}:
@@ -1616,7 +1762,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1640,11 +1786,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Vehicle'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Vehicle'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1674,11 +1825,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Vehicle'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Vehicle'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:
@@ -1703,13 +1859,18 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/database.Break'
-            type: array
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/database.Break'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: List breaks
       tags:
       - Break
@@ -1735,11 +1896,16 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/database.Break'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/database.Break'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
       summary: Create a new break
       tags:
       - Break
@@ -1747,13 +1913,20 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get the schedule for a vehicle using vehicle_id
+      description: |-
+        Get the schedule for a vehicle using vehicle_id
+
+        **For JSON content type**: When overview = true, only the metadata is returned. Default value is false, which also returns the summary object.
       parameters:
       - description: Vehicle ID
         in: path
         name: vehicle_id
         required: true
         type: integer
+      - description: Overview
+        in: query
+        name: overview
+        type: boolean
       produces:
       - text/calendar
       - application/json
@@ -1761,11 +1934,18 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/util.Schedule'
+            allOf:
+            - $ref: '#/definitions/util.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/util.ScheduleDB'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/util.MultiError'
+            $ref: '#/definitions/util.ErrorResponse'
         "404":
           description: Not Found
           schema:

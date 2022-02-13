@@ -30,73 +30,39 @@ package database
 
 import (
 	"context"
-
-	"github.com/Georepublic/pg_scheduleserv/internal/util"
-	"github.com/jackc/pgx/v4"
+	"fmt"
 )
 
-type CreateBreakTimeWindowParams struct {
-	ID      *int64  `json:"id,string" example:"1234567812345678" validate:"required" swaggerignore:"true"`
-	TwOpen  *string `json:"tw_open" validate:"required,datetime=2006-01-02 15:04:05" example:"2021-12-31 23:00:00"`
-	TwClose *string `json:"tw_close" validate:"required,datetime=2006-01-02 15:04:05" example:"2021-12-31 23:59:00"`
-}
-
-func (q *Queries) DBCreateBreakTimeWindow(ctx context.Context, arg CreateBreakTimeWindowParams) (BreakTimeWindow, error) {
-	sql, args := createResource("breaks_time_windows", arg)
-	return_sql := " RETURNING " + util.GetOutputFields(BreakTimeWindow{})
-	row := q.db.QueryRow(ctx, sql+return_sql, args...)
-	return scanBreakTimeWindowRow(row)
-}
-
-func (q *Queries) DBListBreakTimeWindows(ctx context.Context, id int64) ([]BreakTimeWindow, error) {
-	table_name := "breaks_time_windows"
-	additional_query := " WHERE id = $1 ORDER BY created_at"
-	sql := "SELECT " + util.GetOutputFields(BreakTimeWindow{}) + " FROM " + table_name + additional_query
-	rows, err := q.db.Query(ctx, sql, id)
-	if err != nil {
-		return nil, err
+func (q *Queries) DBCreateBreakTimeWindows(ctx context.Context, id int64, arg []TimeWindowParams) error {
+	if len(arg) == 0 {
+		return nil
 	}
-	defer rows.Close()
-	return scanBreakTimeWindowRows(rows)
-}
 
-func (q *Queries) DBDeleteBreakTimeWindow(ctx context.Context, id int64) (BreakTimeWindow, error) {
-	sql := "DELETE FROM breaks_time_windows WHERE id = $1"
-	return_sql := " RETURNING " + util.GetOutputFields(BreakTimeWindow{})
-	row := q.db.QueryRow(ctx, sql+return_sql, id)
-	return scanBreakTimeWindowRow(row)
-}
-
-func scanBreakTimeWindowRow(row pgx.Row) (BreakTimeWindow, error) {
-	var i BreakTimeWindow
-	err := row.Scan(
-		&i.ID,
-		&i.TwOpen,
-		&i.TwClose,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	err = util.HandleDBError(err)
-	return i, err
-}
-
-func scanBreakTimeWindowRows(rows pgx.Rows) ([]BreakTimeWindow, error) {
-	items := []BreakTimeWindow{}
-	var i BreakTimeWindow
-	for rows.Next() {
-		if err := rows.Scan(
-			&i.ID,
-			&i.TwOpen,
-			&i.TwClose,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
+	// create an sql query to insert multiple rows
+	sql := "INSERT INTO breaks_time_windows (id, tw_open, tw_close) VALUES "
+	for i := range arg {
+		if i > 0 {
+			sql += ","
 		}
-		items = append(items, i)
+		sql += fmt.Sprintf("($%d, $%d, $%d)", i*3+1, i*3+2, i*3+3)
 	}
-	if err := rows.Err(); err != nil {
-		return nil, err
+
+	// create a slice of arguments for the query
+	args := make([]interface{}, len(arg)*3)
+	for i, v := range arg {
+		args[i*3] = id
+		args[i*3+1] = v.TwOpen
+		args[i*3+2] = v.TwClose
 	}
-	return items, nil
+
+	// execute the query
+	_, err := q.db.Exec(ctx, sql, args...)
+	return err
+}
+
+func (q *Queries) DBDeleteBreakTimeWindows(ctx context.Context, id int64) error {
+	tableName := "breaks_time_windows"
+	sql := "DELETE FROM " + tableName + " WHERE id = $1"
+	_, err := q.db.Exec(ctx, sql, id)
+	return err
 }

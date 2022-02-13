@@ -69,6 +69,11 @@ func GetPartialSQL(resource interface{}) PartialSQL {
 			continue
 		}
 
+		// skip time_windows field, because it does not exist in the database
+		if tag == "time_windows" || tag == "p_time_windows" || tag == "d_time_windows" {
+			continue
+		}
+
 		// Change any alias fields
 		alias, aliasFound := AliasFields[tag]
 		if aliasFound {
@@ -100,7 +105,7 @@ func GetPartialSQL(resource interface{}) PartialSQL {
 		case reflect.Struct:
 			value := val.Interface()
 			if typ, ok := value.(LocationParams); ok {
-				partialSQL.Args = append(partialSQL.Args, GetLocationIndex(*typ.Latitude, *typ.Longitude))
+				partialSQL.Args = append(partialSQL.Args, GetLocationId(*typ.Latitude, *typ.Longitude))
 			}
 			if typ, ok := value.(string); ok {
 				partialSQL.Args = append(partialSQL.Args, typ)
@@ -117,26 +122,41 @@ func GetPartialSQL(resource interface{}) PartialSQL {
 	return partialSQL
 }
 
-func GetOutputFields(resourceStruct interface{}) (sql string) {
+func GetFormattedInterval(fieldName string) string {
+	return fmt.Sprintf("to_char(%s, 'HH24:MI:SS')", fieldName)
+}
+
+func GetFormattedTimestamp(fieldName string) string {
+	return fmt.Sprintf("to_char(%s, 'YYYY-MM-DD') || 'T' || to_char(%s, 'HH24:MI:SS')", fieldName, fieldName)
+}
+
+func GetOutputFields(resourceStruct interface{}, tableName string) (sql string) {
 	val := reflect.ValueOf(resourceStruct)
 	for i := 0; i < val.Type().NumField(); i++ {
-		if i != 0 {
-			sql += ","
-		}
 		field := val.Type().Field(i)
 		fieldName := jsonTag(field)
+
+		// skip fieldName == "time_windows" because it is not a field in the database
+		if fieldName == "time_windows" || fieldName == "p_time_windows" || fieldName == "d_time_windows" {
+			continue
+		}
 
 		if aliasField, aliasFieldFound := AliasFields[fieldName]; aliasFieldFound {
 			fieldName = aliasField
 		}
 
+		fullFieldName := tableName + "." + fieldName
+
 		if _, intervalFieldFound := IntervalFields[fieldName]; intervalFieldFound {
-			fieldName = fmt.Sprintf("EXTRACT(epoch FROM %s)", fieldName)
+			fullFieldName = GetFormattedInterval(fullFieldName)
 		}
 		if _, timestampFieldFound := TimestampFields[fieldName]; timestampFieldFound {
-			fieldName = fmt.Sprintf("to_char(%s, 'YYYY-MM-DD HH24:MI:SS')", fieldName)
+			fullFieldName = GetFormattedTimestamp(fullFieldName)
 		}
-		sql += " " + fieldName
+		if i != 0 {
+			sql += ","
+		}
+		sql += " " + fullFieldName
 	}
 	return sql
 }

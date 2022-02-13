@@ -3,8 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*.*.*'
-
+      - "v*.*.*"
 
 jobs:
   release:
@@ -12,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
-        fail-fast: false
+      fail-fast: false
 
     steps:
       - name: Checkout repository
@@ -23,7 +22,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v2
         with:
-          go-version: '1.17.x'
+          go-version: "1.17.x"
 
       - name: Get pg_scheduleserv version
         run: |
@@ -43,6 +42,7 @@ jobs:
 
       - name: Build
         run: |
+          # Remove debugging informations in the build
           go build -ldflags "-s -w"
           mv pg_scheduleserv pg_scheduleserv-${PG_SCHEDULESERV_VERSION}
 
@@ -55,7 +55,7 @@ jobs:
 
       - name: Make Attachments
         run: |
-          grep -Pzo "(?s)## pg_scheduleserv ${PG_SCHEDULESERV_VERSION//./\\.} Release Notes.*?(?=## pg_scheduleserv .\..\.. Release Notes)" NEWS.md | tr '\0' '\n' > release_body.txt
+          grep -Pzo "(?s)## v${PG_SCHEDULESERV_VERSION//./\\.} Release Notes.*?(?=## v.\..\.. Release Notes)" NEWS.md | tr '\0' '\n' > release_body.txt
           echo "**Attachments**" >> release_body.txt
           echo "File | Contents" >> release_body.txt
           echo "| --- | --- |" >> release_body.txt

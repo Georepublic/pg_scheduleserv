@@ -47,8 +47,8 @@ import (
 // @Produce application/json
 // @Param project_id path int true "Project ID"
 // @Param Job body database.CreateJobParams true "Job object"
-// @Success 200 {object} database.Job
-// @Failure 400 {object} util.MultiError
+// @Success 200 {object} util.SuccessResponse{data=database.Job}
+// @Failure 400 {object} util.ErrorResponse
 // @Router /projects/{project_id}/jobs [post]
 func (server *Server) CreateJob(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
@@ -85,7 +85,7 @@ func (server *Server) CreateJob(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	created_job, err := server.DBCreateJob(ctx, job)
+	created_job, err := server.DBCreateJobWithTw(ctx, job)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
@@ -101,14 +101,15 @@ func (server *Server) CreateJob(w http.ResponseWriter, r *http.Request) {
 // @Accept application/json
 // @Produce application/json
 // @Param project_id path int true "Project ID"
-// @Success 200 {object} []database.Job
-// @Failure 400 {object} util.MultiError
+// @Success 200 {object} util.SuccessResponse{data=[]database.Job}
+// @Failure 400 {object} util.ErrorResponse
 // @Router /projects/{project_id}/jobs [get]
 func (server *Server) ListJobs(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	project_id, err := strconv.ParseInt(vars["project_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
@@ -128,15 +129,16 @@ func (server *Server) ListJobs(w http.ResponseWriter, r *http.Request) {
 // @Accept application/json
 // @Produce application/json
 // @Param job_id path int true "Job ID"
-// @Success 200 {object} database.Job
-// @Failure 400 {object} util.MultiError
+// @Success 200 {object} util.SuccessResponse{data=database.Job}
+// @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
 // @Router /jobs/{job_id} [get]
 func (server *Server) GetJob(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	job_id, err := strconv.ParseInt(vars["job_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
@@ -156,8 +158,9 @@ func (server *Server) GetJob(w http.ResponseWriter, r *http.Request) {
 // @Accept application/json
 // @Produce application/json
 // @Param job_id path int true "Job ID"
-// @Success 200 {object} database.Job
-// @Failure 400 {object} util.MultiError
+// @Param Job body database.UpdateJobParams true "Job object"
+// @Success 200 {object} util.SuccessResponse{data=database.Job}
+// @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
 // @Router /jobs/{job_id} [patch]
 func (server *Server) UpdateJob(w http.ResponseWriter, r *http.Request) {
@@ -171,7 +174,8 @@ func (server *Server) UpdateJob(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	job_id, err := strconv.ParseInt(vars["job_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	// Validate the input type
@@ -197,7 +201,7 @@ func (server *Server) UpdateJob(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	created_job, err := server.DBUpdateJob(ctx, job, job_id)
+	created_job, err := server.DBUpdateJobWithTw(ctx, job, job_id)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
@@ -214,18 +218,19 @@ func (server *Server) UpdateJob(w http.ResponseWriter, r *http.Request) {
 // @Produce application/json
 // @Param job_id path int true "Job ID"
 // @Success 200 {object} util.Success
-// @Failure 400 {object} util.MultiError
+// @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
 // @Router /jobs/{job_id} [delete]
 func (server *Server) DeleteJob(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	job_id, err := strconv.ParseInt(vars["job_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
-	_, err = server.DBDeleteJob(ctx, job_id)
+	err = server.DBDeleteJobWithTw(ctx, job_id)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
@@ -241,15 +246,16 @@ func (server *Server) DeleteJob(w http.ResponseWriter, r *http.Request) {
 // @Accept application/json
 // @Produce text/calendar,application/json
 // @Param job_id path int true "Job ID"
-// @Success 200 {object} util.Schedule
-// @Failure 400 {object} util.MultiError
+// @Success 200 {object} util.SuccessResponse{data=[]util.ScheduleDataTask}
+// @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
 // @Router /jobs/{job_id}/schedule [get]
 func (server *Server) GetJobSchedule(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	jobID, err := strconv.ParseInt(vars["job_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
@@ -264,7 +270,10 @@ func (server *Server) GetJobSchedule(w http.ResponseWriter, r *http.Request) {
 		calendar, filename := server.GetScheduleICal(schedule)
 		server.FormatICAL(w, http.StatusOK, calendar, filename)
 	case "application/json":
-		server.FormatJSON(w, http.StatusOK, schedule)
+		server.FormatJSON(w, http.StatusOK, util.ScheduleDataTask{
+			Schedule:  schedule.Schedule,
+			ProjectID: schedule.ProjectID,
+		})
 	default:
 		calendar, filename := server.GetScheduleICal(schedule)
 		server.FormatICAL(w, http.StatusOK, calendar, filename)

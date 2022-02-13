@@ -38,28 +38,18 @@ import (
 
 type Querier interface {
 	// Break
-	DBCreateBreak(ctx context.Context, arg CreateBreakParams) (Break, error)
+	DBCreateBreakWithTw(ctx context.Context, arg CreateBreakParams) (Break, error)
 	DBListBreaks(ctx context.Context, vehicleID int64) ([]Break, error)
 	DBGetBreak(ctx context.Context, id int64) (Break, error)
-	DBUpdateBreak(ctx context.Context, arg UpdateBreakParams, break_id int64) (Break, error)
-	DBDeleteBreak(ctx context.Context, id int64) (Break, error)
-
-	// Break Time Window
-	DBCreateBreakTimeWindow(ctx context.Context, arg CreateBreakTimeWindowParams) (BreakTimeWindow, error)
-	DBListBreakTimeWindows(ctx context.Context, id int64) ([]BreakTimeWindow, error)
-	DBDeleteBreakTimeWindow(ctx context.Context, id int64) (BreakTimeWindow, error)
+	DBUpdateBreakWithTw(ctx context.Context, arg UpdateBreakParams, break_id int64) (Break, error)
+	DBDeleteBreakWithTw(ctx context.Context, id int64) error
 
 	// Job
-	DBCreateJob(ctx context.Context, arg CreateJobParams) (Job, error)
+	DBCreateJobWithTw(ctx context.Context, arg CreateJobParams) (Job, error)
 	DBListJobs(ctx context.Context, projectID int64) ([]Job, error)
 	DBGetJob(ctx context.Context, id int64) (Job, error)
-	DBUpdateJob(ctx context.Context, arg UpdateJobParams, job_id int64) (Job, error)
-	DBDeleteJob(ctx context.Context, id int64) (Job, error)
-
-	// Job Time Window
-	DBCreateJobTimeWindow(ctx context.Context, arg CreateJobTimeWindowParams) (JobTimeWindow, error)
-	DBListJobTimeWindows(ctx context.Context, id int64) ([]JobTimeWindow, error)
-	DBDeleteJobTimeWindow(ctx context.Context, id int64) (JobTimeWindow, error)
+	DBUpdateJobWithTw(ctx context.Context, arg UpdateJobParams, job_id int64) (Job, error)
+	DBDeleteJobWithTw(ctx context.Context, id int64) error
 
 	// Project
 	DBCreateProject(ctx context.Context, arg CreateProjectParams) (Project, error)
@@ -69,24 +59,19 @@ type Querier interface {
 	DBDeleteProject(ctx context.Context, id int64) (Project, error)
 
 	// Schedule
-	DBCreateSchedule(ctx context.Context, id int64) error
-	DBGetSchedule(ctx context.Context, id int64) ([]util.Schedule, error)
-	DBGetScheduleJob(ctx context.Context, id int64) ([]util.Schedule, error)
-	DBGetScheduleShipment(ctx context.Context, id int64) ([]util.Schedule, error)
-	DBGetScheduleVehicle(ctx context.Context, id int64) ([]util.Schedule, error)
+	DBCreateSchedule(ctx context.Context, id int64, fresh string) error
+	DBGetSchedule(ctx context.Context, id int64) (util.ScheduleData, error)
+	DBGetScheduleJob(ctx context.Context, id int64) (util.ScheduleData, error)
+	DBGetScheduleShipment(ctx context.Context, id int64) (util.ScheduleData, error)
+	DBGetScheduleVehicle(ctx context.Context, id int64) (util.ScheduleData, error)
 	DBDeleteSchedule(ctx context.Context, id int64) error
 
 	// Shipment
-	DBCreateShipment(ctx context.Context, arg CreateShipmentParams) (Shipment, error)
+	DBCreateShipmentWithTw(ctx context.Context, arg CreateShipmentParams) (Shipment, error)
 	DBListShipments(ctx context.Context, projectID int64) ([]Shipment, error)
 	DBGetShipment(ctx context.Context, id int64) (Shipment, error)
-	DBUpdateShipment(ctx context.Context, arg UpdateShipmentParams, shipment_id int64) (Shipment, error)
-	DBDeleteShipment(ctx context.Context, id int64) (Shipment, error)
-
-	// Shipment Time Window
-	DBCreateShipmentTimeWindow(ctx context.Context, arg CreateShipmentTimeWindowParams) (ShipmentTimeWindow, error)
-	DBListShipmentTimeWindows(ctx context.Context, id int64) ([]ShipmentTimeWindow, error)
-	DBDeleteShipmentTimeWindow(ctx context.Context, id int64) (ShipmentTimeWindow, error)
+	DBUpdateShipmentWithTw(ctx context.Context, arg UpdateShipmentParams, shipment_id int64) (Shipment, error)
+	DBDeleteShipmentWithTw(ctx context.Context, id int64) error
 
 	// Vehicle
 	DBCreateVehicle(ctx context.Context, arg CreateVehicleParams) (Vehicle, error)
@@ -94,6 +79,9 @@ type Querier interface {
 	DBGetVehicle(ctx context.Context, id int64) (Vehicle, error)
 	DBUpdateVehicle(ctx context.Context, arg UpdateVehicleParams, vehicle_id int64) (Vehicle, error)
 	DBDeleteVehicle(ctx context.Context, id int64) (Vehicle, error)
+
+	// Locations
+	DBGetProjectLocations(ctx context.Context, project_id int64) ([]int64, error)
 }
 
 var _ Querier = (*Queries)(nil)

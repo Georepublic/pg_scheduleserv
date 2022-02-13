@@ -33,14 +33,12 @@ import (
 	"strings"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/sirupsen/logrus"
 )
 
 func getErrorMsg(ve validator.ValidationErrors) []string {
 	var msg []string
 	for i := 0; i < len(ve); i++ {
 		var err string
-		logrus.Info(ve[i].Value())
 		switch field := ve[i].Tag(); field {
 		case "required":
 			err = fmt.Sprintf("Field '%s' of type '%s' is required", ve[i].Field(), ve[i].Type().Elem())
@@ -56,6 +54,12 @@ func getErrorMsg(ve validator.ValidationErrors) []string {
 			}
 		case "gt":
 			err = fmt.Sprintf("Field '%s' must be greater than %s", ve[i].Field(), ve[i].Param())
+		case "lt":
+			err = fmt.Sprintf("Field '%s' must be less than %s", ve[i].Field(), ve[i].Param())
+		case "gte":
+			err = fmt.Sprintf("Field '%s' must be greater than or equal to %s", ve[i].Field(), ve[i].Param())
+		case "lte":
+			err = fmt.Sprintf("Field '%s' must be less than or equal to %s", ve[i].Field(), ve[i].Param())
 		case "oneof":
 			err = fmt.Sprintf("Field '%s' must be one out of %s", ve[i].Field(), strings.Replace(ve[i].Param(), " ", ", ", -1))
 		default:

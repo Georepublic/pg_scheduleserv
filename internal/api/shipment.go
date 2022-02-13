@@ -47,8 +47,8 @@ import (
 // @Produce application/json
 // @Param project_id path int true "Project ID"
 // @Param Shipment body database.CreateShipmentParams true "Create shipment"
-// @Success 200 {object} database.Shipment
-// @Failure 400 {object} util.MultiError
+// @Success 200 {object} util.SuccessResponse{data=database.Shipment}
+// @Failure 400 {object} util.ErrorResponse
 // @Router /projects/{project_id}/shipments [post]
 func (server *Server) CreateShipment(w http.ResponseWriter, r *http.Request) {
 	userInput := make(map[string]interface{})
@@ -85,7 +85,7 @@ func (server *Server) CreateShipment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	created_shipment, err := server.DBCreateShipment(ctx, shipment)
+	created_shipment, err := server.DBCreateShipmentWithTw(ctx, shipment)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
@@ -101,14 +101,15 @@ func (server *Server) CreateShipment(w http.ResponseWriter, r *http.Request) {
 // @Accept application/json
 // @Produce application/json
 // @Param project_id path int true "Project ID"
-// @Success 200 {object} []database.Shipment
-// @Failure 400 {object} util.MultiError
+// @Success 200 {object} util.SuccessResponse{data=[]database.Shipment}
+// @Failure 400 {object} util.ErrorResponse
 // @Router /projects/{project_id}/shipments [get]
 func (server *Server) ListShipments(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	project_id, err := strconv.ParseInt(vars["project_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
@@ -128,15 +129,16 @@ func (server *Server) ListShipments(w http.ResponseWriter, r *http.Request) {
 // @Accept application/json
 // @Produce application/json
 // @Param shipment_id path int true "Shipment ID"
-// @Success 200 {object} database.Shipment
-// @Failure 400 {object} util.MultiError
+// @Success 200 {object} util.SuccessResponse{data=database.Shipment}
+// @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
 // @Router /shipments/{shipment_id} [get]
 func (server *Server) GetShipment(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	shipment_id, err := strconv.ParseInt(vars["shipment_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
@@ -157,8 +159,8 @@ func (server *Server) GetShipment(w http.ResponseWriter, r *http.Request) {
 // @Produce application/json
 // @Param shipment_id path int true "Shipment ID"
 // @Param Shipment body database.UpdateShipmentParams true "Update shipment"
-// @Success 200 {object} database.Shipment
-// @Failure 400 {object} util.MultiError
+// @Success 200 {object} util.SuccessResponse{data=database.Shipment}
+// @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
 // @Router /shipments/{shipment_id} [patch]
 func (server *Server) UpdateShipment(w http.ResponseWriter, r *http.Request) {
@@ -172,7 +174,8 @@ func (server *Server) UpdateShipment(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	shipment_id, err := strconv.ParseInt(vars["shipment_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	// Validate the input type
@@ -198,7 +201,7 @@ func (server *Server) UpdateShipment(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	created_shipment, err := server.DBUpdateShipment(ctx, shipment, shipment_id)
+	created_shipment, err := server.DBUpdateShipmentWithTw(ctx, shipment, shipment_id)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
@@ -215,18 +218,19 @@ func (server *Server) UpdateShipment(w http.ResponseWriter, r *http.Request) {
 // @Produce application/json
 // @Param shipment_id path int true "Shipment ID"
 // @Success 200 {object} util.Success
-// @Failure 400 {object} util.MultiError
+// @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
 // @Router /shipments/{shipment_id} [delete]
 func (server *Server) DeleteShipment(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	shipment_id, err := strconv.ParseInt(vars["shipment_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
-	_, err = server.DBDeleteShipment(ctx, shipment_id)
+	err = server.DBDeleteShipmentWithTw(ctx, shipment_id)
 	if err != nil {
 		server.FormatJSON(w, http.StatusBadRequest, err)
 		return
@@ -242,15 +246,16 @@ func (server *Server) DeleteShipment(w http.ResponseWriter, r *http.Request) {
 // @Accept application/json
 // @Produce text/calendar,application/json
 // @Param shipment_id path int true "Shipment ID"
-// @Success 200 {object} util.Schedule
-// @Failure 400 {object} util.MultiError
+// @Success 200 {object} util.SuccessResponse{data=[]util.ScheduleDataTask}
+// @Failure 400 {object} util.ErrorResponse
 // @Failure 404 {object} util.NotFound
 // @Router /shipments/{shipment_id}/schedule [get]
 func (server *Server) GetShipmentSchedule(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	shipmentID, err := strconv.ParseInt(vars["shipment_id"], 10, 64)
 	if err != nil {
-		panic(err)
+		server.FormatJSON(w, http.StatusBadRequest, err)
+		return
 	}
 
 	ctx := r.Context()
@@ -265,7 +270,10 @@ func (server *Server) GetShipmentSchedule(w http.ResponseWriter, r *http.Request
 		calendar, filename := server.GetScheduleICal(schedule)
 		server.FormatICAL(w, http.StatusOK, calendar, filename)
 	case "application/json":
-		server.FormatJSON(w, http.StatusOK, schedule)
+		server.FormatJSON(w, http.StatusOK, util.ScheduleDataTask{
+			Schedule:  schedule.Schedule,
+			ProjectID: schedule.ProjectID,
+		})
 	default:
 		calendar, filename := server.GetScheduleICal(schedule)
 		server.FormatICAL(w, http.StatusOK, calendar, filename)

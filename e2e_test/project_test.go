@@ -30,7 +30,6 @@ package e2etest
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -45,7 +44,7 @@ import (
 func TestCreateProject(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -59,7 +58,9 @@ func TestCreateProject(t *testing.T) {
 			statusCode: 400,
 			body:       map[string]interface{}{},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'name' of type 'string' is required"},
+				"code":    "400",
+				"message": "Bad Request",
+				"errors":  []interface{}{"Field 'name' of type 'string' is required"},
 			},
 		},
 		{
@@ -69,8 +70,16 @@ func TestCreateProject(t *testing.T) {
 				"name": "Sample Project",
 			},
 			resBody: map[string]interface{}{
-				"data": map[string]interface{}{},
-				"name": "Sample Project",
+				"data": map[string]interface{}{
+					"data":              map[string]interface{}{},
+					"name":              "Sample Project",
+					"duration_calc":     "euclidean",
+					"exploration_level": 5.0,
+					"timeout":           "00:10:00",
+					"max_shift":         "00:30:00",
+				},
+				"code":    "201",
+				"message": "Created",
 			},
 		},
 		{
@@ -80,7 +89,9 @@ func TestCreateProject(t *testing.T) {
 				"data": map[string]interface{}{"key": "value"},
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'name' of type 'string' is required"},
+				"code":    "400",
+				"message": "Bad Request",
+				"errors":  []interface{}{"Field 'name' of type 'string' is required"},
 			},
 		},
 		{
@@ -90,7 +101,9 @@ func TestCreateProject(t *testing.T) {
 				"name": 123,
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'name' must be of 'string' type."},
+				"code":    "400",
+				"message": "Bad Request",
+				"errors":  []interface{}{"Field 'name' must be of 'string' type."},
 			},
 		},
 		{
@@ -101,8 +114,16 @@ func TestCreateProject(t *testing.T) {
 				"data": 123,
 			},
 			resBody: map[string]interface{}{
-				"name": "123",
-				"data": float64(123),
+				"data": map[string]interface{}{
+					"name":              "123",
+					"data":              float64(123),
+					"duration_calc":     "euclidean",
+					"exploration_level": 5.0,
+					"timeout":           "00:10:00",
+					"max_shift":         "00:30:00",
+				},
+				"code":    "201",
+				"message": "Created",
 			},
 		},
 		{
@@ -113,8 +134,16 @@ func TestCreateProject(t *testing.T) {
 				"data": map[string]interface{}{"key": "value"},
 			},
 			resBody: map[string]interface{}{
-				"name": "123",
-				"data": map[string]interface{}{"key": "value"},
+				"data": map[string]interface{}{
+					"name":              "123",
+					"data":              map[string]interface{}{"key": "value"},
+					"duration_calc":     "euclidean",
+					"exploration_level": 5.0,
+					"timeout":           "00:10:00",
+					"max_shift":         "00:30:00",
+				},
+				"code":    "201",
+				"message": "Created",
 			},
 		},
 	}
@@ -144,9 +173,12 @@ func TestCreateProject(t *testing.T) {
 			if err = json.Unmarshal(body, &m); err != nil {
 				t.Error(err)
 			}
-			delete(m, "id")
-			delete(m, "created_at")
-			delete(m, "updated_at")
+			if mData, ok := m["data"].(map[string]interface{}); ok {
+				delete(mData, "id")
+				delete(mData, "created_at")
+				delete(mData, "updated_at")
+				m["data"] = mData
+			}
 			assert.Equal(t, tc.resBody, m)
 		})
 	}
@@ -155,7 +187,7 @@ func TestCreateProject(t *testing.T) {
 func TestGetProject(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -170,6 +202,7 @@ func TestGetProject(t *testing.T) {
 			projectID:  100,
 			resBody: map[string]interface{}{
 				"error": "Not Found",
+				"code":  "404",
 			},
 		},
 		{
@@ -177,11 +210,19 @@ func TestGetProject(t *testing.T) {
 			statusCode: 200,
 			projectID:  3909655254191459782,
 			resBody: map[string]interface{}{
-				"id":         "3909655254191459782",
-				"name":       "Sample Project",
-				"data":       "random",
-				"created_at": "2021-10-22 23:29:31",
-				"updated_at": "2021-10-22 23:29:31",
+				"data": map[string]interface{}{
+					"id":                "3909655254191459782",
+					"name":              "Sample Project",
+					"data":              "random",
+					"duration_calc":     "osrm",
+					"exploration_level": 5.0,
+					"timeout":           "00:10:00",
+					"max_shift":         "00:30:00",
+					"created_at":        "2021-10-22T23:29:31",
+					"updated_at":        "2021-10-22T23:29:31",
+				},
+				"code":    "200",
+				"message": "OK",
 			},
 		},
 	}
@@ -215,46 +256,66 @@ func TestGetProject(t *testing.T) {
 func TestListProjects(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
 		name       string
 		statusCode int
-		resBody    []map[string]interface{}
+		resBody    map[string]interface{}
 	}{
 		{
 			name:       "All projects",
 			statusCode: 200,
-			resBody: []map[string]interface{}{
-				{
-					"id":         "3909655254191459782",
-					"name":       "Sample Project",
-					"data":       "random",
-					"created_at": "2021-10-22 23:29:31",
-					"updated_at": "2021-10-22 23:29:31",
+			resBody: map[string]interface{}{
+				"data": []interface{}{
+					map[string]interface{}{
+						"id":                "3909655254191459782",
+						"name":              "Sample Project",
+						"data":              "random",
+						"duration_calc":     "osrm",
+						"exploration_level": 5.0,
+						"timeout":           "00:10:00",
+						"max_shift":         "00:30:00",
+						"created_at":        "2021-10-22T23:29:31",
+						"updated_at":        "2021-10-22T23:29:31",
+					},
+					map[string]interface{}{
+						"id":                "3909655254191459783",
+						"name":              "Sample Project2",
+						"data":              "random",
+						"duration_calc":     "osrm",
+						"exploration_level": 5.0,
+						"timeout":           "00:10:00",
+						"max_shift":         "00:30:00",
+						"created_at":        "2021-10-22T23:29:31",
+						"updated_at":        "2021-10-22T23:29:31",
+					},
+					map[string]interface{}{
+						"id":                "2593982828701335033",
+						"name":              "",
+						"data":              map[string]interface{}{"s": float64(1)},
+						"duration_calc":     "osrm",
+						"exploration_level": 5.0,
+						"timeout":           "00:10:00",
+						"max_shift":         "00:30:00",
+						"created_at":        "2021-10-24T19:52:52",
+						"updated_at":        "2021-10-24T19:52:52",
+					},
+					map[string]interface{}{
+						"id":                "8943284028902589305",
+						"name":              "",
+						"data":              map[string]interface{}{"s": float64(1)},
+						"duration_calc":     "osrm",
+						"exploration_level": 5.0,
+						"timeout":           "00:10:00",
+						"max_shift":         "00:30:00",
+						"created_at":        "2021-10-24T19:52:52",
+						"updated_at":        "2021-10-24T19:52:52",
+					},
 				},
-				{
-					"id":         "3909655254191459783",
-					"name":       "Sample Project2",
-					"data":       "random",
-					"created_at": "2021-10-22 23:29:31",
-					"updated_at": "2021-10-22 23:29:31",
-				},
-				{
-					"id":         "2593982828701335033",
-					"name":       "",
-					"data":       map[string]interface{}{"s": float64(1)},
-					"created_at": "2021-10-24 19:52:52",
-					"updated_at": "2021-10-24 19:52:52",
-				},
-				{
-					"id":         "8943284028902589305",
-					"name":       "",
-					"data":       map[string]interface{}{"s": float64(1)},
-					"created_at": "2021-10-24 19:52:52",
-					"updated_at": "2021-10-24 19:52:52",
-				},
+				"code":    "200",
+				"message": "OK",
 			},
 		},
 	}
@@ -275,7 +336,7 @@ func TestListProjects(t *testing.T) {
 
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
-			m := []map[string]interface{}{}
+			m := map[string]interface{}{}
 			if err = json.Unmarshal(body, &m); err != nil {
 				t.Error(err)
 			}
@@ -287,7 +348,7 @@ func TestListProjects(t *testing.T) {
 func TestUpdateProject(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -303,10 +364,18 @@ func TestUpdateProject(t *testing.T) {
 			projectID:  3909655254191459782,
 			body:       map[string]interface{}{},
 			resBody: map[string]interface{}{
-				"id":         "3909655254191459782",
-				"name":       "Sample Project",
-				"data":       "random",
-				"created_at": "2021-10-22 23:29:31",
+				"data": map[string]interface{}{
+					"id":                "3909655254191459782",
+					"name":              "Sample Project",
+					"data":              "random",
+					"duration_calc":     "osrm",
+					"exploration_level": 5.0,
+					"timeout":           "00:10:00",
+					"max_shift":         "00:30:00",
+					"created_at":        "2021-10-22T23:29:31",
+				},
+				"code":    "200",
+				"message": "OK",
 			},
 		},
 		{
@@ -316,6 +385,7 @@ func TestUpdateProject(t *testing.T) {
 			body:       map[string]interface{}{},
 			resBody: map[string]interface{}{
 				"error": "Not Found",
+				"code":  "404",
 			},
 		},
 		{
@@ -326,10 +396,18 @@ func TestUpdateProject(t *testing.T) {
 				"name": "Another Sample Project",
 			},
 			resBody: map[string]interface{}{
-				"id":         "3909655254191459782",
-				"name":       "Another Sample Project",
-				"data":       "random",
-				"created_at": "2021-10-22 23:29:31",
+				"data": map[string]interface{}{
+					"id":                "3909655254191459782",
+					"name":              "Another Sample Project",
+					"data":              "random",
+					"duration_calc":     "osrm",
+					"exploration_level": 5.0,
+					"timeout":           "00:10:00",
+					"max_shift":         "00:30:00",
+					"created_at":        "2021-10-22T23:29:31",
+				},
+				"code":    "200",
+				"message": "OK",
 			},
 		},
 		{
@@ -340,10 +418,18 @@ func TestUpdateProject(t *testing.T) {
 				"data": map[string]interface{}{"key": "value"},
 			},
 			resBody: map[string]interface{}{
-				"id":         "3909655254191459782",
-				"name":       "Another Sample Project",
-				"data":       map[string]interface{}{"key": "value"},
-				"created_at": "2021-10-22 23:29:31",
+				"data": map[string]interface{}{
+					"id":                "3909655254191459782",
+					"name":              "Another Sample Project",
+					"data":              map[string]interface{}{"key": "value"},
+					"duration_calc":     "osrm",
+					"exploration_level": 5.0,
+					"timeout":           "00:10:00",
+					"max_shift":         "00:30:00",
+					"created_at":        "2021-10-22T23:29:31",
+				},
+				"code":    "200",
+				"message": "OK",
 			},
 		},
 		{
@@ -354,7 +440,9 @@ func TestUpdateProject(t *testing.T) {
 				"name": 123,
 			},
 			resBody: map[string]interface{}{
-				"errors": []interface{}{"Field 'name' must be of 'string' type."},
+				"code":    "400",
+				"message": "Bad Request",
+				"errors":  []interface{}{"Field 'name' must be of 'string' type."},
 			},
 		},
 		{
@@ -365,10 +453,18 @@ func TestUpdateProject(t *testing.T) {
 				"data": 123,
 			},
 			resBody: map[string]interface{}{
-				"id":         "3909655254191459782",
-				"name":       "Another Sample Project",
-				"data":       float64(123),
-				"created_at": "2021-10-22 23:29:31",
+				"data": map[string]interface{}{
+					"id":                "3909655254191459782",
+					"name":              "Another Sample Project",
+					"data":              float64(123),
+					"duration_calc":     "osrm",
+					"exploration_level": 5.0,
+					"timeout":           "00:10:00",
+					"max_shift":         "00:30:00",
+					"created_at":        "2021-10-22T23:29:31",
+				},
+				"code":    "200",
+				"message": "OK",
 			},
 		},
 		{
@@ -380,10 +476,18 @@ func TestUpdateProject(t *testing.T) {
 				"data": map[string]interface{}{"key": "value"},
 			},
 			resBody: map[string]interface{}{
-				"id":         "3909655254191459782",
-				"name":       "Final Sample Project",
-				"data":       map[string]interface{}{"key": "value"},
-				"created_at": "2021-10-22 23:29:31",
+				"data": map[string]interface{}{
+					"id":                "3909655254191459782",
+					"name":              "Final Sample Project",
+					"data":              map[string]interface{}{"key": "value"},
+					"duration_calc":     "osrm",
+					"exploration_level": 5.0,
+					"timeout":           "00:10:00",
+					"max_shift":         "00:30:00",
+					"created_at":        "2021-10-22T23:29:31",
+				},
+				"code":    "200",
+				"message": "OK",
 			},
 		},
 	}
@@ -414,7 +518,10 @@ func TestUpdateProject(t *testing.T) {
 			if err = json.Unmarshal(body, &m); err != nil {
 				t.Error(err)
 			}
-			delete(m, "updated_at")
+			if mData, ok := m["data"].(map[string]interface{}); ok {
+				delete(mData, "updated_at")
+				m["data"] = mData
+			}
 			assert.Equal(t, tc.resBody, m)
 		})
 	}
@@ -423,7 +530,7 @@ func TestUpdateProject(t *testing.T) {
 func TestDeleteProject(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -438,6 +545,7 @@ func TestDeleteProject(t *testing.T) {
 			projectID:  100,
 			resBody: map[string]interface{}{
 				"error": "Not Found",
+				"code":  "404",
 			},
 		},
 		{
@@ -445,7 +553,8 @@ func TestDeleteProject(t *testing.T) {
 			statusCode: 200,
 			projectID:  3909655254191459782,
 			resBody: map[string]interface{}{
-				"success": true,
+				"code":    "200",
+				"message": "OK",
 			},
 		},
 	}

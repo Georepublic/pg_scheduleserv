@@ -65,8 +65,7 @@ func ValidateInput(jsonStruct map[string]interface{}, originalStruct interface{}
 	var errors error
 	resType := reflect.TypeOf(originalStruct)
 	if resType.Kind() != reflect.Struct {
-		logrus.Debug(resType.Kind())
-		panic("Bad type: requires a struct")
+		logrus.Error("Bad type: requires a struct")
 	}
 	for i := 0; i < resType.NumField(); i++ {
 		fieldType := resType.Field(i)
@@ -74,7 +73,6 @@ func ValidateInput(jsonStruct map[string]interface{}, originalStruct interface{}
 
 		// Ignore any nil fields in the input
 		if jsonStruct[tag] == nil {
-			logrus.Debug("Skipping ", tag)
 			continue
 		}
 
@@ -108,7 +106,24 @@ func ValidateInput(jsonStruct map[string]interface{}, originalStruct interface{}
 		if ok && requiredType.Kind() == reflect.Slice {
 			convertible := true
 			for i := 0; i < len(typ2); i++ {
-				if !reflect.TypeOf(typ2[i]).ConvertibleTo(requiredType.Elem()) {
+				// validation for time_windows field: [][]string
+				if tag == "time_windows" || tag == "p_time_windows" || tag == "d_time_windows" {
+					if typ2[i] == nil {
+						convertible = false
+					} else {
+						if typ3, ok := typ2[i].([]interface{}); !ok {
+							convertible = false
+							if len(typ3) != 2 {
+								convertible = false
+							}
+							for j := 0; j < len(typ3); j++ {
+								if (typ3[j] == nil) || (reflect.TypeOf(typ3[j]).Kind() != reflect.String) {
+									convertible = false
+								}
+							}
+						}
+					}
+				} else if typ2[i] == nil || !reflect.TypeOf(typ2[i]).ConvertibleTo(requiredType.Elem()) {
 					convertible = false
 				}
 			}
@@ -117,9 +132,6 @@ func ValidateInput(jsonStruct map[string]interface{}, originalStruct interface{}
 			}
 			continue
 		}
-
-		logrus.Debug(userType)
-		logrus.Debug(requiredType)
 
 		if !userType.ConvertibleTo(requiredType) {
 			errors = multierror.Append(errors, fmt.Errorf(fmt.Sprintf("Field '%s' must be of '%s' type.", tag, requiredType)))

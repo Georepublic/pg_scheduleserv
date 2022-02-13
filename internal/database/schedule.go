@@ -34,86 +34,111 @@ import (
 
 	"github.com/Georepublic/pg_scheduleserv/internal/util"
 	"github.com/jackc/pgx/v4"
+	"github.com/sirupsen/logrus"
 )
 
-func (q *Queries) DBCreateSchedule(ctx context.Context, projectID int64) error {
-	query := fmt.Sprintf("SELECT create_schedule(%d)", projectID)
-	_, err := q.db.Exec(ctx, query)
+func (q *Queries) DBCreateSchedule(ctx context.Context, projectID int64, fresh string) error {
+	// get the project
+	project, err := q.DBGetProject(ctx, projectID)
+	if err != nil {
+		return err
+	}
+
+	// get project locations by calling DBGetProjectLocations
+	locationIds, err := q.DBGetProjectLocations(ctx, projectID)
+	if err != nil {
+		return err
+	}
+
+	// if no locations are found, return error
+	if len(locationIds) == 0 {
+		return fmt.Errorf("No locations present in the project")
+	}
+
+	startIds, endIds, durations, err := util.GetMatrix(locationIds, project.DurationCalc)
+	if err != nil {
+		return err
+	}
+
+	// if either of startIds, endIds, durations is empty, return error
+	if len(startIds) == 0 || len(endIds) == 0 || len(durations) == 0 {
+		return fmt.Errorf("No locations present in the project")
+	}
+
+	var query string
+	// call appropriate function based on the "fresh" parameter
+	if fresh == "true" {
+		query = "SELECT create_fresh_schedule($1, $2, $3, $4)"
+	} else {
+		query = "SELECT create_schedule($1, $2, $3, $4)"
+	}
+	_, err = q.db.Exec(ctx, query, projectID, startIds, endIds, durations)
 	return err
 }
 
-const getSchedules = `
-SELECT
-  A.id,
-  CASE
-    WHEN A.type = 1 THEN 'start'
-    WHEN A.type = 2 THEN 'job'
-    WHEN A.type = 3 THEN 'pickup'
-    WHEN A.type = 4 THEN 'delivery'
-    WHEN A.type = 5 THEN 'break'
-    WHEN A.type = 6 THEN 'end'
-  END AS type,
-  A.project_id, A.vehicle_id, A.job_id, A.shipment_id, A.break_id,
-  CASE
-    WHEN A.type = 1 THEN V.start_index
-    WHEN A.type = 2 THEN J.location_index
-    WHEN A.type = 3 THEN S.p_location_index
-    WHEN A.type = 4 THEN S.d_location_index
-    WHEN A.type = 6 THEN V.end_index
-  END AS location_id,
-  to_char(A.arrival, 'YYYY-MM-DD HH24:MI:SS') AS arrival,
-  to_char(A.arrival + A.service_time + A.waiting_time, 'YYYY-MM-DD HH24:MI:SS') AS departure,
-  EXTRACT(epoch FROM A.travel_time),
-  EXTRACT(epoch FROM A.service_time),
-  EXTRACT(epoch FROM A.waiting_time),
-  lag(A.load, 1, A.load) OVER(PARTITION BY A.vehicle_id ORDER BY A.arrival, A.type) AS start_load,
-  A.load AS end_load,
-  to_char(A.created_at, 'YYYY-MM-DD HH24:MI:SS'),
-  to_char(A.updated_at, 'YYYY-MM-DD HH24:MI:SS')
-FROM schedules A
-LEFT JOIN jobs J ON job_id = J.id
-LEFT JOIN shipments S ON shipment_id = S.id
-LEFT JOIN vehicles V ON A.vehicle_id = V.id`
-
-func (q *Queries) DBGetSchedule(ctx context.Context, projectID int64) ([]util.Schedule, error) {
-	filter := " WHERE A.project_id = $1"
-	orderBy := " ORDER BY vehicle_id, arrival, A.type"
-	rows, err := q.db.Query(ctx, getSchedules+filter+orderBy, projectID)
+func (q *Queries) DBGetSchedule(ctx context.Context, projectID int64) (util.ScheduleData, error) {
+	tableName := "schedules"
+	_, err := q.DBGetProject(ctx, projectID)
 	if err != nil {
-		return nil, err
+		return util.ScheduleData{}, err
+	}
+	filter := " WHERE project_id = $1"
+	orderBy := " ORDER BY vehicle_id, arrival, type"
+	sql := "SELECT " + util.GetOutputFields(util.ScheduleDB{}, tableName) + " FROM " + tableName + filter + orderBy
+	rows, err := q.db.Query(ctx, sql, projectID)
+	if err != nil {
+		return util.ScheduleData{}, err
 	}
 	defer rows.Close()
 	return scanScheduleRows(rows)
 }
 
-func (q *Queries) DBGetScheduleJob(ctx context.Context, shipmentID int64) ([]util.Schedule, error) {
-	filter := " WHERE A.job_id = $1"
-	orderBy := " ORDER BY arrival, A.type"
-	rows, err := q.db.Query(ctx, getSchedules+filter+orderBy, shipmentID)
+func (q *Queries) DBGetScheduleJob(ctx context.Context, jobID int64) (util.ScheduleData, error) {
+	tableName := "schedules"
+	_, err := q.DBGetJob(ctx, jobID)
 	if err != nil {
-		return nil, err
+		return util.ScheduleData{}, err
+	}
+	filter := " WHERE task_id = $1 AND type = 'job'"
+	orderBy := " ORDER BY vehicle_id, arrival, type"
+	sql := "SELECT " + util.GetOutputFields(util.ScheduleDB{}, tableName) + " FROM " + tableName + filter + orderBy
+	rows, err := q.db.Query(ctx, sql, jobID)
+	if err != nil {
+		return util.ScheduleData{}, err
 	}
 	defer rows.Close()
 	return scanScheduleRows(rows)
 }
 
-func (q *Queries) DBGetScheduleShipment(ctx context.Context, shipmentID int64) ([]util.Schedule, error) {
-	filter := " WHERE A.shipment_id = $1"
-	orderBy := " ORDER BY arrival, A.type"
-	rows, err := q.db.Query(ctx, getSchedules+filter+orderBy, shipmentID)
+func (q *Queries) DBGetScheduleShipment(ctx context.Context, shipmentID int64) (util.ScheduleData, error) {
+	tableName := "schedules"
+	_, err := q.DBGetShipment(ctx, shipmentID)
 	if err != nil {
-		return nil, err
+		return util.ScheduleData{}, err
+	}
+	filter := " WHERE task_id = $1  AND (type = 'pickup' OR type = 'delivery')"
+	orderBy := " ORDER BY vehicle_id, arrival, type"
+	sql := "SELECT " + util.GetOutputFields(util.ScheduleDB{}, tableName) + " FROM " + tableName + filter + orderBy
+	rows, err := q.db.Query(ctx, sql, shipmentID)
+	if err != nil {
+		return util.ScheduleData{}, err
 	}
 	defer rows.Close()
 	return scanScheduleRows(rows)
 }
 
-func (q *Queries) DBGetScheduleVehicle(ctx context.Context, vehicleID int64) ([]util.Schedule, error) {
-	filter := " WHERE A.vehicle_id = $1"
-	orderBy := " ORDER BY arrival, A.type"
-	rows, err := q.db.Query(ctx, getSchedules+filter+orderBy, vehicleID)
+func (q *Queries) DBGetScheduleVehicle(ctx context.Context, vehicleID int64) (util.ScheduleData, error) {
+	tableName := "schedules"
+	_, err := q.DBGetVehicle(ctx, vehicleID)
 	if err != nil {
-		return nil, err
+		return util.ScheduleData{}, err
+	}
+	filter := " WHERE vehicle_id = $1"
+	orderBy := " ORDER BY vehicle_id, arrival, type"
+	sql := "SELECT " + util.GetOutputFields(util.ScheduleDB{}, tableName) + " FROM " + tableName + filter + orderBy
+	rows, err := q.db.Query(ctx, sql, vehicleID)
+	if err != nil {
+		return util.ScheduleData{}, err
 	}
 	defer rows.Close()
 	return scanScheduleRows(rows)
@@ -122,69 +147,159 @@ func (q *Queries) DBGetScheduleVehicle(ctx context.Context, vehicleID int64) ([]
 const deleteSchedule = `DELETE FROM schedules WHERE project_id = $1`
 
 func (q *Queries) DBDeleteSchedule(ctx context.Context, projectID int64) error {
-	_, err := q.db.Exec(ctx, deleteSchedule, projectID)
+	_, err := q.DBGetProject(ctx, projectID)
+	if err != nil {
+		return err
+	}
+	_, err = q.db.Exec(ctx, deleteSchedule, projectID)
 	return err
 }
 
-func scanScheduleRows(rows pgx.Rows) ([]util.Schedule, error) {
-	var i util.Schedule
-	items := []util.Schedule{}
-	var lastLocationID *int64
+func scanScheduleRows(rows pgx.Rows) (util.ScheduleData, error) {
+	var projectID int64
+	schedule := []util.ScheduleResponse{}
+
+	summary := []util.ScheduleSummary{}
+	var totalSummary map[string]string = map[string]string{
+		"total_travel":  "00:00:00",
+		"total_setup":   "00:00:00",
+		"total_service": "00:00:00",
+		"total_waiting": "00:00:00",
+	}
+	unassigned := []util.ScheduleUnassigned{}
+
+	var route []util.ScheduleRoute
+
+	var i, prevI util.ScheduleDB
+	fullSummaryFound := false
+
 	for rows.Next() {
-		var jobID *int64
-		var shipmentID *int64
-		var breakID *int64
-		var locationID *int64
+		var locationID int64
 		if err := rows.Scan(
-			&i.ID,
 			&i.Type,
 			&i.ProjectID,
 			&i.VehicleID,
-			&jobID,
-			&shipmentID,
-			&breakID,
+			&i.TaskID,
 			&locationID,
 			&i.Arrival,
 			&i.Departure,
 			&i.TravelTime,
+			&i.SetupTime,
 			&i.ServiceTime,
 			&i.WaitingTime,
-			&i.StartLoad,
-			&i.EndLoad,
+			&i.Load,
+			&i.VehicleData,
+			&i.TaskData,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 		); err != nil {
-			return nil, err
+			return util.ScheduleData{}, err
 		}
 
-		if jobID == nil {
-			jobID = new(int64)
-		}
-		if shipmentID == nil {
-			shipmentID = new(int64)
-		}
-		if breakID == nil {
-			breakID = new(int64)
-		}
-		if locationID == nil {
-			// Useful for breaks
-			locationID = lastLocationID
-		}
-		i.JobID = *jobID
-		i.ShipmentID = *shipmentID
-		i.BreakID = *breakID
-
-		latitude, longitude := util.GetCoordinates(*locationID)
+		latitude, longitude := util.GetCoordinates(locationID)
 		i.Location = util.LocationParams{
 			Latitude:  &latitude,
 			Longitude: &longitude,
 		}
 
-		items = append(items, i)
-		lastLocationID = locationID
+		if i.VehicleID > 0 && i.Type != "summary" {
+			// Complete schedule of tasks
+			currentRoute := util.ScheduleRoute{
+				Type:        i.Type,
+				TaskID:      i.TaskID,
+				Location:    i.Location,
+				Arrival:     i.Arrival,
+				Departure:   i.Departure,
+				TravelTime:  i.TravelTime,
+				SetupTime:   i.SetupTime,
+				ServiceTime: i.ServiceTime,
+				WaitingTime: i.WaitingTime,
+				Load:        i.Load,
+				TaskData:    i.TaskData,
+				CreatedAt:   i.CreatedAt,
+				UpdatedAt:   i.UpdatedAt,
+			}
+			if i.VehicleID == prevI.VehicleID {
+				route = append(route, currentRoute)
+			} else {
+				if route != nil {
+					schedule = append(schedule, util.ScheduleResponse{
+						VehicleID:   prevI.VehicleID,
+						VehicleData: prevI.VehicleData,
+						Route:       route,
+					})
+					route = nil
+				}
+				route = append(route, currentRoute)
+			}
+			prevI = i
+		} else if i.VehicleID > 0 {
+			// Schedule summary for a vehicle
+			summary = append(summary, util.ScheduleSummary{
+				VehicleID:   i.VehicleID,
+				TravelTime:  i.TravelTime,
+				SetupTime:   i.SetupTime,
+				ServiceTime: i.ServiceTime,
+				WaitingTime: i.WaitingTime,
+				VehicleData: i.VehicleData,
+			})
+		} else if i.VehicleID == 0 {
+			fullSummaryFound = true
+			// Schedule summary for the complete problem
+			totalSummary = map[string]string{
+				"total_travel":  i.TravelTime,
+				"total_setup":   i.SetupTime,
+				"total_service": i.ServiceTime,
+				"total_waiting": i.WaitingTime,
+			}
+		} else if i.VehicleID == -1 {
+			// Unassigned tasks
+			unassigned = append(unassigned, util.ScheduleUnassigned{
+				Type:     i.Type,
+				TaskID:   i.TaskID,
+				Location: i.Location,
+				TaskData: i.TaskData,
+			})
+		} else {
+			logrus.Error("Got Invalid Schedule Response")
+		}
+		projectID = i.ProjectID
 	}
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return util.ScheduleData{}, err
+	}
+
+	if route != nil {
+		schedule = append(schedule, util.ScheduleResponse{
+			VehicleID:   prevI.VehicleID,
+			VehicleData: prevI.VehicleData,
+			Route:       route,
+		})
+	}
+
+	if !fullSummaryFound && len(summary) != 0 {
+		if len(summary) >= 2 {
+			logrus.Error("More than 1 vehicles found, but total summary not found")
+		}
+		totalSummary = map[string]string{
+			"total_travel":  summary[0].TravelTime,
+			"total_setup":   summary[0].SetupTime,
+			"total_service": summary[0].ServiceTime,
+			"total_waiting": summary[0].WaitingTime,
+		}
+	}
+
+	items := util.ScheduleData{
+		Schedule: schedule,
+		Metadata: util.MetadataResponse{
+			Summary:      summary,
+			Unassigned:   unassigned,
+			TotalTravel:  totalSummary["total_travel"],
+			TotalSetup:   totalSummary["total_setup"],
+			TotalService: totalSummary["total_service"],
+			TotalWaiting: totalSummary["total_waiting"],
+		},
+		ProjectID: projectID,
 	}
 	return items, nil
 }

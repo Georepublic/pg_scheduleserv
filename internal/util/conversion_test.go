@@ -35,7 +35,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetLocationIndex(t *testing.T) {
+func TestGetLocationId(t *testing.T) {
 	var cases = []struct {
 		name      string
 		latitude  float64
@@ -56,7 +56,7 @@ func TestGetLocationIndex(t *testing.T) {
 	assert := assert.New(t)
 
 	for _, tc := range cases {
-		output := GetLocationIndex(tc.latitude, tc.longitude)
+		output := GetLocationId(tc.latitude, tc.longitude)
 		assert.Equal(tc.id, output, fmt.Sprintf("%s: %v, %v", tc.name, tc.latitude, tc.longitude))
 	}
 }

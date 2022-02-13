@@ -26,7 +26,6 @@ along with pg_scheduleserv.  If not, see <https://www.gnu.org/licenses/>.
 
 ******************************************************************GRP-GNU-AGPL*/
 
-
 package main
 
 import (
@@ -39,12 +38,12 @@ import (
 
 	"github.com/Georepublic/pg_scheduleserv/internal/api"
 	"github.com/Georepublic/pg_scheduleserv/internal/config"
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/sirupsen/logrus"
 )
 
 // @title pg_scheduleserv API
-// @version 0.1.0
+// @version 0.2.0
 // @description This is an API for scheduling VRP tasks. Source code can be found on https://github.com/Georepublic/pg_scheduleserv
 // @termsOfService https://swagger.io/terms/
 // @contact.name Team Georepublic
@@ -82,12 +81,12 @@ func main() {
 		config.DatabasePort,
 		config.DatabaseName,
 	)
-	conn, err := pgx.Connect(context.Background(), connectionURL)
+	conn, err := pgxpool.Connect(context.Background(), connectionURL)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
 	}
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	server := api.NewServer(conn)
-	logrus.Error(server.Start(config.ServerBindAddress))
+	logrus.Error(server.Start(config.ServerPort))
 }

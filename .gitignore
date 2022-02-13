@@ -1,3 +1,5 @@
 app.env
 pg_scheduleserv
 pg_scheduleserv.exe
+node_modules
+

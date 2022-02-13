@@ -42,16 +42,16 @@ func HandleDBError(err error) error {
 			switch pgErr.ConstraintName {
 			case "breaks_time_windows_id_fkey":
 				err = fmt.Errorf("Break with the given 'break_id' does not exist")
-			case "project_locations_project_id_fkey":
-				err = fmt.Errorf("Project with the given 'project_id' does not exist")
 			case "jobs_time_windows_id_fkey":
 				err = fmt.Errorf("Job with the given 'job_id' does not exist")
 			case "shipments_time_windows_id_fkey":
 				err = fmt.Errorf("Shipment with the given 'shipment_id' does not exist")
 			case "breaks_vehicle_id_fkey":
 				err = fmt.Errorf("Vehicle with the given 'vehicle_id' does not exist")
+
 			case "jobs_check":
 				err = fmt.Errorf("Field 'pickup' and 'delivery' must have same length")
+
 			case "breaks_time_windows_check":
 				err = fmt.Errorf("Field 'tw_open' must be less than or equal to field 'tw_close'")
 			case "jobs_time_windows_check":
@@ -60,12 +60,35 @@ func HandleDBError(err error) error {
 				err = fmt.Errorf("Field 'tw_open' must be less than or equal to field 'tw_close'")
 			case "shipments_time_windows_check":
 				err = fmt.Errorf("Field 'tw_open' must be less than or equal to field 'tw_close'")
+
 			case "jobs_time_windows_pkey":
 				err = fmt.Errorf("Jobs time window with given values already exist")
 			case "shipments_time_windows_pkey":
 				err = fmt.Errorf("Shipments time window with given values already exist")
 			case "breaks_time_windows_pkey":
 				err = fmt.Errorf("Breaks time window with given values already exist")
+
+			case "jobs_service_check":
+				err = fmt.Errorf("Field 'service' must be non-negative with the format 'HH:MM:SS'")
+			case "jobs_setup_check":
+				err = fmt.Errorf("Field 'setup' must be non-negative with the format 'HH:MM:SS'")
+			case "shipments_p_service_check":
+				err = fmt.Errorf("Field 'p_service' must be non-negative with the format 'HH:MM:SS'")
+			case "shipments_d_service_check":
+				err = fmt.Errorf("Field 'd_service' must be non-negative with the format 'HH:MM:SS'")
+			case "shipments_p_setup_check":
+				err = fmt.Errorf("Field 'p_setup' must be non-negative with the format 'HH:MM:SS'")
+			case "shipments_d_setup_check":
+				err = fmt.Errorf("Field 'd_setup' must be non-negative with the format 'HH:MM:SS'")
+			case "breaks_service_check":
+				err = fmt.Errorf("Field 'service' must be non-negative with the format 'HH:MM:SS'")
+
+			case "jobs_project_id_fkey":
+				err = fmt.Errorf("Project with the given 'project_id' does not exist")
+			case "shipments_project_id_fkey":
+				err = fmt.Errorf("Project with the given 'project_id' does not exist")
+			case "vehicles_project_id_fkey":
+				err = fmt.Errorf("Project with the given 'project_id' does not exist")
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-name: 'Test'
+name: "Test"
 
 on:
   push:
@@ -23,8 +23,9 @@ jobs:
           echo "PGVER=${PGVER}" >> $GITHUB_ENV
           echo "PGPORT=5432" >> $GITHUB_ENV
           echo "PGIS=3" >> $GITHUB_ENV
-          echo "VROOMVER=1.10.0" >> $GITHUB_ENV
-          echo "VRPVER=0.2.0" >> $GITHUB_ENV
+          echo "VROOMVER=1.11.0" >> $GITHUB_ENV
+          echo "VRPVER=0.3.0" >> $GITHUB_ENV
+          echo "DEVELOP=false" >> $GITHUB_ENV
 
       - name: Add PostgreSQL APT repository
         run: |
@@ -74,6 +75,7 @@ jobs:
           make
 
       - name: Cache vrpRouting
+        if: ${{ env.DEVELOP != 'true' }}
         id: cache-vrprouting
         uses: actions/cache@v2
         env:
@@ -84,13 +86,18 @@ jobs:
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ env.VRPVER }}
 
       - name: Clone vrpRouting
-        if: steps.cache-vroom.outputs.cache-hit != 'true'
+        if: steps.cache-vroom.outputs.cache-hit != 'true' || ${{ env.DEVELOP }} == "true"
         run: |
-          wget https://github.com/pgRouting/vrprouting/archive/refs/tags/v${{ env.VRPVER }}.tar.gz -O /tmp/${{ env.VRPVER }}.tar.gz
-          tar -zvxf /tmp/${{ env.VRPVER }}.tar.gz -C ~/
-          cd ~/vrprouting-${{ env.VRPVER }}
-          # TEMP: Adding support for postgresql-14
-          sed -i 's/PostgreSQL_ADDITIONAL_VERSIONS "12" "13"/PostgreSQL_ADDITIONAL_VERSIONS "12" "13" "14"/' CMakeLists.txt
+          if [ "${{ env.DEVELOP }}" = true ]; then
+            git clone --depth 1 https://github.com/pgRouting/vrprouting -b develop
+            mv vrprouting ~/vrprouting-${{ env.VRPVER }}
+          else
+            wget https://github.com/pgRouting/vrprouting/archive/refs/tags/v${{ env.VRPVER }}.tar.gz -O /tmp/${{ env.VRPVER }}.tar.gz
+            tar -zvxf /tmp/${{ env.VRPVER }}.tar.gz -C ~/
+            cd ~/vrprouting-${{ env.VRPVER }}
+            # TEMP: Adding support for postgresql-14
+            sed -i 's/PostgreSQL_ADDITIONAL_VERSIONS "12" "13"/PostgreSQL_ADDITIONAL_VERSIONS "12" "13" "14"/' CMakeLists.txt
+          fi
 
       - name: Configure vrpRouting
         run: |
@@ -110,7 +117,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v2
         with:
-          go-version: '1.17.x'
+          go-version: "1.17.x"
 
       - name: Cache Go modules
         uses: actions/cache@v2

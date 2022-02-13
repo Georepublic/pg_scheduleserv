@@ -29,7 +29,6 @@ along with pg_scheduleserv.  If not, see <https://www.gnu.org/licenses/>.
 package e2etest
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -48,212 +47,357 @@ import (
 func TestCreateSchedule(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
 		name       string
 		statusCode int
 		projectID  int
-		resBody    []map[string]interface{}
+		resBody    map[string]interface{}
 	}{
 		{
 			name:       "Invalid ID",
-			statusCode: 201,
+			statusCode: 404,
 			projectID:  123,
-			resBody:    []map[string]interface{}{},
+			resBody: map[string]interface{}{
+				"code":  "404",
+				"error": "Not Found",
+			},
 		},
 		{
 			name:       "Valid ID, but nothing to schedule",
-			statusCode: 201,
+			statusCode: 400,
 			projectID:  8943284028902589305,
-			resBody:    []map[string]interface{}{},
+			resBody: map[string]interface{}{
+				"code":    "400",
+				"message": "Bad Request",
+				"errors":  []interface{}{"No locations present in the project"},
+			},
 		},
 		{
 			name:       "Valid ID, but already scheduled",
 			statusCode: 201,
 			projectID:  3909655254191459782,
-			resBody: []map[string]interface{}{
-				{
-					"type":       "start",
+			resBody: map[string]interface{}{
+				"data": map[string]interface{}{
+					"schedule": []interface{}{
+						map[string]interface{}{
+							"vehicle_id": "7300272137290532980",
+							"vehicle_data": map[string]interface{}{
+								"s": float64(1),
+							},
+							"route": []interface{}{
+								map[string]interface{}{
+									"type":    "start",
+									"task_id": "-1",
+									"location": map[string]interface{}{
+										"latitude":  -32.234,
+										"longitude": -23.2342,
+									},
+									"arrival":      "2020-01-01T10:10:00",
+									"departure":    "2020-01-01T10:10:00",
+									"travel_time":  "00:00:00",
+									"setup_time":   "00:00:00",
+									"service_time": "00:00:00",
+									"waiting_time": "00:00:00",
+									"load": []interface{}{
+										float64(0),
+										float64(0),
+									},
+									"task_data": map[string]interface{}{},
+								},
+								map[string]interface{}{
+									"type":    "job",
+									"task_id": "3324729385723589729",
+									"location": map[string]interface{}{
+										"latitude":  -81.23,
+										"longitude": 12.0,
+									},
+									"arrival":      "2020-01-01T10:44:19",
+									"departure":    "2020-01-01T10:44:19",
+									"travel_time":  "00:34:19",
+									"setup_time":   "00:00:00",
+									"service_time": "00:00:00",
+									"waiting_time": "00:00:00",
+									"load": []interface{}{
+										float64(0),
+										float64(0),
+									},
+									"task_data": map[string]interface{}{
+										"s": float64(1),
+									},
+								},
+								map[string]interface{}{
+									"type":    "pickup",
+									"task_id": "3341766951177830852",
+									"location": map[string]interface{}{
+										"latitude":  -32.234,
+										"longitude": -23.2342,
+									},
+									"arrival":      "2020-01-01T11:18:38",
+									"departure":    "2020-01-01T11:18:39",
+									"travel_time":  "00:34:19",
+									"setup_time":   "00:00:00",
+									"service_time": "00:00:01",
+									"waiting_time": "00:00:00",
+									"load": []interface{}{
+										float64(3),
+										float64(5),
+									},
+									"task_data": map[string]interface{}{},
+								},
+								map[string]interface{}{
+									"type":    "delivery",
+									"task_id": "3341766951177830852",
+									"location": map[string]interface{}{
+										"latitude":  23.3458,
+										"longitude": 2.3242,
+									},
+									"arrival":      "2020-01-01T11:52:58",
+									"departure":    "2020-01-01T11:53:01",
+									"travel_time":  "00:34:19",
+									"setup_time":   "00:00:00",
+									"service_time": "00:00:03",
+									"waiting_time": "00:00:00",
+									"load": []interface{}{
+										float64(0),
+										float64(0),
+									},
+									"task_data": map[string]interface{}{},
+								},
+								map[string]interface{}{
+									"type":    "break",
+									"task_id": "2349284092384902582",
+									"location": map[string]interface{}{
+										"latitude":  23.3458,
+										"longitude": 2.3242,
+									},
+									"arrival":      "2020-01-01T11:53:01",
+									"departure":    "2020-01-01T11:58:25",
+									"travel_time":  "00:00:00",
+									"setup_time":   "00:00:00",
+									"service_time": "00:05:24",
+									"waiting_time": "00:00:00",
+									"load": []interface{}{
+										float64(0),
+										float64(0),
+									},
+									"task_data": map[string]interface{}{},
+								},
+								map[string]interface{}{
+									"type":    "end",
+									"task_id": "-1",
+									"location": map[string]interface{}{
+										"latitude":  23.3458,
+										"longitude": 2.3242,
+									},
+									"arrival":      "2020-01-01T11:58:25",
+									"departure":    "2020-01-01T11:58:25",
+									"travel_time":  "00:00:00",
+									"setup_time":   "00:00:00",
+									"service_time": "00:00:00",
+									"waiting_time": "00:00:00",
+									"load": []interface{}{
+										float64(0),
+										float64(0),
+									},
+									"task_data": map[string]interface{}{},
+								},
+							},
+						},
+					},
+					"metadata": map[string]interface{}{
+						"summary": []interface{}{
+							map[string]interface{}{
+								"vehicle_id":   "7300272137290532980",
+								"travel_time":  "01:42:57",
+								"setup_time":   "00:00:00",
+								"service_time": "00:05:28",
+								"waiting_time": "00:00:00",
+								"vehicle_data": map[string]interface{}{
+									"s": float64(1),
+								},
+							},
+						},
+						"unassigned":    []interface{}{},
+						"total_travel":  "01:42:57",
+						"total_setup":   "00:00:00",
+						"total_service": "00:05:28",
+						"total_waiting": "00:00:00",
+					},
 					"project_id": "3909655254191459782",
-					"vehicle_id": "7300272137290532980",
-					"location": map[string]interface{}{
-						"latitude":  -32.234,
-						"longitude": -23.2342,
-					},
-					"arrival":      "2020-01-01 10:10:00",
-					"departure":    "2020-01-01 10:10:00",
-					"travel_time":  float64(0),
-					"service_time": float64(0),
-					"waiting_time": float64(0),
-					"start_load":   []interface{}{float64(0), float64(0)},
-					"end_load":     []interface{}{float64(0), float64(0)},
 				},
-				{
-					"type":        "pickup",
-					"project_id":  "3909655254191459782",
-					"vehicle_id":  "7300272137290532980",
-					"shipment_id": "3341766951177830852",
-					"location": map[string]interface{}{
-						"latitude":  -32.234,
-						"longitude": -23.2342,
-					},
-					"arrival":      "2020-01-01 10:10:00",
-					"departure":    "2020-01-01 10:10:01",
-					"travel_time":  float64(0),
-					"service_time": float64(1),
-					"waiting_time": float64(0),
-					"start_load":   []interface{}{float64(0), float64(0)},
-					"end_load":     []interface{}{float64(3), float64(5)},
-				},
-				{
-					"type":       "job",
-					"project_id": "3909655254191459782",
-					"vehicle_id": "7300272137290532980",
-					"job_id":     "3324729385723589729",
-					"location": map[string]interface{}{
-						"latitude":  -81.23,
-						"longitude": 12.00,
-					},
-					"arrival":      "2020-01-03 09:16:16",
-					"departure":    "2020-01-03 09:16:16",
-					"travel_time":  float64(169575),
-					"service_time": float64(0),
-					"waiting_time": float64(0),
-					"start_load":   []interface{}{float64(3), float64(5)},
-					"end_load":     []interface{}{float64(3), float64(5)},
-				},
-				{
-					"type":        "delivery",
-					"project_id":  "3909655254191459782",
-					"vehicle_id":  "7300272137290532980",
-					"shipment_id": "3341766951177830852",
-					"location": map[string]interface{}{
-						"latitude":  23.3458,
-						"longitude": 2.3242,
-					},
-					"arrival":      "2020-01-07 10:05:31",
-					"departure":    "2020-01-07 10:05:34",
-					"travel_time":  float64(518130),
-					"service_time": float64(3),
-					"waiting_time": float64(0),
-					"start_load":   []interface{}{float64(3), float64(5)},
-					"end_load":     []interface{}{float64(0), float64(0)},
-				},
-				{
-					"type":       "break",
-					"project_id": "3909655254191459782",
-					"vehicle_id": "7300272137290532980",
-					"break_id":   "2349284092384902582",
-					"location": map[string]interface{}{
-						"latitude":  23.3458,
-						"longitude": 2.3242,
-					},
-					"arrival":      "2020-01-07 10:05:34",
-					"departure":    "2020-01-07 10:10:58",
-					"travel_time":  float64(518130),
-					"service_time": float64(324),
-					"waiting_time": float64(0),
-					"start_load":   []interface{}{float64(0), float64(0)},
-					"end_load":     []interface{}{float64(0), float64(0)},
-				},
-				{
-					"type":       "end",
-					"project_id": "3909655254191459782",
-					"vehicle_id": "7300272137290532980",
-					"location": map[string]interface{}{
-						"latitude":  23.3458,
-						"longitude": 2.3242,
-					},
-					"arrival":      "2020-01-07 10:10:58",
-					"departure":    "2020-01-07 10:10:58",
-					"travel_time":  float64(518130),
-					"service_time": float64(0),
-					"waiting_time": float64(0),
-					"start_load":   []interface{}{float64(0), float64(0)},
-					"end_load":     []interface{}{float64(0), float64(0)},
-				},
+				"code":    "201",
+				"message": "Created",
 			},
 		},
 		{
 			name:       "Valid ID, not scheduled yet",
 			statusCode: 201,
 			projectID:  2593982828701335033,
-			resBody: []map[string]interface{}{
-				{
-					"type":       "start",
+			resBody: map[string]interface{}{
+				"data": map[string]interface{}{
+					"schedule": []interface{}{
+						map[string]interface{}{
+							"vehicle_id": "150202809001685363",
+							"vehicle_data": map[string]interface{}{
+								"s": float64(1),
+							},
+							"route": []interface{}{
+								map[string]interface{}{
+									"type":    "start",
+									"task_id": "-1",
+									"location": map[string]interface{}{
+										"latitude":  -32.234,
+										"longitude": -23.2342,
+									},
+									"arrival":      "2020-10-09T23:27:06",
+									"departure":    "2020-10-09T23:27:06",
+									"travel_time":  "00:00:00",
+									"setup_time":   "00:00:00",
+									"service_time": "00:00:00",
+									"waiting_time": "00:00:00",
+									"load": []interface{}{
+										float64(0),
+										float64(0),
+									},
+									"task_data": map[string]interface{}{},
+								},
+								map[string]interface{}{
+									"type":    "pickup",
+									"task_id": "3329730179111013588",
+									"location": map[string]interface{}{
+										"latitude":  -32.234,
+										"longitude": -23.2342,
+									},
+									"arrival":      "2020-10-09T23:27:06",
+									"departure":    "2020-10-09T23:28:07",
+									"travel_time":  "00:00:00",
+									"setup_time":   "00:00:00",
+									"service_time": "00:01:01",
+									"waiting_time": "00:00:00",
+									"load": []interface{}{
+										float64(6),
+										float64(8),
+									},
+									"task_data": map[string]interface{}{},
+								},
+								map[string]interface{}{
+									"type":    "delivery",
+									"task_id": "3329730179111013588",
+									"location": map[string]interface{}{
+										"latitude":  23.3458,
+										"longitude": 2.3242,
+									},
+									"arrival":      "2020-10-10T00:00:00",
+									"departure":    "2020-10-10T00:02:03",
+									"travel_time":  "00:31:53",
+									"setup_time":   "00:00:00",
+									"service_time": "00:02:03",
+									"waiting_time": "00:00:00",
+									"load": []interface{}{
+										float64(0),
+										float64(0),
+									},
+									"task_data": map[string]interface{}{},
+								},
+								map[string]interface{}{
+									"type":    "end",
+									"task_id": "-1",
+									"location": map[string]interface{}{
+										"latitude":  23.3458,
+										"longitude": 2.3242,
+									},
+									"arrival":      "2020-10-10T00:02:03",
+									"departure":    "2020-10-10T00:02:03",
+									"travel_time":  "00:00:00",
+									"setup_time":   "00:00:00",
+									"service_time": "00:00:00",
+									"waiting_time": "00:00:00",
+									"load": []interface{}{
+										float64(0),
+										float64(0),
+									},
+									"task_data": map[string]interface{}{},
+								},
+							},
+						},
+					},
+					"metadata": map[string]interface{}{
+						"summary": []interface{}{
+							map[string]interface{}{
+								"vehicle_id":   "150202809001685363",
+								"travel_time":  "00:31:53",
+								"setup_time":   "00:00:00",
+								"service_time": "00:03:04",
+								"waiting_time": "00:00:00",
+								"vehicle_data": map[string]interface{}{
+									"s": float64(1),
+								},
+							},
+						},
+						"unassigned": []interface{}{
+							map[string]interface{}{
+								"type":    "job",
+								"task_id": "6362411701075685873",
+								"location": map[string]interface{}{
+									"latitude":  32.234,
+									"longitude": -23.2342,
+								},
+								"task_data": map[string]interface{}{
+									"key": "value",
+								},
+							},
+							map[string]interface{}{
+								"type":    "job",
+								"task_id": "2229737119501208952",
+								"location": map[string]interface{}{
+									"latitude":  -81.23,
+									"longitude": 12.0,
+								},
+								"task_data": map[string]interface{}{
+									"data": []interface{}{
+										"value1",
+										2.0,
+									},
+								},
+							},
+							map[string]interface{}{
+								"type":    "pickup",
+								"task_id": "7794682317520784480",
+								"location": map[string]interface{}{
+									"latitude":  32.234,
+									"longitude": -23.2342,
+								},
+								"task_data": map[string]interface{}{},
+							},
+							map[string]interface{}{
+								"type":    "delivery",
+								"task_id": "7794682317520784480",
+								"location": map[string]interface{}{
+									"latitude":  23.3458,
+									"longitude": 2.3242,
+								},
+								"task_data": map[string]interface{}{},
+							},
+						},
+						"total_travel":  "00:31:53",
+						"total_setup":   "00:00:00",
+						"total_service": "00:03:04",
+						"total_waiting": "00:00:00",
+					},
 					"project_id": "2593982828701335033",
-					"vehicle_id": "150202809001685363",
-					"location": map[string]interface{}{
-						"latitude":  -32.234,
-						"longitude": -23.2342,
-					},
-					"arrival":      "2020-10-07 15:56:33",
-					"departure":    "2020-10-07 15:56:33",
-					"travel_time":  float64(0),
-					"service_time": float64(0),
-					"waiting_time": float64(0),
-					"start_load":   []interface{}{float64(0), float64(0)},
-					"end_load":     []interface{}{float64(0), float64(0)},
 				},
-				{
-					"type":        "pickup",
-					"project_id":  "2593982828701335033",
-					"vehicle_id":  "150202809001685363",
-					"shipment_id": "3329730179111013588",
-					"location": map[string]interface{}{
-						"latitude":  -32.234,
-						"longitude": -23.2342,
-					},
-					"arrival":      "2020-10-07 15:56:33",
-					"departure":    "2020-10-07 15:57:34",
-					"travel_time":  float64(0),
-					"service_time": float64(61),
-					"waiting_time": float64(0),
-					"start_load":   []interface{}{float64(0), float64(0)},
-					"end_load":     []interface{}{float64(6), float64(8)},
-				},
-				{
-					"type":        "delivery",
-					"project_id":  "2593982828701335033",
-					"vehicle_id":  "150202809001685363",
-					"shipment_id": "3329730179111013588",
-					"location": map[string]interface{}{
-						"latitude":  23.3458,
-						"longitude": 2.3242,
-					},
-					"arrival":      "2020-10-10 00:00:00",
-					"departure":    "2020-10-10 00:02:03",
-					"travel_time":  float64(201746),
-					"service_time": float64(123),
-					"waiting_time": float64(0),
-					"start_load":   []interface{}{float64(6), float64(8)},
-					"end_load":     []interface{}{float64(0), float64(0)},
-				},
-				{
-					"type":       "end",
-					"project_id": "2593982828701335033",
-					"vehicle_id": "150202809001685363",
-					"location": map[string]interface{}{
-						"latitude":  23.3458,
-						"longitude": 2.3242,
-					},
-					"arrival":      "2020-10-10 00:02:03",
-					"departure":    "2020-10-10 00:02:03",
-					"travel_time":  float64(201746),
-					"service_time": float64(0),
-					"waiting_time": float64(0),
-					"start_load":   []interface{}{float64(0), float64(0)},
-					"end_load":     []interface{}{float64(0), float64(0)},
-				},
+				"code":    "201",
+				"message": "Created",
 			},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			url := fmt.Sprintf("/projects/%d/schedule", tc.projectID)
+			url := fmt.Sprintf("/projects/%d/schedule?fresh=true", tc.projectID)
 			request, err := http.NewRequest("POST", url, nil)
 			require.NoError(t, err)
 
@@ -268,13 +412,31 @@ func TestCreateSchedule(t *testing.T) {
 
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
-			m := []map[string]interface{}{}
+			m := map[string]interface{}{}
 			if err = json.Unmarshal(body, &m); err != nil {
 				t.Error(err)
 			}
-			for i := 0; i < len(m); i++ {
-				delete(m[i], "created_at")
-				delete(m[i], "updated_at")
+			// To delete the "created_at" and "updated_at" field while testing
+			if mData, okData := m["data"].(map[string]interface{}); okData {
+				if mSchedules, okSchedules := mData["schedule"].([]interface{}); okSchedules {
+					for i := 0; i < len(mSchedules); i++ {
+						if mSchedule, okSchedule := mSchedules[i].(map[string]interface{}); okSchedule {
+							if mRoute, okRoute := mSchedule["route"].([]interface{}); okRoute {
+								for j := 0; j < len(mRoute); j++ {
+									if mDataJ, okJ := mRoute[j].(map[string]interface{}); okJ {
+										delete(mDataJ, "created_at")
+										delete(mDataJ, "updated_at")
+										mRoute[j] = mDataJ
+									}
+								}
+								mSchedule["route"] = mRoute
+							}
+							mSchedules[i] = mSchedule
+						}
+					}
+					mData["schedule"] = mSchedules
+				}
+				m["data"] = mData
 			}
 			assert.Equal(t, tc.resBody, m)
 		})
@@ -284,125 +446,188 @@ func TestCreateSchedule(t *testing.T) {
 func TestGetScheduleJson(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
 		name       string
 		statusCode int
 		projectID  int
-		resBody    []map[string]interface{}
+		resBody    map[string]interface{}
 	}{
 		{
 			name:       "Invalid ID",
-			statusCode: 200,
+			statusCode: 404,
 			projectID:  123,
-			resBody:    []map[string]interface{}{},
+			resBody: map[string]interface{}{
+				"error": "Not Found",
+				"code":  "404",
+			},
 		},
 		{
 			name:       "Valid ID, no schedule",
 			statusCode: 200,
 			projectID:  2593982828701335033,
-			resBody:    []map[string]interface{}{},
+			resBody: map[string]interface{}{
+				"data": map[string]interface{}{
+					"schedule": []interface{}{},
+					"metadata": map[string]interface{}{
+						"summary":       []interface{}{},
+						"unassigned":    []interface{}{},
+						"total_setup":   "00:00:00",
+						"total_service": "00:00:00",
+						"total_travel":  "00:00:00",
+						"total_waiting": "00:00:00",
+					},
+				},
+				"code":    "200",
+				"message": "OK",
+			},
 		},
 		{
 			name:       "Valid ID",
 			statusCode: 200,
 			projectID:  3909655254191459782,
-			resBody: []map[string]interface{}{
-				{
-					"type":       "start",
+			resBody: map[string]interface{}{
+				"data": map[string]interface{}{
+					"schedule": []interface{}{
+						map[string]interface{}{
+							"vehicle_id": "7300272137290532980",
+							"vehicle_data": map[string]interface{}{
+								"s": float64(1),
+							},
+							"route": []interface{}{
+								map[string]interface{}{
+									"type":    "start",
+									"task_id": "-1",
+									"location": map[string]interface{}{
+										"latitude":  -32.234,
+										"longitude": -23.2342,
+									},
+									"arrival":      "2020-01-01T10:10:00",
+									"departure":    "2020-01-01T10:10:00",
+									"travel_time":  "00:00:00",
+									"setup_time":   "00:00:00",
+									"service_time": "00:00:00",
+									"waiting_time": "00:00:00",
+									"load": []interface{}{
+										float64(0),
+										float64(0),
+									},
+									"task_data":  map[string]interface{}{},
+									"created_at": "2021-12-08T20:04:16",
+									"updated_at": "2021-12-08T20:04:16",
+								},
+								map[string]interface{}{
+									"type":    "pickup",
+									"task_id": "3341766951177830852",
+									"location": map[string]interface{}{
+										"latitude":  -32.234,
+										"longitude": -23.2342,
+									},
+									"arrival":      "2020-01-01T10:10:00",
+									"departure":    "2020-01-01T10:10:01",
+									"travel_time":  "00:00:00",
+									"setup_time":   "00:00:00",
+									"service_time": "00:00:01",
+									"waiting_time": "00:00:00",
+									"load": []interface{}{
+										float64(3),
+										float64(5),
+									},
+									"task_data":  map[string]interface{}{},
+									"created_at": "2021-12-08T20:04:16",
+									"updated_at": "2021-12-08T20:04:16",
+								},
+								map[string]interface{}{
+									"type":    "delivery",
+									"task_id": "3341766951177830852",
+									"location": map[string]interface{}{
+										"latitude":  23.3458,
+										"longitude": 2.3242,
+									},
+									"arrival":      "2020-01-03T20:52:34",
+									"departure":    "2020-01-03T20:52:37",
+									"travel_time":  "58:42:33",
+									"setup_time":   "00:00:00",
+									"service_time": "00:00:03",
+									"waiting_time": "00:00:00",
+									"load": []interface{}{
+										float64(0),
+										float64(0),
+									},
+									"task_data":  map[string]interface{}{},
+									"created_at": "2021-12-08T20:04:16",
+									"updated_at": "2021-12-08T20:04:16",
+								},
+								map[string]interface{}{
+									"type":    "break",
+									"task_id": "2349284092384902582",
+									"location": map[string]interface{}{
+										"latitude":  23.3458,
+										"longitude": 2.3242,
+									},
+									"arrival":      "2020-01-03T20:52:37",
+									"departure":    "2020-01-03T20:58:01",
+									"travel_time":  "00:00:00",
+									"setup_time":   "00:00:00",
+									"service_time": "00:05:24",
+									"waiting_time": "00:00:00",
+									"load": []interface{}{
+										float64(0),
+										float64(0),
+									},
+									"task_data":  map[string]interface{}{},
+									"created_at": "2021-12-08T20:04:16",
+									"updated_at": "2021-12-08T20:04:16",
+								},
+								map[string]interface{}{
+									"type":    "end",
+									"task_id": "-1",
+									"location": map[string]interface{}{
+										"latitude":  23.3458,
+										"longitude": 2.3242,
+									},
+									"arrival":      "2020-01-03T20:58:01",
+									"departure":    "2020-01-03T20:58:01",
+									"travel_time":  "00:00:00",
+									"setup_time":   "00:00:00",
+									"service_time": "00:00:00",
+									"waiting_time": "00:00:00",
+									"load": []interface{}{
+										float64(0),
+										float64(0),
+									},
+									"task_data":  map[string]interface{}{},
+									"created_at": "2021-12-08T20:04:16",
+									"updated_at": "2021-12-08T20:04:16",
+								},
+							},
+						},
+					},
+					"metadata": map[string]interface{}{
+						"summary": []interface{}{
+							map[string]interface{}{
+								"vehicle_id":   "7300272137290532980",
+								"setup_time":   "00:00:00",
+								"service_time": "00:05:28",
+								"travel_time":  "58:42:33",
+								"waiting_time": "00:00:00",
+								"vehicle_data": map[string]interface{}{
+									"s": float64(1),
+								},
+							},
+						},
+						"unassigned":    []interface{}{},
+						"total_setup":   "00:00:00",
+						"total_service": "00:05:28",
+						"total_travel":  "58:42:33",
+						"total_waiting": "00:00:00",
+					},
 					"project_id": "3909655254191459782",
-					"vehicle_id": "7300272137290532980",
-					"location": map[string]interface{}{
-						"latitude":  -32.234,
-						"longitude": -23.2342,
-					},
-					"arrival":      "2020-01-01 10:10:00",
-					"departure":    "2020-01-01 10:10:00",
-					"travel_time":  float64(0),
-					"service_time": float64(0),
-					"waiting_time": float64(0),
-					"start_load":   []interface{}{float64(0), float64(0)},
-					"end_load":     []interface{}{float64(0), float64(0)},
-					"created_at":   "2021-12-08 20:04:16",
-					"updated_at":   "2021-12-08 20:04:16",
 				},
-				{
-					"type":        "pickup",
-					"project_id":  "3909655254191459782",
-					"vehicle_id":  "7300272137290532980",
-					"shipment_id": "3341766951177830852",
-					"location": map[string]interface{}{
-						"latitude":  -32.234,
-						"longitude": -23.2342,
-					},
-					"arrival":      "2020-01-01 10:10:00",
-					"departure":    "2020-01-01 10:10:01",
-					"travel_time":  float64(0),
-					"service_time": float64(1),
-					"waiting_time": float64(0),
-					"start_load":   []interface{}{float64(0), float64(0)},
-					"end_load":     []interface{}{float64(3), float64(5)},
-					"created_at":   "2021-12-08 20:04:16",
-					"updated_at":   "2021-12-08 20:04:16",
-				},
-				{
-					"type":        "delivery",
-					"project_id":  "3909655254191459782",
-					"vehicle_id":  "7300272137290532980",
-					"shipment_id": "3341766951177830852",
-					"location": map[string]interface{}{
-						"latitude":  23.3458,
-						"longitude": 2.3242,
-					},
-					"arrival":      "2020-01-07 10:05:31",
-					"departure":    "2020-01-07 10:05:34",
-					"travel_time":  float64(518130),
-					"service_time": float64(3),
-					"waiting_time": float64(0),
-					"start_load":   []interface{}{float64(3), float64(5)},
-					"end_load":     []interface{}{float64(0), float64(0)},
-					"created_at":   "2021-12-08 20:04:16",
-					"updated_at":   "2021-12-08 20:04:16",
-				},
-				{
-					"type":       "break",
-					"project_id": "3909655254191459782",
-					"vehicle_id": "7300272137290532980",
-					"break_id":   "2349284092384902582",
-					"location": map[string]interface{}{
-						"latitude":  23.3458,
-						"longitude": 2.3242,
-					},
-					"arrival":      "2020-01-07 10:05:34",
-					"departure":    "2020-01-07 10:10:58",
-					"travel_time":  float64(518130),
-					"service_time": float64(324),
-					"waiting_time": float64(0),
-					"start_load":   []interface{}{float64(0), float64(0)},
-					"end_load":     []interface{}{float64(0), float64(0)},
-					"created_at":   "2021-12-08 20:04:16",
-					"updated_at":   "2021-12-08 20:04:16",
-				},
-				{
-					"type":       "end",
-					"project_id": "3909655254191459782",
-					"vehicle_id": "7300272137290532980",
-					"location": map[string]interface{}{
-						"latitude":  23.3458,
-						"longitude": 2.3242,
-					},
-					"arrival":      "2020-01-07 10:10:58",
-					"departure":    "2020-01-07 10:10:58",
-					"travel_time":  float64(518130),
-					"service_time": float64(0),
-					"waiting_time": float64(0),
-					"start_load":   []interface{}{float64(0), float64(0)},
-					"end_load":     []interface{}{float64(0), float64(0)},
-					"created_at":   "2021-12-08 20:04:16",
-					"updated_at":   "2021-12-08 20:04:16",
-				},
+				"code":    "200",
+				"message": "OK",
 			},
 		},
 	}
@@ -426,7 +651,7 @@ func TestGetScheduleJson(t *testing.T) {
 
 			assert.Equal(t, tc.statusCode, resp.StatusCode)
 			assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
-			m := []map[string]interface{}{}
+			m := map[string]interface{}{}
 			if err = json.Unmarshal(body, &m); err != nil {
 				t.Error(err)
 			}
@@ -438,7 +663,7 @@ func TestGetScheduleJson(t *testing.T) {
 func TestGetScheduleICal(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -448,13 +673,6 @@ func TestGetScheduleICal(t *testing.T) {
 		resBody    []util.ICal
 		filename   string
 	}{
-		{
-			name:       "Invalid ID",
-			statusCode: 200,
-			projectID:  123,
-			resBody:    []util.ICal{},
-			filename:   "schedule-0.ics",
-		},
 		{
 			name:       "Valid ID, no schedule",
 			statusCode: 200,
@@ -468,54 +686,54 @@ func TestGetScheduleICal(t *testing.T) {
 			projectID:  3909655254191459782,
 			resBody: []util.ICal{
 				{
-					ID:          "4341723776417023483",
+					ID:          "start7300272137290532980@scheduleserv",
 					CreatedTime: time.Date(2021, time.Month(12), 8, 20, 4, 16, 0, time.UTC),
 					ModifiedAt:  time.Date(2021, time.Month(12), 8, 20, 4, 16, 0, time.UTC),
 					StartAt:     time.Date(2020, time.Month(1), 1, 10, 10, 0, 0, time.UTC),
 					EndAt:       time.Date(2020, time.Month(1), 1, 10, 10, 0, 0, time.UTC),
 					Summary:     "Start - Vehicle 7300272137290532980",
 					Location:    "(-32.2340, -23.2342)",
-					Description: "Project ID: 3909655254191459782\nVehicle ID: 7300272137290532980\nTravel Time: 00:00:00\nService Time: 00:00:00\nWaiting Time: 00:00:00\nLoad: [0 0] - [0 0]\n",
+					Description: "Project ID: 3909655254191459782\nVehicle ID: 7300272137290532980\nTask ID: -1\nTravel Time: 00:00:00\nService Time: 00:00:00\nWaiting Time: 00:00:00\nLoad: [0 0]\n",
 				},
 				{
-					ID:          "6390629987209858272",
+					ID:          "pickup3341766951177830852@scheduleserv",
 					CreatedTime: time.Date(2021, time.Month(12), 8, 20, 4, 16, 0, time.UTC),
 					ModifiedAt:  time.Date(2021, time.Month(12), 8, 20, 4, 16, 0, time.UTC),
 					StartAt:     time.Date(2020, time.Month(1), 1, 10, 10, 0, 0, time.UTC),
 					EndAt:       time.Date(2020, time.Month(1), 1, 10, 10, 1, 0, time.UTC),
 					Summary:     "Pickup - Vehicle 7300272137290532980",
 					Location:    "(-32.2340, -23.2342)",
-					Description: "Project ID: 3909655254191459782\nVehicle ID: 7300272137290532980\nShipment ID: 3341766951177830852\nTravel Time: 00:00:00\nService Time: 00:00:01\nWaiting Time: 00:00:00\nLoad: [0 0] - [3 5]\n",
+					Description: "Project ID: 3909655254191459782\nVehicle ID: 7300272137290532980\nTask ID: 3341766951177830852\nTravel Time: 00:00:00\nService Time: 00:00:01\nWaiting Time: 00:00:00\nLoad: [3 5]\n",
 				},
 				{
-					ID:          "5021753332863055108",
+					ID:          "delivery3341766951177830852@scheduleserv",
 					CreatedTime: time.Date(2021, time.Month(12), 8, 20, 4, 16, 0, time.UTC),
 					ModifiedAt:  time.Date(2021, time.Month(12), 8, 20, 4, 16, 0, time.UTC),
-					StartAt:     time.Date(2020, time.Month(1), 7, 10, 5, 31, 0, time.UTC),
-					EndAt:       time.Date(2020, time.Month(1), 7, 10, 5, 34, 0, time.UTC),
+					StartAt:     time.Date(2020, time.Month(1), 3, 20, 52, 34, 0, time.UTC),
+					EndAt:       time.Date(2020, time.Month(1), 3, 20, 52, 37, 0, time.UTC),
 					Summary:     "Delivery - Vehicle 7300272137290532980",
 					Location:    "(23.3458, 2.3242)",
-					Description: "Project ID: 3909655254191459782\nVehicle ID: 7300272137290532980\nShipment ID: 3341766951177830852\nTravel Time: 143:55:30\nService Time: 00:00:03\nWaiting Time: 00:00:00\nLoad: [3 5] - [0 0]\n",
+					Description: "Project ID: 3909655254191459782\nVehicle ID: 7300272137290532980\nTask ID: 3341766951177830852\nTravel Time: 58:42:33\nService Time: 00:00:03\nWaiting Time: 00:00:00\nLoad: [0 0]\n",
 				},
 				{
-					ID:          "682344376747508512",
+					ID:          "break2349284092384902582@scheduleserv",
 					CreatedTime: time.Date(2021, time.Month(12), 8, 20, 4, 16, 0, time.UTC),
 					ModifiedAt:  time.Date(2021, time.Month(12), 8, 20, 4, 16, 0, time.UTC),
-					StartAt:     time.Date(2020, time.Month(1), 7, 10, 5, 34, 0, time.UTC),
-					EndAt:       time.Date(2020, time.Month(1), 7, 10, 10, 58, 0, time.UTC),
+					StartAt:     time.Date(2020, time.Month(1), 3, 20, 52, 37, 0, time.UTC),
+					EndAt:       time.Date(2020, time.Month(1), 3, 20, 58, 1, 0, time.UTC),
 					Summary:     "Break - Vehicle 7300272137290532980",
 					Location:    "(23.3458, 2.3242)",
-					Description: "Project ID: 3909655254191459782\nVehicle ID: 7300272137290532980\nBreak ID: 2349284092384902582\nTravel Time: 143:55:30\nService Time: 00:05:24\nWaiting Time: 00:00:00\nLoad: [0 0] - [0 0]\n",
+					Description: "Project ID: 3909655254191459782\nVehicle ID: 7300272137290532980\nTask ID: 2349284092384902582\nTravel Time: 00:00:00\nService Time: 00:05:24\nWaiting Time: 00:00:00\nLoad: [0 0]\n",
 				},
 				{
-					ID:          "3799072960370619615",
+					ID:          "end7300272137290532980@scheduleserv",
 					CreatedTime: time.Date(2021, time.Month(12), 8, 20, 4, 16, 0, time.UTC),
 					ModifiedAt:  time.Date(2021, time.Month(12), 8, 20, 4, 16, 0, time.UTC),
-					StartAt:     time.Date(2020, time.Month(1), 7, 10, 10, 58, 0, time.UTC),
-					EndAt:       time.Date(2020, time.Month(1), 7, 10, 10, 58, 0, time.UTC),
+					StartAt:     time.Date(2020, time.Month(1), 3, 20, 58, 1, 0, time.UTC),
+					EndAt:       time.Date(2020, time.Month(1), 3, 20, 58, 1, 0, time.UTC),
 					Summary:     "End - Vehicle 7300272137290532980",
 					Location:    "(23.3458, 2.3242)",
-					Description: "Project ID: 3909655254191459782\nVehicle ID: 7300272137290532980\nTravel Time: 143:55:30\nService Time: 00:00:00\nWaiting Time: 00:00:00\nLoad: [0 0] - [0 0]\n",
+					Description: "Project ID: 3909655254191459782\nVehicle ID: 7300272137290532980\nTask ID: -1\nTravel Time: 00:00:00\nService Time: 00:00:00\nWaiting Time: 00:00:00\nLoad: [0 0]\n",
 				},
 			},
 			filename: "schedule-3909655254191459782.ics",
@@ -554,7 +772,7 @@ func TestGetScheduleICal(t *testing.T) {
 func TestDeleteSchedule(t *testing.T) {
 	test_db := NewTestDatabase(t)
 	server, conn := setup(test_db, "testdata.sql")
-	defer conn.Close(context.Background())
+	defer conn.Close()
 	mux := server.Router
 
 	testCases := []struct {
@@ -563,13 +781,13 @@ func TestDeleteSchedule(t *testing.T) {
 		projectID  int
 		resBody    map[string]interface{}
 	}{
-		// TODO: Check this
 		{
 			name:       "Invalid ID",
-			statusCode: 200,
+			statusCode: 404,
 			projectID:  100,
 			resBody: map[string]interface{}{
-				"success": true,
+				"error": "Not Found",
+				"code":  "404",
 			},
 		},
 		{
@@ -577,7 +795,8 @@ func TestDeleteSchedule(t *testing.T) {
 			statusCode: 200,
 			projectID:  3909655254191459782,
 			resBody: map[string]interface{}{
-				"success": true,
+				"code":    "200",
+				"message": "OK",
 			},
 		},
 		{
@@ -585,7 +804,8 @@ func TestDeleteSchedule(t *testing.T) {
 			statusCode: 200,
 			projectID:  2593982828701335033,
 			resBody: map[string]interface{}{
-				"success": true,
+				"code":    "200",
+				"message": "OK",
 			},
 		},
 	}

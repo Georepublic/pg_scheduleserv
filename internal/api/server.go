@@ -36,19 +36,20 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
 )
 
 type Server struct {
-	conn     *pgx.Conn
+	conn     *pgxpool.Pool
 	Router   *mux.Router
 	validate *validator.Validate
 	*database.Store
 	*util.Formatter
 }
 
-func NewServer(conn *pgx.Conn) *Server {
+func NewServer(conn *pgxpool.Pool) *Server {
 	router := mux.NewRouter().StrictSlash(true)
 	server := &Server{
 		conn:      conn,
@@ -65,7 +66,9 @@ func NewServer(conn *pgx.Conn) *Server {
 
 func (server *Server) Start(port string) error {
 	logrus.Info("Serving requests on port", port)
-	return http.ListenAndServe(port, util.Logger(server.Router))
+
+	// handle CORS
+	return http.ListenAndServe(port, util.Logger(cors.AllowAll().Handler(server.Router)))
 }
 
 func (server *Server) handleRoutes(router *mux.Router) {
@@ -91,11 +94,6 @@ func (server *Server) handleRoutes(router *mux.Router) {
 	router.HandleFunc("/jobs/{job_id}", server.DeleteJob).Methods("DELETE")
 	router.HandleFunc("/jobs/{job_id}/schedule", server.GetJobSchedule).Methods("GET")
 
-	// Job time windows endpoints
-	router.HandleFunc("/jobs/{job_id}/time_windows", server.CreateJobTimeWindow).Methods("POST")
-	router.HandleFunc("/jobs/{job_id}/time_windows", server.ListJobTimeWindows).Methods("GET")
-	router.HandleFunc("/jobs/{job_id}/time_windows", server.DeleteJobTimeWindow).Methods("DELETE")
-
 	// Shipment endpoints
 	router.HandleFunc("/projects/{project_id}/shipments", server.CreateShipment).Methods("POST")
 	router.HandleFunc("/projects/{project_id}/shipments", server.ListShipments).Methods("GET")
@@ -103,11 +101,6 @@ func (server *Server) handleRoutes(router *mux.Router) {
 	router.HandleFunc("/shipments/{shipment_id}", server.UpdateShipment).Methods("PATCH")
 	router.HandleFunc("/shipments/{shipment_id}", server.DeleteShipment).Methods("DELETE")
 	router.HandleFunc("/shipments/{shipment_id}/schedule", server.GetShipmentSchedule).Methods("GET")
-
-	// Shipment time windows endpoints
-	router.HandleFunc("/shipments/{shipment_id}/time_windows", server.CreateShipmentTimeWindow).Methods("POST")
-	router.HandleFunc("/shipments/{shipment_id}/time_windows", server.ListShipmentTimeWindows).Methods("GET")
-	router.HandleFunc("/shipments/{shipment_id}/time_windows", server.DeleteShipmentTimeWindow).Methods("DELETE")
 
 	// Vehicle endpoints
 	router.HandleFunc("/projects/{project_id}/vehicles", server.CreateVehicle).Methods("POST")
@@ -123,11 +116,6 @@ func (server *Server) handleRoutes(router *mux.Router) {
 	router.HandleFunc("/breaks/{break_id}", server.GetBreak).Methods("GET")
 	router.HandleFunc("/breaks/{break_id}", server.UpdateBreak).Methods("PATCH")
 	router.HandleFunc("/breaks/{break_id}", server.DeleteBreak).Methods("DELETE")
-
-	// Break time windows endpoints
-	router.HandleFunc("/breaks/{break_id}/time_windows", server.CreateBreakTimeWindow).Methods("POST")
-	router.HandleFunc("/breaks/{break_id}/time_windows", server.ListBreakTimeWindows).Methods("GET")
-	router.HandleFunc("/breaks/{break_id}/time_windows", server.DeleteBreakTimeWindow).Methods("DELETE")
 }
 
 func serveSwagger(router *mux.Router) {

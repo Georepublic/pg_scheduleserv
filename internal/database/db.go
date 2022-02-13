@@ -36,6 +36,7 @@ import (
 )
 
 type DBTX interface {
+	BeginTx(context.Context, pgx.TxOptions) (pgx.Tx, error)
 	Exec(context.Context, string, ...interface{}) (pgconn.CommandTag, error)
 	Query(context.Context, string, ...interface{}) (pgx.Rows, error)
 	QueryRow(context.Context, string, ...interface{}) pgx.Row
@@ -49,8 +50,36 @@ type Queries struct {
 	db DBTX
 }
 
-func (q *Queries) DBWithTx(tx pgx.Tx) *Queries {
-	return &Queries{
-		db: tx,
+func (q *Queries) execCreateTx(ctx context.Context, fn func(*Queries) (int64, error)) (int64, error) {
+	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{})
+	if err != nil {
+		return 0, err
 	}
+	defer func() {
+		err = tx.Rollback(ctx)
+	}()
+
+	id, err := fn(q)
+	if err != nil {
+		return 0, err
+	}
+
+	return id, tx.Commit(ctx)
+}
+
+func (q *Queries) execUpdateTx(ctx context.Context, fn func(*Queries) error) error {
+	tx, err := q.db.BeginTx(ctx, pgx.TxOptions{})
+	if err != nil {
+		return err
+	}
+	defer func() {
+		err = tx.Rollback(ctx)
+	}()
+
+	err = fn(q)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit(ctx)
 }

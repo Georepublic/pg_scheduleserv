@@ -1,0 +1,198 @@
+.navbar {
+    margin-bottom: 50px;
+}
+
+.heading,
+.sub-heading {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#map {
+    height: 800px;
+    width: 100%;
+}
+
+#map.active {
+    cursor: pointer;
+    border: red solid 2px;
+}
+
+.dropdown-item {
+    cursor: pointer;
+}
+
+.myDivIcon {
+    /* Horizontally center the text (icon) */
+    text-align: center;
+    /* Vertically center the text (icon) */
+    line-height: 10px;
+}
+
+.card-header {
+    color: white;
+    background-color: #00f;
+}
+
+.card-body-custom {
+    max-height: 25vh;
+    overflow-y: scroll;
+}
+
+.card-body-schedule {
+    max-height: 50vh;
+    overflow-y: scroll;
+}
+
+.list-group,
+#map {
+    margin-bottom: 20px;
+}
+
+.list-group-item[data-action] {
+    margin-left: 10px;
+}
+
+.list-group-item[data-action]:hover {
+    cursor: pointer;
+    background-color: #eee;
+}
+
+.list-group-item[data-action].active {
+    background-color: rgb(0, 128, 255);
+}
+
+button[data-action="job-close"],
+button[data-action="shipment-close"],
+button[data-action="vehicle-close"] {
+    float: right;
+}
+
+.timelines-container {
+    position: relative;
+    height: calc(100% - 70px);
+    margin-bottom: 20px;
+    padding-right: 20px;
+    /* overflow-y: auto; */
+}
+
+.timeline-item {
+    padding-right: 20px;
+    margin-right: -20px;
+}
+
+.timeline {
+    margin-left: 10px;
+    position: relative;
+    height: 100%;
+    min-height: 45px;
+}
+
+.timeline .line {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    height: 1px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.timeline .value-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 8px;
+    margin-top: -4px;
+    z-index: 10;
+    border-radius: 4px;
+}
+
+.flex-container.items-center {
+    align-items: center;
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.flex-container .flex-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.task-item {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.task-item:hover {
+    cursor: pointer;
+}
+
+.task-item .task-item-full {
+    height: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+}
+
+.task-item-tooltip {
+    white-space: pre-line;
+    font-size: 14px;
+    line-height: 1.4em;
+}
+
+.label-vertical-line {
+    position: absolute;
+    border-left: 1px solid rgba(0, 0, 0, 0.2);
+    width: 1px;
+    top: 0;
+    bottom: 0;
+}
+
+.tooltip {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1.42857143;
+    text-align: left;
+    text-align: start;
+    text-decoration: none;
+    text-shadow: none;
+    text-transform: none;
+    letter-spacing: normal;
+    word-break: normal;
+    word-spacing: normal;
+    word-wrap: normal;
+    white-space: normal;
+}
+.tooltip-inner {
+    max-width: 200px;
+    padding: 3px 8px;
+    color: #fff;
+    text-align: center;
+    background-color: #000;
+    border-radius: 4px;
+}
+
+.label-item {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.circle-icon {
+    width: 20px !important;
+    height: 20px !important;
+    margin-left: -10px;
+    margin-top: -10px;
+    border-radius: 18px;
+    text-align: center;
+    font-size: 12px;
+}
+
+::-webkit-calendar-picker-indicator {
+    margin-left: 0px;
+}

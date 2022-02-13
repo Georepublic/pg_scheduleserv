@@ -29,15 +29,15 @@ along with pg_scheduleserv.  If not, see <https://www.gnu.org/licenses/>.
 package database
 
 import (
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 type Store struct {
 	Querier
-	db *pgx.Conn
+	db *pgxpool.Pool
 }
 
-func NewStore(db *pgx.Conn) *Store {
+func NewStore(db *pgxpool.Pool) *Store {
 	return &Store{
 		db:      db,
 		Querier: New(db),
