@@ -337,16 +337,22 @@ export default class ScheduleView extends AbstractView {
       }
 
       let taskType = task.type.charAt(0).toUpperCase() + task.type.slice(1);
+      let taskId = "";
+      if (taskType != "Start" && taskType != "End") {
+        taskId = `ID: ${task.task_id}<br/>`;
+      }
 
       // set tooltip text for the task
       let tooltipText = `
         <b>${taskType}</b><br/>
+        ${taskId}
         Arr: ${task.arrival}<br/>
         Dep: ${task.departure}<br/>
         Travel time: ${task.travel_time}<br/>
         Waiting time: ${task.waiting_time}<br/>
         Setup time: ${task.setup_time}<br/>
         Service time: ${task.service_time}<br/>
+        Data: ${JSON.stringify(task.task_data)}<br/>
       `;
 
       let zIndex = 10 + route.length - index;
@@ -356,7 +362,7 @@ export default class ScheduleView extends AbstractView {
         <div class="task-item" style="left: ${
           left * widthFactor
         }%; width: ${widthString}; z-index: ${zIndex}">
-          <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title="${tooltipText}">
+          <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true" title='${tooltipText}'>
             <div class="task-item-full" style="background-color: ${color};"></div>
           </a>
         </div>

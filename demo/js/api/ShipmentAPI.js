@@ -8,6 +8,7 @@ export default class ShipmentAPI {
   }
 
   parseShipment(data) {
+    console.log(data);
     return {
       id: data.id,
       p_location: Parser.parseLocation(data.p_location),
@@ -20,7 +21,8 @@ export default class ShipmentAPI {
       skills: Parser.parseAmount(data.skills),
       priority: Parser.parsePriority(data.priority),
       project_id: data.project_id,
-      data: Parser.parseJSON(data.data),
+      p_data: Parser.parseJSON(data.p_data),
+      d_data: Parser.parseJSON(data.d_data),
       p_time_windows: Parser.parseTimeWindows(
         data["p_tw_open[]"],
         data["p_tw_close[]"]

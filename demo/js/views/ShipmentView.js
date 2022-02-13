@@ -82,7 +82,10 @@ export default class ShipmentView extends AbstractView {
         </div>
 
         <div class="d-flex w-100 justify-content-between">
-          <p class="mb-1">${JSON.stringify(shipment.data)}</p>
+          <p class="mb-1">
+            ${JSON.stringify(shipment.p_data)},
+            ${JSON.stringify(shipment.d_data)}
+          </p>
         </div>
       </div>
       </div>
@@ -172,7 +175,12 @@ export default class ShipmentView extends AbstractView {
             <p class="mb-1">Project ID: ${shipment.project_id}</p>
           </div>
           <div class="d-flex w-100 justify-content-between">
-            <p class="mb-1">Data: ${JSON.stringify(shipment.data)}</p>
+            <p class="mb-1">Pickup Data: ${JSON.stringify(shipment.p_data)}</p>
+          </div>
+          <div class="d-flex w-100 justify-content-between">
+            <p class="mb-1">Delivery Data: ${JSON.stringify(
+              shipment.d_data
+            )}</p>
           </div>
           <div class="d-flex w-100 justify-content-between">
             <p class="mb-1">Created At: ${shipment.created_at}</p>
@@ -312,9 +320,15 @@ export default class ShipmentView extends AbstractView {
             ${p_timeWindowsHtml}
             ${d_timeWindowsHtml}
             <div class="form-group">
-              <label>Data</label>
-              <input type="text" class="form-control" name="data" value='${JSON.stringify(
-                shipment.data
+              <label>Pickup Data</label>
+              <input type="text" class="form-control" name="p_data" value='${JSON.stringify(
+                shipment.p_data
+              )}'>
+            </div>
+            <div class="form-group">
+              <label>Delivery Data</label>
+              <input type="text" class="form-control" name="d_data" value='${JSON.stringify(
+                shipment.d_data
               )}'>
             </div>
             <div class="d-flex w-100 justify-content-center">
