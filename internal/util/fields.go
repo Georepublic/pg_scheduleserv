@@ -40,6 +40,7 @@ var IntervalFields = map[string]bool{
 	"service_time": true,
 	"waiting_time": true,
 	"max_shift":    true,
+	"timeout":      true,
 }
 
 var TimestampFields = map[string]bool{

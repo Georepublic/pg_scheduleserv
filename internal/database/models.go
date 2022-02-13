@@ -45,8 +45,6 @@ type Break struct {
 // add description to all fields and name, so that it can be displayed in the frontend
 // only one data field is present in shipment, instead of p_ and d_
 
-// change timezone example (add T)
-
 type Job struct {
 	ID          int64               `json:"id,string" example:"1234567812345678"`
 	Location    util.LocationParams `json:"location"`
@@ -64,13 +62,15 @@ type Job struct {
 }
 
 type Project struct {
-	ID           int64       `json:"id,string" example:"1234567812345678"`
-	Name         string      `json:"name" example:"Sample Project"`
-	DistanceCalc string      `json:"distance_calc" example:"euclidean"`
-	MaxShift     string      `json:"max_shift" example:"00:30:00"`
-	Data         interface{} `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
-	CreatedAt    string      `json:"created_at" example:"2021-12-01T13:00:00"`
-	UpdatedAt    string      `json:"updated_at" example:"2021-12-01T13:00:00"`
+	ID               int64       `json:"id,string" example:"1234567812345678"`
+	Name             string      `json:"name" example:"Sample Project"`
+	DistanceCalc     string      `json:"distance_calc" example:"euclidean"`
+	ExplorationLevel int64       `json:"exploration_level" example:"5"`
+	Timeout          string      `json:"timeout" example:"00:10:00"`
+	MaxShift         string      `json:"max_shift" example:"00:30:00"`
+	Data             interface{} `json:"data" swaggertype:"object,string" example:"key1:value1,key2:value2"`
+	CreatedAt        string      `json:"created_at" example:"2021-12-01T13:00:00"`
+	UpdatedAt        string      `json:"updated_at" example:"2021-12-01T13:00:00"`
 }
 
 type Shipment struct {
