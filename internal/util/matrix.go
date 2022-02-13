@@ -53,7 +53,7 @@ func Get(url string, contentType string, target interface{}) (int, error) {
 	return res.StatusCode, json.NewDecoder(res.Body).Decode(target)
 }
 
-func GetMatrix(locationIds []int64, distanceCalc string) (startIds []int64, endIds []int64, durations []int64, err error) {
+func GetMatrix(locationIds []int64, durationCalc string) (startIds []int64, endIds []int64, durations []int64, err error) {
 	// iterate through locationIds, convert all the ids to latitude and longitude, and append [longitude, latitude] in an array
 	coordinates := make([][]float64, 0)
 	for _, id := range locationIds {
@@ -64,7 +64,7 @@ func GetMatrix(locationIds []int64, distanceCalc string) (startIds []int64, endI
 	var matrix [][]int64
 
 	// call the appropriate function to get the matrix
-	switch distanceCalc {
+	switch durationCalc {
 	case "euclidean":
 		matrix, err = GetEuclideanMatrix(coordinates)
 	case "valhalla":
@@ -72,7 +72,7 @@ func GetMatrix(locationIds []int64, distanceCalc string) (startIds []int64, endI
 	case "osrm":
 		matrix, err = GetMatrixFromOSRM(coordinates)
 	default:
-		err = fmt.Errorf("Invalid distance calculation method")
+		err = fmt.Errorf("Invalid duration calculation method")
 	}
 
 	if err != nil {

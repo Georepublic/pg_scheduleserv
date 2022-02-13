@@ -55,7 +55,7 @@ func (q *Queries) DBCreateSchedule(ctx context.Context, projectID int64, fresh s
 		return fmt.Errorf("No locations present in the project")
 	}
 
-	startIds, endIds, durations, err := util.GetMatrix(locationIds, project.DistanceCalc)
+	startIds, endIds, durations, err := util.GetMatrix(locationIds, project.DurationCalc)
 	if err != nil {
 		return err
 	}

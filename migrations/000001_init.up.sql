@@ -152,7 +152,7 @@ CREATE TABLE IF NOT EXISTS locations (
 
 
 DO $$ BEGIN
-  CREATE TYPE distance_calc_type AS ENUM ('euclidean', 'valhalla', 'osrm');
+  CREATE TYPE duration_calc_type AS ENUM ('euclidean', 'valhalla', 'osrm');
 EXCEPTION
   WHEN duplicate_object THEN null;
 END $$;
@@ -161,7 +161,7 @@ END $$;
 CREATE TABLE IF NOT EXISTS projects (
   id                BIGINT                DEFAULT random_bigint() PRIMARY KEY,
   name              VARCHAR               NOT NULL,
-  distance_calc     DISTANCE_CALC_TYPE    NOT NULL DEFAULT 'euclidean',
+  duration_calc     DURATION_CALC_TYPE    NOT NULL DEFAULT 'euclidean',
   exploration_level INTEGER               NOT NULL DEFAULT 5,
   timeout           INTERVAL              NOT NULL DEFAULT '00:10:00'::INTERVAL,
   max_shift         INTERVAL              NOT NULL DEFAULT '00:30:00'::INTERVAL,

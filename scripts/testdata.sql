@@ -28,7 +28,7 @@ along with pg_scheduleserv.  If not, see <https://www.gnu.org/licenses/>.
 
 BEGIN;
 
-COPY public.projects (id, name, data, distance_calc, created_at, updated_at, deleted) FROM stdin;
+COPY public.projects (id, name, data, duration_calc, created_at, updated_at, deleted) FROM stdin;
 3909655254191459782	Sample Project	"random"	osrm	2021-10-22 23:29:31.618091	2021-10-22 23:29:31.618091	f
 3909655254191459783	Sample Project2	"random"	osrm	2021-10-22 23:29:31.618091	2021-10-22 23:29:31.618091	f
 2593982828701335033		{"s": 1}	osrm	2021-10-24 19:52:52.303672	2021-10-24 19:52:52.303672	f

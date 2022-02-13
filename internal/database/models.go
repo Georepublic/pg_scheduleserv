@@ -64,7 +64,7 @@ type Job struct {
 type Project struct {
 	ID               int64       `json:"id,string" example:"1234567812345678"`
 	Name             string      `json:"name" example:"Sample Project"`
-	DistanceCalc     string      `json:"distance_calc" example:"euclidean"`
+	DurationCalc     string      `json:"duration_calc" example:"euclidean"`
 	ExplorationLevel int64       `json:"exploration_level" example:"5"`
 	Timeout          string      `json:"timeout" example:"00:10:00"`
 	MaxShift         string      `json:"max_shift" example:"00:30:00"`

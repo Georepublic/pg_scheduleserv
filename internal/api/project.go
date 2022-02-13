@@ -42,7 +42,7 @@ import (
 // CreateProject godoc
 // @Summary Create a new project
 // @Description Create a new project with the input payload
-// @Description The "distance_calc" parameter must be either "euclidean", "valhalla" or "osrm"
+// @Description The "duration_calc" parameter must be either "euclidean", "valhalla" or "osrm"
 // @Tags Project
 // @Accept application/json
 // @Produce application/json
@@ -142,7 +142,7 @@ func (server *Server) GetProject(w http.ResponseWriter, r *http.Request) {
 // UpdateProject godoc
 // @Summary Update a project
 // @Description Update a project with its project_id
-// @Description The "distance_calc" parameter must be either "euclidean", "valhalla" or "osrm"
+// @Description The "duration_calc" parameter must be either "euclidean", "valhalla" or "osrm"
 // @Tags Project
 // @Accept application/json
 // @Produce application/json
