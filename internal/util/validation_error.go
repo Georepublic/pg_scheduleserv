@@ -33,14 +33,12 @@ import (
 	"strings"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/sirupsen/logrus"
 )
 
 func getErrorMsg(ve validator.ValidationErrors) []string {
 	var msg []string
 	for i := 0; i < len(ve); i++ {
 		var err string
-		logrus.Info(ve[i].Value())
 		switch field := ve[i].Tag(); field {
 		case "required":
 			err = fmt.Sprintf("Field '%s' of type '%s' is required", ve[i].Field(), ve[i].Type().Elem())
