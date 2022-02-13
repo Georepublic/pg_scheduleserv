@@ -109,14 +109,20 @@ definitions:
           key1: value1
           key2: value2
         type: object
-      distance_calc:
+      duration_calc:
         example: euclidean
         type: string
+      exploration_level:
+        example: 5
+        type: integer
       max_shift:
         example: "00:30:00"
         type: string
       name:
         example: Sample Project
+        type: string
+      timeout:
+        example: "00:10:00"
         type: string
     required:
     - name
@@ -130,6 +136,13 @@ definitions:
         items:
           type: integer
         type: array
+      d_data:
+        additionalProperties:
+          type: string
+        example:
+          key1: value1
+          key2: value2
+        type: object
       d_location:
         $ref: '#/definitions/util.LocationParams'
       d_service:
@@ -144,7 +157,7 @@ definitions:
             type: string
           type: array
         type: array
-      data:
+      p_data:
         additionalProperties:
           type: string
         example:
@@ -294,9 +307,12 @@ definitions:
           key1: value1
           key2: value2
         type: object
-      distance_calc:
+      duration_calc:
         example: euclidean
         type: string
+      exploration_level:
+        example: 5
+        type: integer
       id:
         example: "1234567812345678"
         type: string
@@ -305,6 +321,9 @@ definitions:
         type: string
       name:
         example: Sample Project
+        type: string
+      timeout:
+        example: "00:10:00"
         type: string
       updated_at:
         example: 2021-12-01T13:00:00
@@ -322,6 +341,13 @@ definitions:
       created_at:
         example: 2021-12-01T13:00:00
         type: string
+      d_data:
+        additionalProperties:
+          type: string
+        example:
+          key1: value1
+          key2: value2
+        type: object
       d_location:
         $ref: '#/definitions/util.LocationParams'
       d_service:
@@ -336,16 +362,16 @@ definitions:
             type: string
           type: array
         type: array
-      data:
+      id:
+        example: "1234567812345678"
+        type: string
+      p_data:
         additionalProperties:
           type: string
         example:
           key1: value1
           key2: value2
         type: object
-      id:
-        example: "1234567812345678"
-        type: string
       p_location:
         $ref: '#/definitions/util.LocationParams'
       p_service:
@@ -434,6 +460,13 @@ definitions:
         items:
           type: integer
         type: array
+      d_data:
+        additionalProperties:
+          type: string
+        example:
+          key1: value1
+          key2: value2
+        type: object
       d_location:
         $ref: '#/definitions/util.LocationParams'
       d_service:
@@ -448,7 +481,7 @@ definitions:
             type: string
           type: array
         type: array
-      data:
+      p_data:
         additionalProperties:
           type: string
         example:
@@ -856,7 +889,7 @@ info:
     url: https://www.gnu.org/licenses/agpl-3.0.en.html
   termsOfService: https://swagger.io/terms/
   title: pg_scheduleserv API
-  version: 0.1.0
+  version: 0.2.0
 paths:
   /breaks/{break_id}:
     delete:
@@ -1128,7 +1161,7 @@ paths:
       - application/json
       description: |-
         Create a new project with the input payload
-        The "distance_calc" parameter must be either "euclidean", "valhalla" or "osrm"
+        The "duration_calc" parameter must be either "euclidean", "valhalla" or "osrm"
       parameters:
       - description: Create project
         in: body
@@ -1222,7 +1255,7 @@ paths:
       - application/json
       description: |-
         Update a project with its project_id
-        The "distance_calc" parameter must be either "euclidean", "valhalla" or "osrm"
+        The "duration_calc" parameter must be either "euclidean", "valhalla" or "osrm"
       parameters:
       - description: Project ID
         in: path
