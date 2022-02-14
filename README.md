@@ -17,8 +17,11 @@
 
 A RESTful API Server for scheduling VRP tasks using [vrpRouting](https://github.com/pgRouting/vrprouting), written in [Go](https://golang.org/).
 
-API Documentation: [docs/api.md](./docs/api.md)
+API Documentation: [docs/api.md](./docs/api.md)\
 Release Notes: [NEWS.md](./NEWS.md)
+
+pg_scheduleserv API: https://api-v0.udc.pgrouting.org/ \
+Demo Application: https://demo-v0.udc.pgrouting.org/
 
 ## Status
 
@@ -79,7 +82,7 @@ All the steps are similar as above, except that the executable will be built fro
 
 ### Usage
 
-Any API client can be used to interact with the API server. The API can also be tested using the Swagger documentation. Sample deployed API can be found on https://api.udc.pgrouting.org/
+Any API client can be used to interact with the API server. The API can also be tested using the Swagger documentation. Sample deployed API can be found on https://api-v0.udc.pgrouting.org/
 
 These documenations can be accessed after running the API server on the following URLs:
 
@@ -91,7 +94,7 @@ These documenations can be accessed after running the API server on the followin
 
 ### Demo Application
 
-A frontend demo application for the API resides in the `demo` directory. Sample deployed demo application can be found on https://vrpdemo.udc.pgrouting.org/
+A frontend demo application for the API resides in the `demo` directory. Sample deployed demo application can be found on https://demo-v0.udc.pgrouting.org/
 
 To run the demo application:
 
