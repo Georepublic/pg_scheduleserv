@@ -20,9 +20,6 @@ A RESTful API Server for scheduling VRP tasks using [vrpRouting](https://github.
 API Documentation: [docs/api.md](./docs/api.md)\
 Release Notes: [NEWS.md](./NEWS.md)
 
-pg_scheduleserv API: https://api-v0.udc.pgrouting.org/ \
-Demo Application: https://demo-v0.udc.pgrouting.org/
-
 ## Status
 
 | Service  | Main                                                                                                                                                                                                      | Develop                                                                                                                                                                                                         |
